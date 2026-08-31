@@ -23,7 +23,7 @@ pub async fn session_auth(
     next: Next,
 ) -> Response {
     let unauthorized = || {
-        ApiError::Unauthorized("a valid portal session is required for the internal contour")
+        ApiError::Unauthorized("a valid session is required for the internal contour")
             .into_response()
     };
 
@@ -78,7 +78,7 @@ pub async fn session_auth(
 
     let current = CurrentUser {
         user_id: user.user.id,
-        sso_subject: user.user.sso_subject,
+        username: user.user.username,
         effective_role: auth::effective_role(&grants),
         scope: auth::widest_scope(&grants),
         roles: grants,
@@ -96,7 +96,7 @@ pub async fn require_internal_access(request: Request, next: Next) -> Response {
     match request.extensions().get::<CurrentUser>() {
         Some(user) if user.scope.is_some() => next.run(request).await,
         Some(_) => ApiError::Forbidden(auth::REQUEST_ACCESS_DETAIL).into_response(),
-        None => ApiError::Unauthorized("a valid portal session is required").into_response(),
+        None => ApiError::Unauthorized("a valid session is required").into_response(),
     }
 }
 
@@ -109,6 +109,6 @@ pub async fn require_admin(request: Request, next: Next) -> Response {
         Some(_) => {
             ApiError::Forbidden("the administrative area requires the admin role").into_response()
         }
-        None => ApiError::Unauthorized("a valid portal session is required").into_response(),
+        None => ApiError::Unauthorized("a valid session is required").into_response(),
     }
 }

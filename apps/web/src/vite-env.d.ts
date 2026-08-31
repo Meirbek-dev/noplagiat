@@ -11,11 +11,4 @@ interface ImportMetaEnv {
    * proxy in development). See `src/api/README.md`.
    */
   readonly VITE_API_BASE?: string
-  /**
-   * `dev` when the API runs `APP_AUTH_MODE=dev`, which replaces the OIDC flow
-   * with `POST /api/auth/dev-login`. Set it only on a development or e2e build:
-   * it makes the sign-in page offer the development form, which the API 404s
-   * on any deployment fronted by the portal IdP. Development builds imply it.
-   */
-  readonly VITE_AUTH_MODE?: string
 }

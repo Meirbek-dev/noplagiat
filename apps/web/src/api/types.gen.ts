@@ -13,10 +13,11 @@ export type ClientOptions = {
 /**
  * One account and its grants.
  *
- * `email` and `display_name` come from the portal IdP and identify a *service*
- * account of the dashboard, which TZ §6.1 exempts from the PII ban precisely
- * so that grants can be administered. They appear here and nowhere else - no
- * analytic response, no export, no log line.
+ * `email` and `display_name` are set by the operator who created the account
+ * with the `manage-users` CLI and identify a *service* account of the
+ * dashboard, which TZ §6.1 exempts from the PII ban precisely so that grants
+ * can be administered. They appear here and nowhere else - no analytic
+ * response, no export, no log line.
  */
 export type AccountDto = {
     active: boolean;
@@ -24,12 +25,12 @@ export type AccountDto = {
     email: string;
     id: number;
     roles: Array<RoleGrantDto>;
-    sso_subject: string;
+    username: string;
 };
 
 export type AdminPing = {
     scope: ScopeDto;
-    sso_subject: string;
+    username: string;
 };
 
 export type AdminReportDto = {
@@ -186,48 +187,6 @@ export type DepartmentsMatrix = {
     period: PeriodDto;
     scope: ScopeDto;
     total: InternalPair;
-};
-
-/**
- * Development sign-in request.
- *
- * No name and no e-mail: the identity is the opaque SSO subject, and the
- * synthetic account fields are derived from it, so this endpoint cannot be
- * used to put a person's name into the database (AGENTS.md invariant #1).
- */
-export type DevLoginRequest = {
-    /**
-     * Role to grant: `staff`, `dept_head`, `dean`, `ethics`, `compliance` or
-     * `admin`. Omit to mint the role-less session that the «request access»
-     * path uses.
-     */
-    role?: string | null;
-    /**
-     * Department dictionary code for a `dept_head` grant.
-     */
-    scope_department_code?: string | null;
-    /**
-     * Faculty dictionary code for a `dean` grant.
-     */
-    scope_faculty_code?: string | null;
-    /**
-     * Opaque subject identifier, as the IdP would supply.
-     */
-    sso_subject: string;
-};
-
-export type DevLoginResponse = {
-    /**
-     * Hex CSRF token for this session - send it as `x-csrf-token` on every
-     * mutating request.
-     */
-    csrf_token: string;
-    /**
-     * Grants the account now holds.
-     */
-    roles: Array<RoleGrantDto>;
-    scope?: null | ScopeDto;
-    sso_subject: string;
 };
 
 export type DictionaryItem = {
@@ -541,7 +500,7 @@ export type InternalPing = {
      * its scope (ADR-014 §4).
      */
     screening: string;
-    sso_subject: string;
+    username: string;
 };
 
 export type InternalPreviousPeriod = {
@@ -628,13 +587,30 @@ export type InternalYoyYear = {
     label: string;
 };
 
+/**
+ * Sign-in request.
+ *
+ * No name and no e-mail: those are account fields an operator sets with the
+ * CLI, so this endpoint cannot be used to put a person's name into the
+ * database (AGENTS.md invariant #1).
+ */
+export type LoginRequest = {
+    /**
+     * The account's password. Never logged, never echoed.
+     */
+    password: string;
+    /**
+     * Login name, matched case-insensitively.
+     */
+    username: string;
+};
+
 export type LogoutResponse = {
     /**
-     * RP-initiated logout URL, when the provider advertises an
-     * `end_session_endpoint`. The browser should follow it so the portal
-     * session ends too; `null` means the local session was all there was.
+     * Where the browser should go once the session is gone. Always the sign-in
+     * page: with no identity provider there is no second session to end.
      */
-    end_session_url?: string | null;
+    next_path: string;
 };
 
 export type MatrixDepartment = {
@@ -660,7 +636,8 @@ export type MatrixFaculty = {
 
 export type MeResponse = {
     /**
-     * Hex CSRF token for this session, so a reloaded page can keep mutating.
+     * Hex CSRF token for this session - send it as `x-csrf-token` on every
+     * mutating request.
      */
     csrf_token: string;
     /**
@@ -673,7 +650,10 @@ export type MeResponse = {
     role?: string | null;
     roles: Array<RoleGrantDto>;
     scope?: null | ScopeDto;
-    sso_subject: string;
+    /**
+     * Login name of the signed-in account.
+     */
+    username: string;
 };
 
 /**
@@ -878,31 +858,9 @@ export type RoleGrantRequest = {
     scope_department_code?: string | null;
     scope_faculty_code?: string | null;
     /**
-     * Opaque SSO subject of the account.
+     * Login name of the account, matched case-insensitively.
      */
-    sso_subject: string;
-};
-
-/**
- * One AD group's meaning.
- */
-export type RoleMapping = {
-    /**
-     * Department dictionary code - required for `dept_head`.
-     */
-    department_code?: string | null;
-    /**
-     * Faculty dictionary code - required for `dean`.
-     */
-    faculty_code?: string | null;
-    /**
-     * AD group name as the IdP spells it in the claim.
-     */
-    group: string;
-    /**
-     * `staff`, `dept_head`, `dean`, `ethics`, `compliance` or `admin`.
-     */
-    role: string;
+    username: string;
 };
 
 export type RolesResponse = {
@@ -2383,72 +2341,8 @@ export type UpdateWorkTypeRuleResponses = {
 
 export type UpdateWorkTypeRuleResponse = UpdateWorkTypeRuleResponses[keyof UpdateWorkTypeRuleResponses];
 
-export type CallbackData = {
-    body?: never;
-    path?: never;
-    query?: {
-        /**
-         * Authorization code, on success.
-         */
-        code?: string;
-        /**
-         * Opaque value echoed back, compared against the flow cookie.
-         */
-        state?: string;
-        /**
-         * OAuth error code, when the user declined or the provider refused.
-         */
-        error?: string;
-        error_description?: string;
-    };
-    url: '/api/auth/callback';
-};
-
-export type CallbackErrors = {
-    /**
-     * the sign-in could not be matched to this browser
-     */
-    403: Problem;
-    /**
-     * the identity provider rejected the exchange
-     */
-    502: Problem;
-    /**
-     * no identity provider is configured
-     */
-    503: Problem;
-};
-
-export type CallbackError = CallbackErrors[keyof CallbackErrors];
-
-export type DevLoginData = {
-    body: DevLoginRequest;
-    path?: never;
-    query?: never;
-    url: '/api/auth/dev-login';
-};
-
-export type DevLoginErrors = {
-    /**
-     * not running in dev auth mode
-     */
-    404: Problem;
-    /**
-     * unknown dictionary code
-     */
-    422: Problem;
-};
-
-export type DevLoginError = DevLoginErrors[keyof DevLoginErrors];
-
-export type DevLoginResponses = {
-    200: DevLoginResponse;
-};
-
-export type DevLoginResponse2 = DevLoginResponses[keyof DevLoginResponses];
-
 export type LoginData = {
-    body?: never;
+    body: LoginRequest;
     path?: never;
     query?: never;
     url: '/api/auth/login';
@@ -2456,12 +2350,29 @@ export type LoginData = {
 
 export type LoginErrors = {
     /**
-     * no identity provider is configured
+     * the credentials were not accepted
      */
-    503: Problem;
+    401: Problem;
+    /**
+     * a field was empty
+     */
+    422: Problem;
+    /**
+     * too many sign-in attempts from this address
+     */
+    429: Problem;
 };
 
 export type LoginError = LoginErrors[keyof LoginErrors];
+
+export type LoginResponses = {
+    /**
+     * session established
+     */
+    200: MeResponse;
+};
+
+export type LoginResponse = LoginResponses[keyof LoginResponses];
 
 export type LogoutData = {
     body?: never;

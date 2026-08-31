@@ -23,7 +23,6 @@ use axum::{Json, Router};
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 
-use crate::auth::mapping;
 use crate::auth::{CurrentUser, RbacScope};
 use crate::dto::ScopeDto;
 use crate::error::ApiError;
@@ -113,7 +112,7 @@ pub fn router() -> Router<AppState> {
 
 #[derive(Debug, Serialize, ToSchema)]
 pub struct AdminPing {
-    pub sso_subject: String,
+    pub username: String,
     pub scope: ScopeDto,
 }
 
@@ -132,7 +131,7 @@ pub struct AdminPing {
 )]
 pub async fn ping(user: CurrentUser, RbacScope(scope): RbacScope) -> Json<AdminPing> {
     Json(AdminPing {
-        sso_subject: user.sso_subject,
+        username: user.username,
         scope: scope.into(),
     })
 }
@@ -158,7 +157,7 @@ pub struct SettingDto {
 }
 
 /// The settings this build validates, in the order the admin screen shows them.
-const KNOWN_SETTINGS: [&str; 8] = [
+const KNOWN_SETTINGS: [&str; 7] = [
     db::settings::K_THRESHOLD,
     db::settings::ORIGINALITY_THRESHOLD,
     db::settings::HISTOGRAM_BUCKETS,
@@ -166,7 +165,6 @@ const KNOWN_SETTINGS: [&str; 8] = [
     db::settings::STATUS_RULES,
     db::settings::EXCLUDE_DELETED,
     db::settings::PUBLIC_SNAPSHOT_QUARTER,
-    mapping::ROLE_MAPPINGS_KEY,
 ];
 
 /// TZ §4.6 - the runtime configuration.
@@ -179,7 +177,11 @@ const KNOWN_SETTINGS: [&str; 8] = [
 )]
 pub async fn settings(State(state): State<AppState>) -> Result<Json<SettingsResponse>, ApiError> {
     let rows = db::settings::list(&state.db).await?;
-    let mut items: Vec<SettingDto> = rows
+    // A deployment migrated from the SSO era may still hold an inert
+    // `role_mappings` row (ADR-017 §5): it is listed like any other stored
+    // setting and refused on write, because this build no longer knows what it
+    // would mean.
+    let items: Vec<SettingDto> = rows
         .into_iter()
         .map(|row| SettingDto {
             key: row.key,
@@ -188,20 +190,6 @@ pub async fn settings(State(state): State<AppState>) -> Result<Json<SettingsResp
             updated_by: row.updated_by,
         })
         .collect();
-    // `role_mappings` has a shipped default and may never have been written;
-    // the editor still needs a row to edit (ADR-014 §3).
-    if !items
-        .iter()
-        .any(|item| item.key == mapping::ROLE_MAPPINGS_KEY)
-    {
-        items.push(SettingDto {
-            key: mapping::ROLE_MAPPINGS_KEY.to_owned(),
-            value: serde_json::to_value(mapping::defaults()).unwrap_or(serde_json::Value::Null),
-            updated_at: String::new(),
-            updated_by: None,
-        });
-        items.sort_by(|left, right| left.key.cmp(&right.key));
-    }
     Ok(Json(SettingsResponse {
         items,
         known_keys: KNOWN_SETTINGS.to_vec(),
@@ -238,7 +226,7 @@ pub async fn update_settings(
     let mut written: Vec<String> = Vec::with_capacity(update.0.len());
     for (key, value) in &update.0 {
         validate_setting(key, value)?;
-        db::settings::set(&state.db, key, value, Some(&user.sso_subject)).await?;
+        db::settings::set(&state.db, key, value, Some(&user.username)).await?;
         written.push(key.clone());
     }
     // A raised `k` must take effect now, not in up to 60 seconds.
@@ -297,9 +285,6 @@ fn validate_setting(key: &str, value: &serde_json::Value) -> Result<(), ApiError
             .as_str()
             .map(|_| ())
             .ok_or_else(|| invalid("expected a JSON string".to_owned())),
-        mapping::ROLE_MAPPINGS_KEY => mapping::parse(value)
-            .map(|_| ())
-            .map_err(|error| invalid(error.to_string())),
         other => Err(ApiError::field(
             other.to_owned(),
             format!(
@@ -702,14 +687,15 @@ pub struct RolesResponse {
 
 /// One account and its grants.
 ///
-/// `email` and `display_name` come from the portal IdP and identify a *service*
-/// account of the dashboard, which TZ §6.1 exempts from the PII ban precisely
-/// so that grants can be administered. They appear here and nowhere else - no
-/// analytic response, no export, no log line.
+/// `email` and `display_name` are set by the operator who created the account
+/// with the `manage-users` CLI and identify a *service* account of the
+/// dashboard, which TZ §6.1 exempts from the PII ban precisely so that grants
+/// can be administered. They appear here and nowhere else - no analytic
+/// response, no export, no log line.
 #[derive(Debug, Serialize, ToSchema)]
 pub struct AccountDto {
     pub id: i64,
-    pub sso_subject: String,
+    pub username: String,
     pub email: String,
     pub display_name: String,
     pub active: bool,
@@ -719,8 +705,8 @@ pub struct AccountDto {
 #[derive(Debug, Deserialize, ToSchema)]
 #[serde(deny_unknown_fields)]
 pub struct RoleGrantRequest {
-    /// Opaque SSO subject of the account.
-    pub sso_subject: String,
+    /// Login name of the account, matched case-insensitively.
+    pub username: String,
     /// `staff`, `dept_head`, `dean`, `ethics`, `compliance` or `admin`.
     pub role: String,
     #[serde(default)]
@@ -748,7 +734,7 @@ pub async fn list_roles(
         .into_iter()
         .map(|record| AccountDto {
             id: record.user.id,
-            sso_subject: record.user.sso_subject,
+            username: record.user.username,
             email: record.user.email,
             display_name: record.user.display_name,
             active: record.user.active,
@@ -771,8 +757,8 @@ pub async fn list_roles(
     Ok(Json(RolesResponse { items }))
 }
 
-/// Grant a role. Idempotent; the account must already exist (it is created on
-/// first sign-in).
+/// Grant a role. Idempotent; the account must already exist - `manage-users
+/// create-user` is what creates one (ADR-017 §3).
 #[utoipa::path(
     post,
     path = "/api/admin/roles",
@@ -797,7 +783,7 @@ pub async fn grant_role(
     Ok(noted(
         listing.into_response(),
         serde_json::json!({
-            "entity": "role", "op": "grant", "sso_subject": body.sso_subject,
+            "entity": "role", "op": "grant", "username": body.username,
             "role": body.role, "faculty": body.scope_faculty_code,
             "department": body.scope_department_code,
         }),
@@ -830,7 +816,7 @@ pub async fn revoke_role(
     Ok(noted(
         StatusCode::NO_CONTENT.into_response(),
         serde_json::json!({
-            "entity": "role", "op": "revoke", "sso_subject": body.sso_subject,
+            "entity": "role", "op": "revoke", "username": body.username,
             "role": body.role,
         }),
     ))
@@ -844,7 +830,7 @@ async fn resolve_grant(
 ) -> Result<ResolvedGrant, ApiError> {
     let role = crate::auth::parse_role(&body.role)
         .ok_or_else(|| ApiError::field("role", format!("unknown role `{}`", body.role)))?;
-    let user = db::users::by_sso_subject(&state.db, body.sso_subject.trim())
+    let user = db::users::by_username(&state.db, body.username.trim())
         .await?
         .ok_or(ApiError::NotFound)?;
 
@@ -2619,20 +2605,14 @@ mod tests {
         assert!(validate_setting("originality_threshold", &serde_json::json!(101)).is_err());
         assert!(validate_setting("exclude_deleted", &serde_json::json!(true)).is_ok());
         assert!(validate_setting("exclude_deleted", &serde_json::json!("yes")).is_err());
+        // The SSO-era group mapping is no longer a setting this build knows
+        // (ADR-017 §5); an inert stored row must be refused on write.
         assert!(
             validate_setting(
                 "role_mappings",
                 &serde_json::json!([{"group": "g", "role": "admin"}])
             )
-            .is_ok()
-        );
-        assert!(
-            validate_setting(
-                "role_mappings",
-                &serde_json::json!([{"group": "g", "role": "dean"}])
-            )
-            .is_err(),
-            "a dean mapping without a faculty must be refused"
+            .is_err()
         );
         assert!(validate_setting("not_a_setting", &serde_json::json!(1)).is_err());
     }

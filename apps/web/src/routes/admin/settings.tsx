@@ -4,7 +4,6 @@ import { createFileRoute } from "@tanstack/react-router"
 import * as v from "valibot"
 
 import type { SettingDto, SettingsUpdate } from "@/api/types.gen"
-import { vRoleMapping } from "@/api/valibot.gen"
 import {
   AdminCard,
   notifyError,
@@ -52,8 +51,6 @@ const statusRulesSchema = v.object({
   rules: v.array(v.object({ status: v.string(), when: v.string() })),
 })
 
-const roleMappingsSchema = v.array(vRoleMapping)
-
 const semesterSchema = v.pipe(
   v.string(),
   v.trim(),
@@ -69,7 +66,6 @@ type SettingsFormValues = {
   exclude_deleted: boolean
   public_snapshot_quarter: string
   status_rules: string
-  role_mappings: string
 }
 
 function SettingsPage() {
@@ -117,7 +113,6 @@ function SettingsForm({
     public_snapshot_quarter:
       readStringValue(items, "public_snapshot_quarter") ?? "auto",
     status_rules: toJson(readValue(items, "status_rules")),
-    role_mappings: toJson(readValue(items, "role_mappings")),
   }
 
   const form = useForm({
@@ -138,7 +133,6 @@ function SettingsForm({
         exclude_deleted: v.boolean(),
         public_snapshot_quarter: v.pipe(v.string(), v.trim()),
         status_rules: jsonSchema(statusRulesSchema, locale),
-        role_mappings: jsonSchema(roleMappingsSchema, locale),
       }),
     },
     onSubmit: async ({ value }) => {
@@ -159,7 +153,6 @@ function SettingsForm({
       put("exclude_deleted", value.exclude_deleted)
       put("public_snapshot_quarter", value.public_snapshot_quarter.trim())
       put("status_rules", JSON.parse(value.status_rules) as unknown)
-      put("role_mappings", JSON.parse(value.role_mappings) as unknown)
 
       if (Object.keys(update).length === 0) {
         notifySaved(locale, m.settings_unchanged({}, { locale }))
@@ -305,24 +298,6 @@ function SettingsForm({
             <LabeledTextarea
               id={field.name}
               label={m.setting_status_rules({}, { locale })}
-              value={field.state.value}
-              onChange={field.handleChange}
-              onBlur={field.handleBlur}
-              errors={field.state.meta.errors}
-            />
-          )}
-        </form.Field>
-      </AdminCard>
-
-      <AdminCard
-        title={m.setting_role_mappings({}, { locale })}
-        description={m.setting_role_mappings_hint({}, { locale })}
-      >
-        <form.Field name="role_mappings">
-          {(field) => (
-            <LabeledTextarea
-              id={field.name}
-              label={m.setting_role_mappings({}, { locale })}
               value={field.state.value}
               onChange={field.handleChange}
               onBlur={field.handleBlur}

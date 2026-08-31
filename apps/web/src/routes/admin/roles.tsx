@@ -105,7 +105,7 @@ function RolesPage() {
             {row.email}
           </span>
           <span className="text-xs break-all text-muted-foreground">
-            {row.sso_subject}
+            {row.username}
           </span>
         </div>
       ),
@@ -166,7 +166,7 @@ function RolesPage() {
                     // the admin area asks first; this one did not.
                     if (window.confirm(m.confirm_revoke_role({}, { locale })))
                       revoke.mutate({
-                        sso_subject: row.sso_subject,
+                        username: row.username,
                         role: grant.role,
                       })
                   }}
@@ -205,14 +205,14 @@ function GrantCard({ locale }: { locale: Locale }) {
 
   const form = useForm({
     defaultValues: {
-      sso_subject: "",
+      username: "",
       role: "dean",
       scope_faculty_code: "",
       scope_department_code: "",
     },
     validators: {
       onSubmit: v.object({
-        sso_subject: v.pipe(
+        username: v.pipe(
           v.string(),
           v.trim(),
           v.minLength(1, m.form_required({}, { locale }))
@@ -226,7 +226,7 @@ function GrantCard({ locale }: { locale: Locale }) {
       try {
         await adminApi.grantRole(
           {
-            sso_subject: value.sso_subject.trim(),
+            username: value.username.trim(),
             role: value.role,
             scope_faculty_code:
               value.scope_faculty_code === "" ? null : value.scope_faculty_code,
@@ -258,7 +258,7 @@ function GrantCard({ locale }: { locale: Locale }) {
           void form.handleSubmit()
         }}
       >
-        <form.Field name="sso_subject">
+        <form.Field name="username">
           {(field) => (
             <LabeledInput
               id={field.name}

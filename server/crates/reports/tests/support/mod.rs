@@ -159,7 +159,7 @@ pub fn suppressed_doc(locale: Locale) -> ReportDoc {
             title: Label::phrase(strings.section_faculties),
             short_title: Label::phrase(strings.sheet_faculties),
             table,
-            footnotes: vec![Label::phrase(strings.note_units_since_2025)],
+            footnotes: vec![Label::phrase(strings.note_units_current_mapping)],
         }],
         locale,
     }

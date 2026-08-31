@@ -7,9 +7,6 @@ use axum::http::Uri;
 use compliance::KPolicyCache;
 use domain::RoleKind;
 
-use crate::auth::mapping::{self, RoleMapping};
-use crate::auth::oidc::{OidcClient, OidcConfig};
-use crate::error::ApiError;
 use crate::layers::rate_limit::{RateLimitConfig, RateLimiter};
 use crate::metrics::Metrics;
 
@@ -25,33 +22,24 @@ pub struct AppState {
     pub rate_limiter: Arc<RateLimiter>,
     /// Prometheus registry behind `/metrics` (ARCHITECTURE.md §8).
     pub metrics: Arc<Metrics>,
-    /// The portal IdP client. `None` in `APP_AUTH_MODE=dev` and whenever the
-    /// OIDC environment is incomplete - `/api/auth/login` then says so rather
-    /// than redirecting into a half-configured flow.
-    pub oidc: Option<Arc<OidcClient>>,
+    /// Per-IP token bucket in front of `POST /api/auth/login` (ADR-017 §4).
+    /// Its own bucket, not the public one: a password endpoint needs a tight
+    /// limit and the public contour needs a generous one.
+    pub login_rate_limiter: Arc<RateLimiter>,
 }
 
 impl AppState {
     #[must_use]
     pub fn new(db: db::Pool, config: AppConfig) -> Self {
         let rate_limiter = Arc::new(RateLimiter::new(config.public_rate_limit));
-        let oidc = config
-            .oidc
-            .clone()
-            .and_then(|oidc| match OidcClient::new(oidc) {
-                Ok(client) => Some(Arc::new(client)),
-                Err(error) => {
-                    tracing::error!(%error, "the OIDC client could not be built");
-                    None
-                }
-            });
+        let login_rate_limiter = Arc::new(RateLimiter::new(config.login_rate_limit));
         Self {
             db,
             config: Arc::new(config),
             k_policy: Arc::new(KPolicyCache::new()),
             rate_limiter,
+            login_rate_limiter,
             metrics: Arc::new(Metrics::new()),
-            oidc,
         }
     }
 
@@ -69,48 +57,7 @@ impl AppState {
         Ok(policy)
     }
 
-    /// The AD group → role table, or the shipped defaults when the setting has
-    /// never been written (ADR-014 §3).
-    ///
-    /// A *malformed* stored table is an error, not a fallback to the defaults:
-    /// silently ignoring a broken mapping would sign people in with fewer
-    /// rights than the administrator believes they granted.
-    pub async fn role_mappings(&self) -> Result<Vec<RoleMapping>, ApiError> {
-        match db::settings::get(&self.db, mapping::ROLE_MAPPINGS_KEY).await? {
-            None => Ok(mapping::defaults()),
-            Some(value) => mapping::parse(&value).map_err(|error| {
-                tracing::error!(%error, "settings.role_mappings is malformed");
-                ApiError::Internal("settings.role_mappings is malformed")
-            }),
-        }
-    }
 }
-
-/// How the internal contour authenticates.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum AuthMode {
-    /// Portal SSO through OIDC - the production mode (slice W3.1).
-    Oidc,
-    /// `POST /api/auth/dev-login` mints a session directly. Development, tests
-    /// and e2e only; never a production deployment (PLAN.md D7).
-    Dev,
-}
-
-impl AuthMode {
-    /// Parses `APP_AUTH_MODE`. Unknown values are an error rather than a silent
-    /// fallback - an environment typo must not open the dev login.
-    pub fn parse(value: &str) -> Result<Self, UnknownAuthMode> {
-        match value.trim() {
-            "oidc" => Ok(Self::Oidc),
-            "dev" => Ok(Self::Dev),
-            other => Err(UnknownAuthMode(other.to_owned())),
-        }
-    }
-}
-
-#[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
-#[error("APP_AUTH_MODE must be `oidc` or `dev`, got `{0}`")]
-pub struct UnknownAuthMode(pub String);
 
 /// Whether a caller sees raw aggregates or k-screened ones (ADR-014 §4).
 ///
@@ -161,13 +108,12 @@ impl Screening {
 pub struct AppConfig {
     /// `APP_PUBLIC_BASE_URL` - external origin behind the portal proxy.
     pub public_base_url: Uri,
-    /// `APP_AUTH_MODE` - `oidc` (default) or `dev`.
-    pub auth_mode: AuthMode,
     /// Session lifetime in seconds (`APP_SESSION_TTL_SECONDS`, default 12 h).
     pub session_ttl_seconds: i64,
     pub public_rate_limit: RateLimitConfig,
-    /// Portal IdP parameters (`APP_OIDC_*`). `None` when unconfigured.
-    pub oidc: Option<OidcConfig>,
+    /// Throttle in front of `POST /api/auth/login`
+    /// ([`DEFAULT_LOGIN_RATE_LIMIT`]).
+    pub login_rate_limit: RateLimitConfig,
     /// Where `report_snapshots` files live (`APP_REPORTS_DIR`).
     pub reports_dir: PathBuf,
     /// `APP_INGEST_PEPPER`, needed to derive a `staff_units` key from an e-mail
@@ -194,6 +140,19 @@ pub const DEFAULT_SESSION_TTL_SECONDS: i64 = 12 * 60 * 60;
 /// nightly tick (02:00 +05:00) two hours of slack before readiness degrades.
 pub const DEFAULT_INGEST_MAX_AGE_SECONDS: i64 = 26 * 60 * 60;
 
+/// Sign-in throttle (ADR-017 §4).
+///
+/// Ten attempts back to back, then one every four seconds. A person who
+/// mistypes their password twice notices nothing; an address working through a
+/// password list gets thirty tries a minute against an Argon2 verification that
+/// costs ~40 ms of the server's time each. Deliberately far tighter than
+/// [`RateLimitConfig::default`], which shapes a cacheable public contour rather
+/// than guarding a secret.
+pub const DEFAULT_LOGIN_RATE_LIMIT: RateLimitConfig = RateLimitConfig {
+    burst: 10,
+    per_minute: 15,
+};
+
 impl AppConfig {
     /// A configuration with production-shaped defaults, for tests and for the
     /// binary to override field by field.
@@ -201,10 +160,9 @@ impl AppConfig {
     pub fn new(public_base_url: Uri) -> Self {
         Self {
             public_base_url,
-            auth_mode: AuthMode::Oidc,
             session_ttl_seconds: DEFAULT_SESSION_TTL_SECONDS,
             public_rate_limit: RateLimitConfig::default(),
-            oidc: None,
+            login_rate_limit: DEFAULT_LOGIN_RATE_LIMIT,
             reports_dir: reports::default_out_dir(),
             ingest_pepper: None,
             ingest_max_age_seconds: DEFAULT_INGEST_MAX_AGE_SECONDS,

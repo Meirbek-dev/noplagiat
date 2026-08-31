@@ -16,7 +16,7 @@
 
 use std::path::{Path, PathBuf};
 
-use api::state::{AppConfig, AppState, AuthMode};
+use api::state::{AppConfig, AppState};
 use axum::Router;
 use axum::body::{Body, Bytes};
 use axum::http::{HeaderMap, HeaderValue, Request, StatusCode, header};
@@ -24,18 +24,15 @@ use serde_json::Value;
 use sqlx::PgPool;
 use tower::ServiceExt;
 
-pub mod idp;
-
-/// Application state wired for tests: dev auth mode, everything else default.
+/// Application state wired for tests.
 pub fn state(pool: PgPool) -> AppState {
-    AppState::new(db::Pool::for_tests(pool), config(AuthMode::Dev))
+    AppState::new(db::Pool::for_tests(pool), config())
 }
 
 /// The test configuration, with a scratch reports directory so a snapshot test
 /// never writes into the repository.
-pub fn config(auth_mode: AuthMode) -> AppConfig {
+pub fn config() -> AppConfig {
     AppConfig {
-        auth_mode,
         reports_dir: scratch_reports_dir(),
         // The fixture seeder uses this pepper, so a `staff_units` mapping
         // written through the admin API lands on the same digest the importer
@@ -58,12 +55,132 @@ pub fn scratch_reports_dir() -> PathBuf {
 
 /// The same, over a pool the caller has already seeded.
 pub fn state_from(pool: db::Pool) -> AppState {
-    AppState::new(pool, config(AuthMode::Dev))
+    AppState::new(pool, config())
 }
 
 /// The production router over a test database.
-pub fn router(pool: PgPool) -> Router {
-    api::build_router(state(pool))
+pub fn router(pool: PgPool) -> Harness {
+    Harness::new(state(pool))
+}
+
+/// The production router, plus the pool behind it.
+///
+/// Authentication is local (ADR-017) and nothing in the HTTP surface creates an
+/// account, so a test that needs a signed-in caller has to reach the database
+/// the way `manage-users` does. Carrying the pool beside the router is what
+/// lets [`Harness::sign_in`] stay a one-liner at every call site.
+///
+/// Derefs to the router, so `send(&harness, ...)` and every other helper here
+/// take it unchanged.
+pub struct Harness {
+    router: Router,
+    pool: db::Pool,
+}
+
+impl Harness {
+    pub fn new(state: AppState) -> Self {
+        let pool = state.db.clone();
+        Self {
+            router: api::build_router(state),
+            pool,
+        }
+    }
+
+    pub fn pool(&self) -> &db::Pool {
+        &self.pool
+    }
+
+    /// Create the account if it is missing, grant the role if one is named, and
+    /// sign in through the real `POST /api/auth/login`.
+    ///
+    /// Additive and idempotent, exactly like the CLI: repeating it for one
+    /// login name reuses the row and adds the grant if it is absent. It never
+    /// revokes, so a test that needs a different role uses a different name.
+    pub async fn sign_in(&self, identity: Value) -> Session {
+        let username = identity["username"]
+            .as_str()
+            .expect("an identity names its account")
+            .to_owned();
+        provision(&self.pool, &identity).await;
+        login(&self.router, &username, TEST_PASSWORD).await
+    }
+}
+
+impl std::ops::Deref for Harness {
+    type Target = Router;
+
+    fn deref(&self) -> &Self::Target {
+        &self.router
+    }
+}
+
+/// The address [`Harness::sign_in`] gives an account it creates.
+///
+/// Defined once and asserted against rather than spelled out at a call site:
+/// `tests/ops.rs` checks that an address appears on the admin roles screen and
+/// nowhere else, and a hard-coded domain there drifts the moment the harness
+/// changes its mind - which is exactly what happened to the `@dev.invalid` the
+/// retired `dev-login` endpoint used to mint.
+///
+/// Non-routable by construction: these account fields exist so that grants can
+/// be administered (TZ §6.1), not so that anyone can be written to.
+#[must_use]
+pub fn test_email(username: &str) -> String {
+    format!("{username}@test.invalid")
+}
+
+/// The password every account created by [`Harness::sign_in`] holds.
+///
+/// Long enough to clear `api::auth::password::MIN_PASSWORD_LENGTH`, and
+/// obviously not a secret: it exists only inside a scratch database that
+/// `#[sqlx::test]` drops at the end of the test.
+pub const TEST_PASSWORD: &str = "test-account-password";
+
+/// Create the account and apply the grant, the way `manage-users` would.
+async fn provision(pool: &db::Pool, identity: &Value) {
+    let username = identity["username"]
+        .as_str()
+        .expect("an identity names its account");
+    let user = match db::users::by_username(pool, username)
+        .await
+        .expect("user lookup")
+    {
+        Some(existing) => existing.user,
+        None => {
+            let hash = api::auth::password::hash(TEST_PASSWORD).expect("hashing succeeds");
+            db::users::create(pool, username, &test_email(username), username, Some(&hash))
+            .await
+            .expect("account creation")
+        }
+    };
+
+    let Some(label) = identity.get("role").and_then(Value::as_str) else {
+        return;
+    };
+    let role = api::auth::parse_role(label).unwrap_or_else(|| panic!("unknown role `{label}`"));
+    let faculty = match identity.get("scope_faculty_code").and_then(Value::as_str) {
+        Some(code) => Some(
+            *db::dicts::faculty_ids(pool)
+                .await
+                .expect("faculty dictionary")
+                .get(code)
+                .unwrap_or_else(|| panic!("no faculty `{code}` in the dictionaries")),
+        ),
+        None => None,
+    };
+    let department = match identity.get("scope_department_code").and_then(Value::as_str) {
+        Some(code) => Some(
+            *db::dicts::department_ids(pool)
+                .await
+                .expect("department dictionary")
+                .get(code)
+                .unwrap_or_else(|| panic!("no department `{code}` in the dictionaries")),
+        ),
+        None => None,
+    };
+    db::users::add_role(pool, user.id, role, faculty, department)
+        .await
+        .expect("role grant");
 }
 
 /// One HTTP round trip through the router.
@@ -154,26 +271,32 @@ pub async fn get(router: &Router, uri: &str) -> Reply {
     send(router, request).await
 }
 
-/// A signed-in dev session: everything a subsequent request needs.
+/// A signed-in session: everything a subsequent request needs.
 pub struct Session {
     pub cookie: String,
     pub csrf_token: String,
     pub body: Value,
 }
 
-/// `POST /api/auth/dev-login`, returning the session cookie and CSRF token.
-pub async fn dev_login(router: &Router, body: Value) -> Session {
-    let request = Request::builder()
+/// One sign-in request, for the tests that assert on the response themselves.
+pub fn login_request(username: &str, password: &str) -> Request<Body> {
+    Request::builder()
         .method("POST")
-        .uri("/api/auth/dev-login")
+        .uri("/api/auth/login")
         .header(header::CONTENT_TYPE, "application/json")
-        .body(Body::from(body.to_string()))
-        .expect("the login request is well formed");
-    let reply = send(router, request).await;
+        .body(Body::from(
+            serde_json::json!({"username": username, "password": password}).to_string(),
+        ))
+        .expect("the login request is well formed")
+}
+
+/// `POST /api/auth/login`, returning the session cookie and CSRF token.
+pub async fn login(router: &Router, username: &str, password: &str) -> Session {
+    let reply = send(router, login_request(username, password)).await;
     assert_eq!(
         reply.status,
         StatusCode::OK,
-        "dev-login failed: {}",
+        "login failed: {}",
         String::from_utf8_lossy(&reply.body)
     );
 
@@ -182,12 +305,12 @@ pub async fn dev_login(router: &Router, body: Value) -> Session {
         .get(header::SET_COOKIE)
         .and_then(|value| value.to_str().ok())
         .and_then(|value| value.split(';').next())
-        .expect("dev-login sets the session cookie")
+        .expect("login sets the session cookie")
         .to_owned();
     let payload = reply.json();
     let csrf_token = payload["csrf_token"]
         .as_str()
-        .expect("dev-login returns a CSRF token")
+        .expect("login returns a CSRF token")
         .to_owned();
     Session {
         cookie,

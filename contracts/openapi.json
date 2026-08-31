@@ -1630,7 +1630,7 @@
         "tags": [
           "admin"
         ],
-        "summary": "Grant a role. Idempotent; the account must already exist (it is created on\nfirst sign-in).",
+        "summary": "Grant a role. Idempotent; the account must already exist - `manage-users\ncreate-user` is what creates one (ADR-017 §3).",
         "operationId": "grant_role",
         "requestBody": {
           "content": {
@@ -2564,100 +2564,19 @@
         ]
       }
     },
-    "/api/auth/callback": {
-      "get": {
-        "tags": [
-          "auth"
-        ],
-        "summary": "Finish the portal SSO flow.",
-        "operationId": "callback",
-        "parameters": [
-          {
-            "name": "code",
-            "in": "query",
-            "description": "Authorization code, on success.",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "state",
-            "in": "query",
-            "description": "Opaque value echoed back, compared against the flow cookie.",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "error",
-            "in": "query",
-            "description": "OAuth error code, when the user declined or the provider refused.",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "error_description",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "303": {
-            "description": "session established; redirect into the dashboard"
-          },
-          "403": {
-            "description": "the sign-in could not be matched to this browser",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Problem"
-                }
-              }
-            }
-          },
-          "502": {
-            "description": "the identity provider rejected the exchange",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Problem"
-                }
-              }
-            }
-          },
-          "503": {
-            "description": "no identity provider is configured",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Problem"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/auth/dev-login": {
+    "/api/auth/login": {
       "post": {
         "tags": [
           "auth"
         ],
-        "summary": "Mint a session directly. `APP_AUTH_MODE=dev` only.",
-        "description": "Idempotent and additive: repeating it for the same subject re-uses the user\nrow and adds the requested grant if it is missing. It never revokes, so a\ntest that needs a different role uses a different subject.",
-        "operationId": "dev_login",
+        "summary": "Sign in with a local account.",
+        "description": "Every failure - unknown name, deactivated account, no password set, wrong\npassword - is one `401` with one message. Distinguishing them would turn the\nendpoint into an oracle for which login names exist, and the operator who\ncan create accounts is not the person doing the guessing.",
+        "operationId": "login",
         "requestBody": {
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/DevLoginRequest"
+                "$ref": "#/components/schemas/LoginRequest"
               }
             }
           },
@@ -2665,17 +2584,17 @@
         },
         "responses": {
           "200": {
-            "description": "",
+            "description": "session established",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/DevLoginResponse"
+                  "$ref": "#/components/schemas/MeResponse"
                 }
               }
             }
           },
-          "404": {
-            "description": "not running in dev auth mode",
+          "401": {
+            "description": "the credentials were not accepted",
             "content": {
               "application/json": {
                 "schema": {
@@ -2685,7 +2604,7 @@
             }
           },
           "422": {
-            "description": "unknown dictionary code",
+            "description": "a field was empty",
             "content": {
               "application/json": {
                 "schema": {
@@ -2693,24 +2612,9 @@
                 }
               }
             }
-          }
-        }
-      }
-    },
-    "/api/auth/login": {
-      "get": {
-        "tags": [
-          "auth"
-        ],
-        "summary": "Start the portal SSO flow.",
-        "description": "Answers `303 See Other` to the provider's authorization endpoint, carrying\n`state`, `nonce` and an S256 PKCE challenge, and sets the ten-minute flow\ncookie the callback validates against.",
-        "operationId": "login",
-        "responses": {
-          "303": {
-            "description": "redirect to the identity provider"
           },
-          "503": {
-            "description": "no identity provider is configured",
+          "429": {
+            "description": "too many sign-in attempts from this address",
             "content": {
               "application/json": {
                 "schema": {
@@ -4901,10 +4805,10 @@
     "schemas": {
       "AccountDto": {
         "type": "object",
-        "description": "One account and its grants.\n\n`email` and `display_name` come from the portal IdP and identify a *service*\naccount of the dashboard, which TZ §6.1 exempts from the PII ban precisely\nso that grants can be administered. They appear here and nowhere else - no\nanalytic response, no export, no log line.",
+        "description": "One account and its grants.\n\n`email` and `display_name` are set by the operator who created the account\nwith the `manage-users` CLI and identify a *service* account of the\ndashboard, which TZ §6.1 exempts from the PII ban precisely so that grants\ncan be administered. They appear here and nowhere else - no analytic\nresponse, no export, no log line.",
         "required": [
           "id",
-          "sso_subject",
+          "username",
           "email",
           "display_name",
           "active",
@@ -4930,7 +4834,7 @@
               "$ref": "#/components/schemas/RoleGrantDto"
             }
           },
-          "sso_subject": {
+          "username": {
             "type": "string"
           }
         }
@@ -4938,14 +4842,14 @@
       "AdminPing": {
         "type": "object",
         "required": [
-          "sso_subject",
+          "username",
           "scope"
         ],
         "properties": {
           "scope": {
             "$ref": "#/components/schemas/ScopeDto"
           },
-          "sso_subject": {
+          "username": {
             "type": "string"
           }
         }
@@ -5339,75 +5243,6 @@
           },
           "total": {
             "$ref": "#/components/schemas/InternalPair"
-          }
-        }
-      },
-      "DevLoginRequest": {
-        "type": "object",
-        "description": "Development sign-in request.\n\nNo name and no e-mail: the identity is the opaque SSO subject, and the\nsynthetic account fields are derived from it, so this endpoint cannot be\nused to put a person's name into the database (AGENTS.md invariant #1).",
-        "required": [
-          "sso_subject"
-        ],
-        "properties": {
-          "role": {
-            "type": [
-              "string",
-              "null"
-            ],
-            "description": "Role to grant: `staff`, `dept_head`, `dean`, `ethics`, `compliance` or\n`admin`. Omit to mint the role-less session that the «request access»\npath uses."
-          },
-          "scope_department_code": {
-            "type": [
-              "string",
-              "null"
-            ],
-            "description": "Department dictionary code for a `dept_head` grant."
-          },
-          "scope_faculty_code": {
-            "type": [
-              "string",
-              "null"
-            ],
-            "description": "Faculty dictionary code for a `dean` grant."
-          },
-          "sso_subject": {
-            "type": "string",
-            "description": "Opaque subject identifier, as the IdP would supply."
-          }
-        },
-        "additionalProperties": false
-      },
-      "DevLoginResponse": {
-        "type": "object",
-        "required": [
-          "sso_subject",
-          "roles",
-          "csrf_token"
-        ],
-        "properties": {
-          "csrf_token": {
-            "type": "string",
-            "description": "Hex CSRF token for this session - send it as `x-csrf-token` on every\nmutating request."
-          },
-          "roles": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/RoleGrantDto"
-            },
-            "description": "Grants the account now holds."
-          },
-          "scope": {
-            "oneOf": [
-              {
-                "type": "null"
-              },
-              {
-                "$ref": "#/components/schemas/ScopeDto"
-              }
-            ]
-          },
-          "sso_subject": {
-            "type": "string"
           }
         }
       },
@@ -6080,7 +5915,7 @@
         "type": "object",
         "description": "Who the caller is and what they may see.",
         "required": [
-          "sso_subject",
+          "username",
           "role",
           "scope",
           "screening"
@@ -6097,7 +5932,7 @@
             "type": "string",
             "description": "`raw` or `screened` - whether this account reads exact numbers inside\nits scope (ADR-014 §4)."
           },
-          "sso_subject": {
+          "username": {
             "type": "string"
           }
         }
@@ -6365,15 +6200,34 @@
           }
         }
       },
+      "LoginRequest": {
+        "type": "object",
+        "description": "Sign-in request.\n\nNo name and no e-mail: those are account fields an operator sets with the\nCLI, so this endpoint cannot be used to put a person's name into the\ndatabase (AGENTS.md invariant #1).",
+        "required": [
+          "username",
+          "password"
+        ],
+        "properties": {
+          "password": {
+            "type": "string",
+            "description": "The account's password. Never logged, never echoed."
+          },
+          "username": {
+            "type": "string",
+            "description": "Login name, matched case-insensitively."
+          }
+        },
+        "additionalProperties": false
+      },
       "LogoutResponse": {
         "type": "object",
+        "required": [
+          "next_path"
+        ],
         "properties": {
-          "end_session_url": {
-            "type": [
-              "string",
-              "null"
-            ],
-            "description": "RP-initiated logout URL, when the provider advertises an\n`end_session_endpoint`. The browser should follow it so the portal\nsession ends too; `null` means the local session was all there was."
+          "next_path": {
+            "type": "string",
+            "description": "Where the browser should go once the session is gone. Always the sign-in\npage: with no identity provider there is no second session to end."
           }
         }
       },
@@ -6446,7 +6300,7 @@
       "MeResponse": {
         "type": "object",
         "required": [
-          "sso_subject",
+          "username",
           "roles",
           "request_access_path",
           "csrf_token"
@@ -6454,7 +6308,7 @@
         "properties": {
           "csrf_token": {
             "type": "string",
-            "description": "Hex CSRF token for this session, so a reloaded page can keep mutating."
+            "description": "Hex CSRF token for this session - send it as `x-csrf-token` on every\nmutating request."
           },
           "request_access_path": {
             "type": "string",
@@ -6484,8 +6338,9 @@
               }
             ]
           },
-          "sso_subject": {
-            "type": "string"
+          "username": {
+            "type": "string",
+            "description": "Login name of the signed-in account."
           }
         }
       },
@@ -6804,7 +6659,7 @@
       "RoleGrantRequest": {
         "type": "object",
         "required": [
-          "sso_subject",
+          "username",
           "role"
         ],
         "properties": {
@@ -6824,42 +6679,9 @@
               "null"
             ]
           },
-          "sso_subject": {
+          "username": {
             "type": "string",
-            "description": "Opaque SSO subject of the account."
-          }
-        },
-        "additionalProperties": false
-      },
-      "RoleMapping": {
-        "type": "object",
-        "description": "One AD group's meaning.",
-        "required": [
-          "group",
-          "role"
-        ],
-        "properties": {
-          "department_code": {
-            "type": [
-              "string",
-              "null"
-            ],
-            "description": "Department dictionary code - required for `dept_head`."
-          },
-          "faculty_code": {
-            "type": [
-              "string",
-              "null"
-            ],
-            "description": "Faculty dictionary code - required for `dean`."
-          },
-          "group": {
-            "type": "string",
-            "description": "AD group name as the IdP spells it in the claim."
-          },
-          "role": {
-            "type": "string",
-            "description": "`staff`, `dept_head`, `dean`, `ethics`, `compliance` or `admin`."
+            "description": "Login name of the account, matched case-insensitively."
           }
         },
         "additionalProperties": false
@@ -7610,7 +7432,7 @@
     },
     {
       "name": "internal",
-      "description": "Internal contour - SSO session, RBAC scope, audit logged (TZ §5)"
+      "description": "Internal contour - local session, RBAC scope, audit logged (TZ §5)"
     },
     {
       "name": "admin",

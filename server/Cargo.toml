@@ -51,6 +51,12 @@ path = "src/bin/ingest_csv.rs"
 name = "generate-report"
 path = "src/bin/generate_report.rs"
 
+# Account CLI (ADR-017 §3). The only thing that creates an account or sets a
+# password - there is no HTTP endpoint that mints an administrator.
+[[bin]]
+name = "manage-users"
+path = "src/bin/manage_users.rs"
+
 [dependencies]
 anyhow = "1.0.104"
 api.workspace = true

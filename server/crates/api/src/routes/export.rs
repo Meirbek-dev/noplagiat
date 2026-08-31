@@ -454,6 +454,30 @@ async fn build_public_document(
     let work_type_rows = labelled_groups(cube.by_work_type(), |code| strings.work_type(code))?;
     let faculty_rows = labelled_groups(cube.by_faculty(), |code| strings.unit(code))?;
 
+    // The faculty sheet carries the same mapping footnote the dashboard shows
+    // under this table: how the breakdown was attributed (or, while every row
+    // is the sentinel, what is missing) - `reports::annual` does the same.
+    let mapped = faculty_rows
+        .iter()
+        .any(|(code, _, _)| code != UNASSIGNED_UNIT);
+    let mut faculties_breakdown = closure_breakdown_section(
+        strings,
+        &policy,
+        Label::phrase(strings.section_faculties),
+        Label::phrase(strings.sheet_faculties),
+        Label::phrase(strings.column_faculty),
+        faculty_rows,
+        &total,
+    );
+    faculties_breakdown.footnotes.insert(
+        1,
+        Label::phrase(if mapped {
+            strings.note_units_current_mapping
+        } else {
+            strings.note_units_pending_mapping
+        }),
+    );
+
     let sections = vec![
         public_summary_section(strings, &policy, &kpis, coverage, threshold),
         closure_breakdown_section(
@@ -466,15 +490,7 @@ async fn build_public_document(
             &total,
         ),
         public_bands_section(strings, &policy, &bands, &total),
-        closure_breakdown_section(
-            strings,
-            &policy,
-            Label::phrase(strings.section_faculties),
-            Label::phrase(strings.sheet_faculties),
-            Label::phrase(strings.column_faculty),
-            faculty_rows,
-            &total,
-        ),
+        faculties_breakdown,
     ];
 
     let period = filters.period();
@@ -930,7 +946,7 @@ fn faculties_section(
 
     let mut footnotes = vec![
         k_note(strings, policy),
-        Label::phrase(strings.note_units_since_2025),
+        Label::phrase(strings.note_units_current_mapping),
     ];
     if units.iter().any(|row| row.faculty_code == UNASSIGNED_UNIT) {
         footnotes.push(Label::phrase(strings.note_unassigned_unit));

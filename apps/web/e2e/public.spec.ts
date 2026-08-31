@@ -30,6 +30,8 @@ const AY = scenario("academic-year-2025-2026")
 const ALL = scenario("all-time-no-filter")
 const NOV = scenario("month-2025-11")
 const FAC03 = scenario("faculty-fac03")
+/** Every public dimension at once, for the round-trip test. */
+const COMBO = scenario("faculty-fac03-worktype-course")
 
 test.describe("public dashboard", () => {
   test("default view shows the current academic year", async ({ page }) => {
@@ -235,6 +237,22 @@ test.describe("public dashboard", () => {
     }
 
     expect(paramsOf(page.url())).toMatchObject(expectedParams)
+
+    // The awaited response is a *network* event; the card is re-rendered a
+    // commit later. Reading `innerText` straight after it therefore races the
+    // render, and on a loaded single-worker runner it loses - it caught the
+    // pre-filter academic-year view and failed on chromium in CI while the
+    // same test passed on the three slower engines.
+    //
+    // So settle on the figure the combination is supposed to produce, which
+    // `expectKpi` polls for. That is also a stronger assertion than the
+    // "different from the unfiltered page" it replaces: the number comes from
+    // the same independent reducer as every other figure in this suite.
+    await expectKpi(
+      page,
+      "kpi-total-checks",
+      count(COMBO.public_summary.checks)
+    )
 
     const headline = normalizeSpace(
       await page.getByTestId("kpi-total-checks").innerText()

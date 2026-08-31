@@ -80,20 +80,6 @@ export const vBatchesResponse = v.object({
     total: v.pipe(v.number(), v.integer())
 });
 
-/**
- * Development sign-in request.
- *
- * No name and no e-mail: the identity is the opaque SSO subject, and the
- * synthetic account fields are derived from it, so this endpoint cannot be
- * used to put a person's name into the database (AGENTS.md invariant #1).
- */
-export const vDevLoginRequest = v.strictObject({
-    role: v.nullish(v.string()),
-    scope_department_code: v.nullish(v.string()),
-    scope_faculty_code: v.nullish(v.string()),
-    sso_subject: v.string()
-});
-
 export const vDictionaryItem = v.object({
     active: v.boolean(),
     code: v.string(),
@@ -203,8 +189,20 @@ export const vInternalFilterQuery = v.strictObject({
     work_type: v.nullish(v.string())
 });
 
+/**
+ * Sign-in request.
+ *
+ * No name and no e-mail: those are account fields an operator sets with the
+ * CLI, so this endpoint cannot be used to put a person's name into the
+ * database (AGENTS.md invariant #1).
+ */
+export const vLoginRequest = v.strictObject({
+    password: v.string(),
+    username: v.string()
+});
+
 export const vLogoutResponse = v.object({
-    end_session_url: v.nullish(v.string())
+    next_path: v.string()
 });
 
 /**
@@ -289,10 +287,11 @@ export const vRoleGrantDto = v.object({
 /**
  * One account and its grants.
  *
- * `email` and `display_name` come from the portal IdP and identify a *service*
- * account of the dashboard, which TZ §6.1 exempts from the PII ban precisely
- * so that grants can be administered. They appear here and nowhere else - no
- * analytic response, no export, no log line.
+ * `email` and `display_name` are set by the operator who created the account
+ * with the `manage-users` CLI and identify a *service* account of the
+ * dashboard, which TZ §6.1 exempts from the PII ban precisely so that grants
+ * can be administered. They appear here and nowhere else - no analytic
+ * response, no export, no log line.
  */
 export const vAccountDto = v.object({
     active: v.boolean(),
@@ -300,24 +299,14 @@ export const vAccountDto = v.object({
     email: v.string(),
     id: v.pipe(v.number(), v.integer()),
     roles: v.array(vRoleGrantDto),
-    sso_subject: v.string()
+    username: v.string()
 });
 
 export const vRoleGrantRequest = v.strictObject({
     role: v.string(),
     scope_department_code: v.nullish(v.string()),
     scope_faculty_code: v.nullish(v.string()),
-    sso_subject: v.string()
-});
-
-/**
- * One AD group's meaning.
- */
-export const vRoleMapping = v.strictObject({
-    department_code: v.nullish(v.string()),
-    faculty_code: v.nullish(v.string()),
-    group: v.string(),
-    role: v.string()
+    username: v.string()
 });
 
 export const vRolesResponse = v.object({
@@ -347,14 +336,7 @@ export const vScopeDto = v.object({
 
 export const vAdminPing = v.object({
     scope: vScopeDto,
-    sso_subject: v.string()
-});
-
-export const vDevLoginResponse = v.object({
-    csrf_token: v.string(),
-    roles: v.array(vRoleGrantDto),
-    scope: v.nullish(vScopeDto),
-    sso_subject: v.string()
+    username: v.string()
 });
 
 /**
@@ -364,7 +346,7 @@ export const vInternalPing = v.object({
     role: v.string(),
     scope: vScopeDto,
     screening: v.string(),
-    sso_subject: v.string()
+    username: v.string()
 });
 
 export const vMeResponse = v.object({
@@ -373,7 +355,7 @@ export const vMeResponse = v.object({
     role: v.nullish(v.string()),
     roles: v.array(vRoleGrantDto),
     scope: v.nullish(vScopeDto),
-    sso_subject: v.string()
+    username: v.string()
 });
 
 export const vSettingDto = v.object({
@@ -1147,16 +1129,12 @@ export const vUpdateWorkTypeRulePath = v.object({
 
 export const vUpdateWorkTypeRuleResponse = vWorkTypeRulesResponse;
 
-export const vCallbackQuery = v.object({
-    code: v.optional(v.string()),
-    state: v.optional(v.string()),
-    error: v.optional(v.string()),
-    error_description: v.optional(v.string())
-});
+export const vLoginBody = vLoginRequest;
 
-export const vDevLoginBody = vDevLoginRequest;
-
-export const vDevLoginResponse2 = vDevLoginResponse;
+/**
+ * session established
+ */
+export const vLoginResponse = vMeResponse;
 
 /**
  * session ended

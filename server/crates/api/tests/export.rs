@@ -21,7 +21,7 @@ use axum::body::Body;
 use axum::http::{Request, StatusCode, header};
 use serde_json::json;
 use sqlx::PgPool;
-use support::{Session, dev_login, send};
+use support::{Session, send};
 
 /// The fixture range the scenarios cover.
 const FILTERS: &str = r#"{"from": "2023-09-01", "to": "2026-08-31"}"#;
@@ -31,12 +31,12 @@ const PDF_MAGIC: &[u8] = b"%PDF-";
 /// `PK\x03\x04` - an XLSX is a zip archive.
 const XLSX_MAGIC: &[u8] = b"PK\x03\x04";
 
-async fn warehouse(pool: PgPool) -> (axum::Router, db::Pool) {
+async fn warehouse(pool: PgPool) -> (support::Harness, db::Pool) {
     let pool = db::Pool::for_tests(pool);
     support::load_warehouse(&pool)
         .await
         .expect("the fixture warehouse loads");
-    (api::build_router(support::state_from(pool.clone())), pool)
+    (support::Harness::new(support::state_from(pool.clone())), pool)
 }
 
 fn export(session: Option<&Session>, uri: &str, body: &str) -> Request<Body> {
@@ -61,9 +61,8 @@ async fn an_internal_export_produces_a_marked_file_and_an_audit_row(
     pool: PgPool,
 ) -> sqlx::Result<()> {
     let (router, pool) = warehouse(pool).await;
-    let session = dev_login(
-        &router,
-        json!({"sso_subject": "fac03-dean", "role": "dean", "scope_faculty_code": "FAC03"}),
+    let session = router.sign_in(
+        json!({"username": "fac03-dean", "role": "dean", "scope_faculty_code": "FAC03"}),
     )
     .await;
 
@@ -131,9 +130,8 @@ async fn an_internal_export_produces_a_marked_file_and_an_audit_row(
 #[sqlx::test(migrations = "../../migrations")]
 async fn an_internal_workbook_carries_the_service_marking(pool: PgPool) -> sqlx::Result<()> {
     let (router, _pool) = warehouse(pool).await;
-    let session = dev_login(
-        &router,
-        json!({"sso_subject": "compliance-export", "role": "compliance"}),
+    let session = router.sign_in(
+        json!({"username": "compliance-export", "role": "compliance"}),
     )
     .await;
 
@@ -170,7 +168,7 @@ async fn the_internal_export_is_closed_to_roles_without_export_rights(
     support::load_dictionaries(&pool)
         .await
         .expect("dictionaries load");
-    let router = api::build_router(support::state_from(pool));
+    let router = support::Harness::new(support::state_from(pool));
 
     // Anonymous.
     send(
@@ -181,9 +179,8 @@ async fn the_internal_export_is_closed_to_roles_without_export_rights(
     .problem(StatusCode::UNAUTHORIZED);
 
     // Staff.
-    let staff = dev_login(
-        &router,
-        json!({"sso_subject": "lecturer-export", "role": "staff"}),
+    let staff = router.sign_in(
+        json!({"username": "lecturer-export", "role": "staff"}),
     )
     .await;
     send(
@@ -194,9 +191,8 @@ async fn the_internal_export_is_closed_to_roles_without_export_rights(
     .problem(StatusCode::FORBIDDEN);
 
     // A scoped role without the CSRF token is refused too.
-    let dean = dev_login(
-        &router,
-        json!({"sso_subject": "dean-export", "role": "dean", "scope_faculty_code": "FAC03"}),
+    let dean = router.sign_in(
+        json!({"username": "dean-export", "role": "dean", "scope_faculty_code": "FAC03"}),
     )
     .await;
     let no_token = Request::builder()
@@ -215,9 +211,8 @@ async fn the_internal_export_is_closed_to_roles_without_export_rights(
 #[sqlx::test(migrations = "../../migrations")]
 async fn an_out_of_scope_export_is_refused(pool: PgPool) -> sqlx::Result<()> {
     let (router, _pool) = warehouse(pool).await;
-    let session = dev_login(
-        &router,
-        json!({"sso_subject": "fac03-dean", "role": "dean", "scope_faculty_code": "FAC03"}),
+    let session = router.sign_in(
+        json!({"username": "fac03-dean", "role": "dean", "scope_faculty_code": "FAC03"}),
     )
     .await;
 
@@ -310,7 +305,7 @@ async fn a_suppressed_cell_never_exports_as_a_number(pool: PgPool) -> sqlx::Resu
         .await
         .expect("k is stored");
     // A fresh router, so the policy cache reads the new threshold at once.
-    let router = api::build_router(support::state_from(pool));
+    let router = support::Harness::new(support::state_from(pool));
 
     let reply = send(
         &router,
@@ -336,7 +331,7 @@ async fn a_suppressed_cell_never_exports_as_a_number(pool: PgPool) -> sqlx::Resu
 #[sqlx::test(migrations = "../../migrations")]
 async fn a_snapshot_is_generated_published_and_downloadable(pool: PgPool) -> sqlx::Result<()> {
     let (router, _pool) = warehouse(pool).await;
-    let admin = dev_login(&router, json!({"sso_subject": "root", "role": "admin"})).await;
+    let admin = router.sign_in( json!({"username": "root", "role": "admin"})).await;
 
     let generated = send(
         &router,

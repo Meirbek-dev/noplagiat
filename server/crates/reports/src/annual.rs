@@ -385,14 +385,14 @@ fn faculties_section(
 
     // The promise that a unit breakdown exists is only true once the data holds
     // one. While every row is the `UNASSIGNED` sentinel of migration 0002 - the
-    // state until the reviewer-to-unit mapping is loaded - «доступна с 2025/26»
-    // reads as a claim contradicted by the table right above it, so the note
-    // says what is actually missing instead.
+    // state until the reviewer-to-unit mapping is loaded - a note describing
+    // that mapping reads as a claim contradicted by the table right above it,
+    // so the note says what is actually missing instead.
     let mapped = units.iter().any(|row| row.faculty_code != "UNASSIGNED");
     let mut footnotes = vec![
         k_note(strings, policy),
         Label::phrase(if mapped {
-            strings.note_units_since_2025
+            strings.note_units_current_mapping
         } else {
             strings.note_units_pending_mapping
         }),
@@ -681,7 +681,7 @@ mod tests {
     fn the_unit_footnote_follows_the_data() {
         for locale in Locale::ALL {
             let strings = locale.strings();
-            let since = strings.note_units_since_2025.to_owned();
+            let since = strings.note_units_current_mapping.to_owned();
             let pending = strings.note_units_pending_mapping.to_owned();
 
             let sentinel_only = footnotes_of(&[unit_of("UNASSIGNED", 400)], locale);

@@ -105,7 +105,13 @@ export interface LabeledInputProps {
   errors: readonly unknown[]
   description?: string
   placeholder?: string
-  type?: "text" | "date" | "number" | "email"
+  type?: "text" | "date" | "number" | "email" | "password"
+  /**
+   * Off everywhere by default: an admin form editing a dictionary row must not
+   * be offered the previous row. The sign-in page is the one place a browser
+   * password manager should help, so it passes `username`/`current-password`.
+   */
+  autoComplete?: string
   className?: string
   inputClassName?: string
 }
@@ -120,6 +126,7 @@ export function LabeledInput({
   description,
   placeholder,
   type = "text",
+  autoComplete = "off",
   className,
   inputClassName,
 }: LabeledInputProps) {
@@ -138,7 +145,7 @@ export function LabeledInput({
         value={value}
         placeholder={placeholder}
         className={inputClassName}
-        autoComplete="off"
+        autoComplete={autoComplete}
         onBlur={onBlur}
         onChange={(event) => {
           onChange(event.target.value)

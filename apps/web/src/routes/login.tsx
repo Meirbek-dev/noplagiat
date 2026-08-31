@@ -7,26 +7,25 @@ import * as v from "valibot"
 
 import { BrandHeader } from "@/components/dashboard/BrandHeader"
 import { Button } from "@/components/button"
-import { LabeledInput, LabeledSelect } from "@/components/forms/fields"
-import { ApiError, apiBaseUrl } from "@/lib/api"
+import { LabeledInput } from "@/components/forms/fields"
+import { ApiError } from "@/lib/api"
 import { authApi } from "@/lib/api-internal"
 import { authQueries } from "@/lib/queries"
-import { ROLE_KINDS, roleLabel } from "@/lib/roles"
 import { pageTitle } from "@/lib/head"
 import { m } from "@/paraglide/messages.js"
 import { getLocale } from "@/paraglide/runtime.js"
 
 /**
- * Sign-in (TZ.md §5, ARCHITECTURE §5.1).
+ * Sign-in (TZ.md §5, ARCHITECTURE §5.1, ADR-017).
  *
- * Two paths, and only one of them exists on a given deployment. The portal SSO
- * button is a *navigation*, not a fetch: `/api/auth/login` answers `303` to the
- * identity provider and sets the PKCE flow cookie on the way, so the browser
- * has to follow it itself.
+ * A login name and a password, both set by an administrator with the
+ * `manage-users` CLI on the server host. There is no identity provider to
+ * redirect to, no self-service registration and no password-reset link: the
+ * operator who created the account is the reset path, and saying so is more
+ * useful than a form that cannot help.
  *
- * The development form below it mints a session without an identity provider
- * and exists only where the API runs `APP_AUTH_MODE=dev`; it is labelled as
- * such, and the endpoint answers `404` anywhere else.
+ * The server answers every failed attempt the same way, so this page does too -
+ * it never says which half was wrong.
  */
 
 const searchSchema = v.object({
@@ -40,9 +39,6 @@ export const Route = createFileRoute("/login")({
   component: LoginPage,
 })
 
-const DEV_AUTH_OFFERED =
-  import.meta.env.DEV || import.meta.env.VITE_AUTH_MODE === "dev"
-
 function LoginPage() {
   const locale = getLocale()
   const { redirect } = Route.useSearch()
@@ -50,7 +46,7 @@ function LoginPage() {
   return (
     <div className="flex min-h-svh flex-col bg-background">
       <BrandHeader locale={locale} />
-      <main className="mx-auto flex w-full max-w-xl flex-col gap-6 px-4 py-10 sm:px-6">
+      <main className="mx-auto flex w-full max-w-sm flex-col gap-6 px-4 py-10 sm:px-6">
         <div className="flex flex-col gap-2">
           <h1 className="text-xl font-semibold text-primary">
             {m.login_title({}, { locale })}
@@ -60,58 +56,39 @@ function LoginPage() {
           </p>
         </div>
 
-        <a
-          href={`${apiBaseUrl()}/api/auth/login`}
-          className="inline-flex h-10 items-center justify-center rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground hover:opacity-90"
-        >
-          {m.login_sso_button({}, { locale })}
-        </a>
-
-        {DEV_AUTH_OFFERED ? <DevLoginForm redirectTo={redirect} /> : null}
+        <SignInForm redirectTo={redirect} />
       </main>
     </div>
   )
 }
 
-function DevLoginForm({ redirectTo }: { redirectTo: string | undefined }) {
+function SignInForm({ redirectTo }: { redirectTo: string | undefined }) {
   const locale = getLocale()
   const navigate = useNavigate()
   const queryClient = useQueryClient()
   const [error, setError] = useState<string | null>(null)
 
   const form = useForm({
-    defaultValues: {
-      sso_subject: "",
-      role: "dean",
-      scope_faculty_code: "",
-      scope_department_code: "",
-    },
+    defaultValues: { username: "", password: "" },
     validators: {
       onSubmit: v.object({
-        sso_subject: v.pipe(
+        username: v.pipe(
           v.string(),
           v.trim(),
           v.minLength(1, m.form_required({}, { locale }))
         ),
-        role: v.string(),
-        scope_faculty_code: v.string(),
-        scope_department_code: v.string(),
+        password: v.pipe(
+          v.string(),
+          v.minLength(1, m.form_required({}, { locale }))
+        ),
       }),
     },
     onSubmit: async ({ value }) => {
       setError(null)
       try {
-        await authApi.devLogin({
-          sso_subject: value.sso_subject.trim(),
-          role: value.role === "" ? null : value.role,
-          scope_faculty_code:
-            value.scope_faculty_code.trim() === ""
-              ? null
-              : value.scope_faculty_code.trim(),
-          scope_department_code:
-            value.scope_department_code.trim() === ""
-              ? null
-              : value.scope_department_code.trim(),
+        await authApi.login({
+          username: value.username.trim(),
+          password: value.password,
         })
         // The session cookie changed: every cached answer belonged to the
         // previous identity and must not be shown to the new one.
@@ -119,12 +96,16 @@ function DevLoginForm({ redirectTo }: { redirectTo: string | undefined }) {
         await queryClient.ensureQueryData(authQueries.me())
         await navigate({ to: redirectTo ?? "/app" })
       } catch (cause) {
+        // The server refuses an unknown name and a wrong password with one
+        // answer; repeating anything finer here would undo that.
         setError(
-          cause instanceof ApiError && cause.status === 404
-            ? m.login_dev_unavailable({}, { locale })
-            : cause instanceof Error
-              ? cause.message
-              : m.form_error({}, { locale })
+          cause instanceof ApiError && cause.status === 429
+            ? m.login_throttled({}, { locale })
+            : cause instanceof ApiError && cause.status === 401
+              ? m.login_failed({}, { locale })
+              : cause instanceof Error
+                ? cause.message
+                : m.form_error({}, { locale })
         )
       }
     },
@@ -132,84 +113,47 @@ function DevLoginForm({ redirectTo }: { redirectTo: string | undefined }) {
 
   return (
     <form
-      className="flex flex-col gap-3 rounded-lg border border-dashed p-4"
+      className="flex flex-col gap-4 rounded-lg border p-4"
       onSubmit={(event) => {
         event.preventDefault()
         void form.handleSubmit()
       }}
     >
-      <div className="flex flex-col gap-1">
-        <h2 className="text-sm font-semibold">
-          {m.login_dev_title({}, { locale })}
-        </h2>
-        <p className="text-xs text-muted-foreground">
-          {m.login_dev_warning({}, { locale })}
-        </p>
-      </div>
-
-      <form.Field name="sso_subject">
+      <form.Field name="username">
         {(field) => (
           <LabeledInput
             id={field.name}
-            label={m.login_subject({}, { locale })}
+            label={m.login_username({}, { locale })}
             value={field.state.value}
             onChange={field.handleChange}
             onBlur={field.handleBlur}
             errors={field.state.meta.errors}
+            autoComplete="username"
           />
         )}
       </form.Field>
 
-      <form.Field name="role">
+      <form.Field name="password">
         {(field) => (
-          <LabeledSelect
+          <LabeledInput
             id={field.name}
-            label={m.login_role({}, { locale })}
+            type="password"
+            label={m.login_password({}, { locale })}
             value={field.state.value}
             onChange={field.handleChange}
+            onBlur={field.handleBlur}
             errors={field.state.meta.errors}
-            placeholder={m.login_role_none({}, { locale })}
-            options={ROLE_KINDS.map((role) => ({
-              value: role,
-              label: roleLabel(role, locale),
-            }))}
+            autoComplete="current-password"
           />
         )}
       </form.Field>
-
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-        <form.Field name="scope_faculty_code">
-          {(field) => (
-            <LabeledInput
-              id={field.name}
-              label={m.login_scope_faculty({}, { locale })}
-              value={field.state.value}
-              onChange={field.handleChange}
-              errors={field.state.meta.errors}
-              placeholder="FAC03"
-            />
-          )}
-        </form.Field>
-        <form.Field name="scope_department_code">
-          {(field) => (
-            <LabeledInput
-              id={field.name}
-              label={m.login_scope_department({}, { locale })}
-              value={field.state.value}
-              onChange={field.handleChange}
-              errors={field.state.meta.errors}
-              placeholder="DEP11"
-            />
-          )}
-        </form.Field>
-      </div>
 
       <form.Subscribe selector={(state) => state.isSubmitting}>
         {(isSubmitting) => (
-          <Button type="submit" disabled={isSubmitting} className="self-start">
+          <Button type="submit" disabled={isSubmitting}>
             {isSubmitting
               ? m.form_saving({}, { locale })
-              : m.login_dev_submit({}, { locale })}
+              : m.login_submit({}, { locale })}
           </Button>
         )}
       </form.Subscribe>
@@ -219,6 +163,10 @@ function DevLoginForm({ redirectTo }: { redirectTo: string | undefined }) {
           {error}
         </p>
       )}
+
+      <p className="text-xs text-muted-foreground">
+        {m.login_no_account({}, { locale })}
+      </p>
     </form>
   )
 }

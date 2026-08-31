@@ -5,9 +5,15 @@ import { fileURLToPath } from "node:url"
 import type { Locator, Page, Response } from "@playwright/test"
 import { expect } from "@playwright/test"
 
+import {
+  FIXTURE_ACCOUNTS,
+  FIXTURE_PASSWORD,
+  type FixtureAccount,
+} from "../../../fixtures/accounts"
+
 /**
  * Shared vocabulary for the e2e suite: the fixture truth, the numbers as the
- * page prints them, and the two-line dev sign-in.
+ * page prints them, and the sign-in.
  *
  * Nothing here softens an assertion. `normalizeSpace` exists because `Intl`
  * groups thousands and separates a percent sign with U+00A0, so an expected
@@ -209,57 +215,39 @@ export async function expectKpi(
 
 /* ── Sessions ─────────────────────────────────────────────────────────────── */
 
-export interface DevIdentity {
-  sso_subject: string
-  role: string | null
-  scope_faculty_code?: string | null
-  scope_department_code?: string | null
-}
-
 /**
- * Signs in through `POST /api/auth/dev-login` (`APP_AUTH_MODE=dev` only).
+ * Signs in through the real `POST /api/auth/login` (ADR-017).
  *
- * `page.request` shares the browser context's cookie jar, so the session
- * cookie the endpoint sets is the one the page then carries - the same cookie
- * the sign-in form would have produced, without driving a form that is not
- * what these tests are about. `login.spec` coverage of the form itself lives
- * in `rbac.spec.ts`'s anonymous case.
+ * The accounts were created by `fixtures/seed.ts` with the `manage-users` CLI,
+ * because nothing in the HTTP surface creates one - which is the whole point of
+ * the design, and is why the suite cannot mint an identity of its own.
+ *
+ * `page.request` shares the browser context's cookie jar, so the session cookie
+ * this sets is the one the page then carries - the same cookie the sign-in form
+ * would have produced, without driving a form that is not what most of these
+ * tests are about. Coverage of the form itself lives in `rbac.spec.ts`.
  */
 export async function signIn(
   page: Page,
-  identity: DevIdentity
+  account: FixtureAccount
 ): Promise<{ csrf_token: string }> {
-  const response = await page.request.post("/api/auth/dev-login", {
-    data: {
-      sso_subject: identity.sso_subject,
-      role: identity.role,
-      scope_faculty_code: identity.scope_faculty_code ?? null,
-      scope_department_code: identity.scope_department_code ?? null,
-    },
+  const response = await page.request.post("/api/auth/login", {
+    data: { username: account.username, password: FIXTURE_PASSWORD },
   })
   expect(
     response.ok(),
-    `dev-login failed: ${String(response.status())} ${await response.text()}`
+    `login failed for ${account.username}: ${String(response.status())} ` +
+      `${await response.text()} - did \`bun fixtures/seed.ts\` run?`
   ).toBe(true)
   return (await response.json()) as { csrf_token: string }
 }
 
-/** Stable subjects, so repeated runs reuse rows instead of accumulating them. */
-export const IDENTITIES = {
-  deanFac03: {
-    sso_subject: "e2e-dean-fac03",
-    role: "dean",
-    scope_faculty_code: "FAC03",
-  },
-  headDep11: {
-    sso_subject: "e2e-head-dep11",
-    role: "dept_head",
-    scope_department_code: "DEP11",
-  },
-  staff: { sso_subject: "e2e-staff", role: "staff" },
-  roleless: { sso_subject: "e2e-roleless", role: null },
-  admin: { sso_subject: "e2e-admin", role: "admin" },
-} as const satisfies Record<string, DevIdentity>
+/**
+ * The seeded accounts, by role. One list, shared with the seeder, so a role
+ * added here without a matching account fails to compile rather than at
+ * sign-in.
+ */
+export const IDENTITIES = FIXTURE_ACCOUNTS
 
 /* ── Network capture ──────────────────────────────────────────────────────── */
 

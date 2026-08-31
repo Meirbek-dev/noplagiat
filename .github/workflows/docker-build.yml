@@ -87,11 +87,23 @@ jobs:
       # nginx parses its configuration only at startup, so a typo here is a
       # gateway that never comes back after a deploy. `-t` is the same check
       # nginx runs on boot, against the image Compose actually pins.
+      #
+      # Mounted and configured exactly as docker-compose.yml does it, which is
+      # the whole point of the gate. In particular the file goes into
+      # `templates/`, not straight into `conf.d/`: it holds
+      # `resolver ${NGINX_LOCAL_RESOLVERS}`, and that placeholder is filled in
+      # by the image's own entrypoint on the way from templates/ to conf.d/.
+      # Mounted into conf.d the substitution never runs, and `nginx -t` fails on
+      # the literal `${NGINX_LOCAL_RESOLVERS}` - which is a broken gate, not a
+      # broken config. The two variables are the same pair Compose sets, and
+      # single quotes keep the `$` anchor out of the shell's hands.
       - name: Gateway configuration is valid
         run: |
           docker run --rm \
-            --volume "${{ github.workspace }}/deploy/nginx.conf:/etc/nginx/conf.d/default.conf:ro" \
-            nginx:1.28-alpine nginx -t
+            --volume "${{ github.workspace }}/deploy/nginx.conf:/etc/nginx/templates/default.conf.template:ro" \
+            --env NGINX_ENTRYPOINT_LOCAL_RESOLVERS=1 \
+            --env 'NGINX_ENVSUBST_FILTER=^NGINX_LOCAL_RESOLVERS$' \
+            nginx:1.31-alpine nginx -t
 
       # `config` resolves every interpolation, anchor and `depends_on` target.
       # The values below are throwaways that satisfy the two `:?` guards; they

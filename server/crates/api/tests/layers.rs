@@ -5,7 +5,7 @@ mod support;
 
 use api::layers::kanon::{self, Guarded, KAnonWitness};
 use api::layers::rate_limit::RateLimitConfig;
-use api::state::{AppConfig, AppState, AuthMode};
+use api::state::{AppConfig, AppState};
 use axum::body::Body;
 use axum::http::{Request, StatusCode, header};
 use axum::routing::get as route;
@@ -312,12 +312,11 @@ async fn a_configured_frame_ancestors_list_is_honoured(pool: PgPool) -> sqlx::Re
     let state = AppState::new(
         db::Pool::for_tests(pool),
         AppConfig {
-            auth_mode: AuthMode::Dev,
             embed_frame_ancestors: "'self' https://portal.example.edu".to_owned(),
             ..AppConfig::new("http://localhost:8080".parse().expect("absolute"))
         },
     );
-    let router = api::build_router(state);
+    let router = support::Harness::new(state);
 
     let reply = get(&router, "/api/public/status").await;
     assert_eq!(reply.status, StatusCode::OK);
@@ -338,12 +337,11 @@ async fn an_unusable_frame_ancestors_value_falls_back_to_the_default(
     let state = AppState::new(
         db::Pool::for_tests(pool),
         AppConfig {
-            auth_mode: AuthMode::Dev,
             embed_frame_ancestors: "*; script-src 'unsafe-inline'".to_owned(),
             ..AppConfig::new("http://localhost:8080".parse().expect("absolute"))
         },
     );
-    let router = api::build_router(state);
+    let router = support::Harness::new(state);
 
     let reply = get(&router, "/api/public/status").await;
     assert_eq!(
@@ -385,7 +383,6 @@ async fn the_public_contour_is_rate_limited_per_client(pool: PgPool) -> sqlx::Re
     let state = AppState::new(
         db::Pool::for_tests(pool),
         AppConfig {
-            auth_mode: AuthMode::Dev,
             public_rate_limit: RateLimitConfig {
                 burst: 2,
                 per_minute: 1,
@@ -393,7 +390,7 @@ async fn the_public_contour_is_rate_limited_per_client(pool: PgPool) -> sqlx::Re
             ..AppConfig::new("http://localhost:8080".parse().expect("absolute"))
         },
     );
-    let router = api::build_router(state);
+    let router = support::Harness::new(state);
 
     assert_eq!(
         get(&router, "/api/public/status").await.status,

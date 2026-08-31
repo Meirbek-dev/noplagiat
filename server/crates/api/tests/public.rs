@@ -27,7 +27,7 @@
 
 mod support;
 
-use api::state::{AppConfig, AppState, AuthMode};
+use api::state::{AppConfig, AppState};
 use axum::http::StatusCode;
 use serde_json::{Value, json};
 use sqlx::PgPool;
@@ -409,12 +409,11 @@ async fn raising_k_shrinks_the_released_cube(pool: PgPool) -> sqlx::Result<()> {
     let state = AppState::new(
         db::Pool::for_tests(pool),
         AppConfig {
-            auth_mode: AuthMode::Dev,
             ..AppConfig::new("http://localhost:8080".parse().expect("absolute"))
         },
     );
     let policy_cache = std::sync::Arc::clone(&state.k_policy);
-    let router = api::build_router(state);
+    let router = support::Harness::new(state);
 
     let query = "from=2023-09-01&to=2026-08-31";
     let before = get(&router, &format!("/api/public/faculties?{query}"))

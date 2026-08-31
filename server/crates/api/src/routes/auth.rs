@@ -1,38 +1,35 @@
 //! Session lifecycle (`/api/auth/*`).
 //!
-//! Production authentication is the portal's OIDC authorization-code flow with
-//! PKCE (slice W3.1, ADR-014); the protocol mechanics live in
-//! [`crate::auth::oidc`] and this module is the HTTP shape around them.
-//! `APP_AUTH_MODE=dev` instead mounts `dev-login`, which mints a session
-//! directly so that development, integration tests and Playwright can exercise
-//! the whole RBAC and audit stack without an identity provider (PLAN.md D7, R3).
+//! Authentication is a login name and a password, both held in the `users` row
+//! and both put there by the `manage-users` CLI on the server host (ADR-017).
+//! There is no identity provider, no redirect, no self-service registration and
+//! no password-reset flow: an operator with shell access to the deployment is
+//! the reset path, which is the same operator TZ §5 already routes role
+//! assignment through.
 //!
-//! `dev-login` and `callback` are the two mutating endpoints outside the CSRF
-//! layer: they are the requests that *create* the token, so there is none to
-//! present yet. The callback's CSRF defence is the `state` parameter, compared
-//! against the flow cookie.
+//! `login` is the one mutating endpoint outside the CSRF layer - it is the
+//! request that *creates* the token, so there is none to present yet. It is
+//! instead the one endpoint behind the login rate limiter.
 //!
 //! # Session fixation
 //!
-//! Both login paths mint a **new** session id and destroy any session the
+//! A successful sign-in mints a **new** session id and destroys any session the
 //! browser presented on the way in. An attacker who plants a session cookie in
 //! a victim's browser before sign-in therefore ends up holding a dead id.
 
-use axum::extract::{Query, State};
+use axum::extract::{Request, State};
 use axum::http::{HeaderValue, header};
-use axum::response::{IntoResponse, Redirect, Response};
+use axum::middleware::Next;
+use axum::response::{IntoResponse, Response};
 use axum::routing::{get, post};
 use axum::{Json, Router};
 use serde::{Deserialize, Serialize};
 
-use crate::auth::oidc::{self, FlowState};
-use crate::auth::{self, CurrentUser, mapping, store};
+use crate::auth::{self, CurrentUser, password, store};
 use crate::dto::{RoleGrantDto, ScopeDto};
 use crate::error::ApiError;
-use crate::state::{AppState, AuthMode};
-
-/// Where a signed-in user lands.
-const DASHBOARD_PATH: &str = "/app";
+use crate::layers::rate_limit::client_address;
+use crate::state::AppState;
 
 pub fn router(state: &AppState) -> Router<AppState> {
     let authenticated = Router::new()
@@ -47,261 +44,144 @@ pub fn router(state: &AppState) -> Router<AppState> {
         ));
 
     Router::new()
-        .route("/login", get(login))
-        .route("/callback", get(callback))
-        .route("/dev-login", post(dev_login))
+        .route(
+            "/login",
+            post(login).layer(axum::middleware::from_fn_with_state(
+                state.clone(),
+                throttle_login,
+            )),
+        )
         .merge(authenticated)
 }
 
 // ── login ───────────────────────────────────────────────────────────────────
 
-/// Start the portal SSO flow.
+/// Sign-in request.
 ///
-/// Answers `303 See Other` to the provider's authorization endpoint, carrying
-/// `state`, `nonce` and an S256 PKCE challenge, and sets the ten-minute flow
-/// cookie the callback validates against.
-#[utoipa::path(
-    get,
-    path = "/api/auth/login",
-    tag = "auth",
-    responses(
-        (status = 303, description = "redirect to the identity provider"),
-        (status = 503, body = crate::error::Problem, description = "no identity provider is configured"),
-    ),
-)]
-pub async fn login(State(state): State<AppState>) -> Result<Response, ApiError> {
-    if state.config.auth_mode == AuthMode::Dev {
-        return Err(ApiError::NotImplementedYet(
-            "this deployment runs APP_AUTH_MODE=dev; sign in with POST /api/auth/dev-login",
-        ));
-    }
-    let Some(client) = state.oidc.as_ref() else {
-        return Err(ApiError::NotImplementedYet(
-            "APP_OIDC_ISSUER, APP_OIDC_CLIENT_ID and APP_OIDC_CLIENT_SECRET are not configured",
-        ));
-    };
-
-    let flow = FlowState::generate().map_err(|error| {
-        tracing::error!(%error, "flow token generation failed");
-        ApiError::Internal("sign-in token generation failed")
-    })?;
-    let url = client.authorization_url(&flow).await.map_err(oidc_error)?;
-
-    let mut response = Redirect::to(&url).into_response();
-    append_cookie(
-        &mut response,
-        &oidc::set_flow_cookie(&flow.to_cookie_value()),
-    );
-    Ok(response)
-}
-
-// ── callback ────────────────────────────────────────────────────────────────
-
-/// Query parameters the provider returns on the callback.
-#[derive(Debug, Default, Deserialize, utoipa::IntoParams)]
-#[into_params(parameter_in = Query)]
-pub struct CallbackQuery {
-    /// Authorization code, on success.
-    pub code: Option<String>,
-    /// Opaque value echoed back, compared against the flow cookie.
-    pub state: Option<String>,
-    /// OAuth error code, when the user declined or the provider refused.
-    pub error: Option<String>,
-    #[serde(rename = "error_description")]
-    pub error_description: Option<String>,
-}
-
-/// Finish the portal SSO flow.
-#[utoipa::path(
-    get,
-    path = "/api/auth/callback",
-    tag = "auth",
-    params(CallbackQuery),
-    responses(
-        (status = 303, description = "session established; redirect into the dashboard"),
-        (status = 403, body = crate::error::Problem, description = "the sign-in could not be matched to this browser"),
-        (status = 502, body = crate::error::Problem, description = "the identity provider rejected the exchange"),
-        (status = 503, body = crate::error::Problem, description = "no identity provider is configured"),
-    ),
-)]
-pub async fn callback(
-    State(state): State<AppState>,
-    headers: axum::http::HeaderMap,
-    Query(query): Query<CallbackQuery>,
-) -> Result<Response, ApiError> {
-    let Some(client) = state.oidc.as_ref() else {
-        return Err(ApiError::NotImplementedYet(
-            "no identity provider is configured for this deployment",
-        ));
-    };
-
-    // The flow cookie is cleared on every outcome: an authorization request is
-    // single use, so a replayed `code` finds no verifier waiting for it.
-    let finish = |response: Response| -> Response {
-        let mut response = response;
-        append_cookie(&mut response, &oidc::clear_flow_cookie());
-        response
-    };
-
-    if let Some(error) = query.error.as_deref() {
-        // The provider's description is attacker-influenced text; it is logged
-        // at debug through a typed field and never echoed into the response.
-        tracing::warn!(
-            error,
-            has_description = query.error_description.is_some(),
-            "the identity provider refused the sign-in"
-        );
-        return Ok(finish(
-            ApiError::Forbidden("the identity provider refused this sign-in").into_response(),
-        ));
-    }
-
-    let flow = oidc::flow_cookie(&headers)
-        .as_deref()
-        .and_then(FlowState::from_cookie_value);
-    let (Some(code), Some(returned_state), Some(flow)) =
-        (query.code.as_deref(), query.state.as_deref(), flow)
-    else {
-        return Ok(finish(
-            ApiError::Forbidden(
-                "this sign-in could not be matched to your browser - start again from /api/auth/login",
-            )
-            .into_response(),
-        ));
-    };
-
-    if !oidc::tokens_match(returned_state, &flow.state) {
-        tracing::warn!("OIDC callback state does not match the flow cookie");
-        return Ok(finish(
-            ApiError::Forbidden("this sign-in could not be matched to your browser")
-                .into_response(),
-        ));
-    }
-
-    let claims = match client.exchange_and_verify(code, &flow).await {
-        Ok(claims) => claims,
-        Err(error) => {
-            tracing::warn!(%error, "the OIDC code exchange failed");
-            return Ok(finish(oidc_error(error).into_response()));
-        }
-    };
-
-    let user = establish(&state, &claims, auth::session_cookie(&headers).as_deref()).await?;
-    let target = if user.scope.is_some() {
-        DASHBOARD_PATH
-    } else {
-        auth::REQUEST_ACCESS_PATH
-    };
-
-    let mut response = Redirect::to(target).into_response();
-    append_cookie(
-        &mut response,
-        &auth::set_cookie(&user.session_id_hex, state.config.session_ttl_seconds),
-    );
-    Ok(finish(response))
-}
-
-// ── dev login ───────────────────────────────────────────────────────────────
-
-/// Development sign-in request.
-///
-/// No name and no e-mail: the identity is the opaque SSO subject, and the
-/// synthetic account fields are derived from it, so this endpoint cannot be
-/// used to put a person's name into the database (AGENTS.md invariant #1).
+/// No name and no e-mail: those are account fields an operator sets with the
+/// CLI, so this endpoint cannot be used to put a person's name into the
+/// database (AGENTS.md invariant #1).
 #[derive(Debug, Deserialize, utoipa::ToSchema)]
 #[serde(deny_unknown_fields)]
-pub struct DevLoginRequest {
-    /// Opaque subject identifier, as the IdP would supply.
-    pub sso_subject: String,
-    /// Role to grant: `staff`, `dept_head`, `dean`, `ethics`, `compliance` or
-    /// `admin`. Omit to mint the role-less session that the «request access»
-    /// path uses.
-    #[serde(default)]
-    #[schema(value_type = Option<String>)]
-    pub role: Option<domain::RoleKind>,
-    /// Faculty dictionary code for a `dean` grant.
-    #[serde(default)]
-    pub scope_faculty_code: Option<String>,
-    /// Department dictionary code for a `dept_head` grant.
-    #[serde(default)]
-    pub scope_department_code: Option<String>,
+pub struct LoginRequest {
+    /// Login name, matched case-insensitively.
+    pub username: String,
+    /// The account's password. Never logged, never echoed.
+    pub password: String,
 }
 
-#[derive(Debug, Serialize, utoipa::ToSchema)]
-pub struct DevLoginResponse {
-    pub sso_subject: String,
-    /// Grants the account now holds.
-    pub roles: Vec<RoleGrantDto>,
-    pub scope: Option<ScopeDto>,
-    /// Hex CSRF token for this session - send it as `x-csrf-token` on every
-    /// mutating request.
-    pub csrf_token: String,
-}
-
-/// Mint a session directly. `APP_AUTH_MODE=dev` only.
+/// Per-address throttle in front of the one endpoint that takes a password.
 ///
-/// Idempotent and additive: repeating it for the same subject re-uses the user
-/// row and adds the requested grant if it is missing. It never revokes, so a
-/// test that needs a different role uses a different subject.
+/// The public limiter is deliberately generous (a cached portal page issues one
+/// request an hour); a password endpoint needs the opposite shape, so it gets
+/// its own bucket. Mounted as a layer rather than checked inside the handler so
+/// that a refusal costs no database round trip and no Argon2 verification.
+async fn throttle_login(
+    State(state): State<AppState>,
+    request: Request,
+    next: Next,
+) -> Response {
+    let client = client_address(&request);
+    match state.login_rate_limiter.check(client) {
+        Ok(()) => next.run(request).await,
+        Err(retry_after_seconds) => {
+            tracing::warn!(%client, "sign-in rate limit exceeded");
+            ApiError::TooManyRequests {
+                retry_after_seconds,
+            }
+            .into_response()
+        }
+    }
+}
+
+/// Sign in with a local account.
+///
+/// Every failure - unknown name, deactivated account, no password set, wrong
+/// password - is one `401` with one message. Distinguishing them would turn the
+/// endpoint into an oracle for which login names exist, and the operator who
+/// can create accounts is not the person doing the guessing.
 #[utoipa::path(
     post,
-    path = "/api/auth/dev-login",
+    path = "/api/auth/login",
     tag = "auth",
-    request_body = DevLoginRequest,
+    request_body = LoginRequest,
     responses(
-        (status = 200, body = DevLoginResponse),
-        (status = 404, body = crate::error::Problem, description = "not running in dev auth mode"),
-        (status = 422, body = crate::error::Problem, description = "unknown dictionary code"),
+        (status = 200, body = MeResponse, description = "session established"),
+        (status = 401, body = crate::error::Problem, description = "the credentials were not accepted"),
+        (status = 422, body = crate::error::Problem, description = "a field was empty"),
+        (status = 429, body = crate::error::Problem, description = "too many sign-in attempts from this address"),
     ),
 )]
-pub async fn dev_login(
+pub async fn login(
     State(state): State<AppState>,
-    Json(request): Json<DevLoginRequest>,
+    headers: axum::http::HeaderMap,
+    Json(request): Json<LoginRequest>,
 ) -> Result<Response, ApiError> {
-    if state.config.auth_mode != AuthMode::Dev {
-        // Not 403: in production this route does not exist at all.
-        return Err(ApiError::NotFound);
+    if request.username.trim().is_empty() {
+        return Err(ApiError::field("username", "must not be empty"));
     }
-    if request.sso_subject.trim().is_empty() {
-        return Err(ApiError::field("sso_subject", "must not be empty"));
-    }
-
-    let subject = request.sso_subject.trim();
-    let user = db::users::upsert_by_sso_subject(
-        &state.db,
-        subject,
-        &format!("{subject}@dev.invalid"),
-        subject,
-    )
-    .await?;
-
-    if let Some(role) = request.role {
-        let faculty_id = match &request.scope_faculty_code {
-            Some(code) => Some(resolve_faculty(&state, code).await?),
-            None => None,
-        };
-        let department_id = match &request.scope_department_code {
-            Some(code) => Some(resolve_department(&state, code).await?),
-            None => None,
-        };
-        db::users::add_role(&state.db, user.id, role, faculty_id, department_id).await?;
+    if request.password.is_empty() {
+        return Err(ApiError::field("password", "must not be empty"));
     }
 
-    // Opportunistic housekeeping: expired rows are dead weight, and login is
-    // the one moment a session table is guaranteed to be touched.
+    let refused = || ApiError::Unauthorized("the login name or password is not correct");
+
+    let candidate = db::users::credentials_by_username(&state.db, request.username.trim()).await?;
+    let Some(candidate) = candidate else {
+        // Spend the verification time anyway: answering an unknown name faster
+        // than a wrong password is a membership oracle.
+        password::spend_verification_time();
+        return Err(refused());
+    };
+
+    // A deactivated account is refused by withholding its hash, which
+    // `password::verify` treats exactly like an account that has none: same
+    // answer, and the same Argon2 work spent before giving it.
+    let stored = candidate
+        .password_hash
+        .as_deref()
+        .filter(|_| candidate.user.active);
+    if !password::verify(&request.password, stored) {
+        tracing::warn!(user_id = candidate.user.id, "sign-in refused");
+        return Err(refused());
+    }
+
+    // Session fixation: whatever id the browser arrived with is destroyed, and
+    // the id below is freshly generated. A planted cookie is dead by the time
+    // the victim is signed in.
+    if let Some(hex) = auth::session_cookie(&headers)
+        && let Ok(id) = hex::decode(hex)
+        && id.len() == store::TOKEN_LEN
+        && let Err(error) = store::delete(&state.db, &id).await
+    {
+        tracing::warn!(%error, "presented session could not be rotated away");
+    }
+
+    // Opportunistic housekeeping: expired rows are dead weight, and a sign-in
+    // is the one moment the session table is guaranteed to be touched.
     if let Err(error) = store::delete_expired(&state.db).await {
         tracing::warn!(%error, "expired session sweep failed");
     }
 
-    let session = store::create(&state.db, user.id, state.config.session_ttl_seconds)
+    let session = store::create(&state.db, candidate.user.id, state.config.session_ttl_seconds)
         .await
         .map_err(session_error)?;
 
-    let grants = load_grants(&state, user.id).await?;
-    let body = DevLoginResponse {
-        sso_subject: user.sso_subject,
-        scope: auth::widest_scope(&grants).map(Into::into),
+    let grants = load_grants(&state, candidate.user.id).await?;
+    // The user id is a warehouse key, not an address. The login name, the
+    // e-mail and the display name never reach a log line (ARCHITECTURE.md §8).
+    tracing::info!(
+        user_id = candidate.user.id,
+        grants = grants.len(),
+        "session established"
+    );
+
+    let body = MeResponse {
+        username: candidate.user.username,
+        role: auth::effective_role(&grants).map(|role| db::filters::role_label(role).to_owned()),
         roles: grants.iter().map(RoleGrantDto::from_grant).collect(),
+        scope: auth::widest_scope(&grants).map(Into::into),
+        request_access_path: auth::REQUEST_ACCESS_PATH,
         csrf_token: session.csrf_hex(),
     };
 
@@ -317,10 +197,9 @@ pub async fn dev_login(
 
 #[derive(Debug, Serialize, utoipa::ToSchema)]
 pub struct LogoutResponse {
-    /// RP-initiated logout URL, when the provider advertises an
-    /// `end_session_endpoint`. The browser should follow it so the portal
-    /// session ends too; `null` means the local session was all there was.
-    pub end_session_url: Option<String>,
+    /// Where the browser should go once the session is gone. Always the sign-in
+    /// page: with no identity provider there is no second session to end.
+    pub next_path: &'static str,
 }
 
 /// End the current session and clear the cookie.
@@ -343,20 +222,23 @@ pub async fn logout(
         .await
         .map_err(session_error)?;
 
-    let end_session_url = match state.oidc.as_ref() {
-        Some(client) => client.end_session_url().await,
-        None => None,
-    };
-    let mut response = Json(LogoutResponse { end_session_url }).into_response();
+    let mut response = Json(LogoutResponse {
+        next_path: LOGIN_PATH,
+    })
+    .into_response();
     append_cookie(&mut response, &auth::clear_cookie());
     Ok(response)
 }
+
+/// Frontend sign-in route.
+pub const LOGIN_PATH: &str = "/login";
 
 // ── me ──────────────────────────────────────────────────────────────────────
 
 #[derive(Debug, Serialize, utoipa::ToSchema)]
 pub struct MeResponse {
-    pub sso_subject: String,
+    /// Login name of the signed-in account.
+    pub username: String,
     /// Widest role held, or `null` for an account awaiting access.
     pub role: Option<String>,
     pub roles: Vec<RoleGrantDto>,
@@ -365,7 +247,8 @@ pub struct MeResponse {
     pub scope: Option<ScopeDto>,
     /// Where to send an account that holds no grants (TZ §5).
     pub request_access_path: &'static str,
-    /// Hex CSRF token for this session, so a reloaded page can keep mutating.
+    /// Hex CSRF token for this session - send it as `x-csrf-token` on every
+    /// mutating request.
     pub csrf_token: String,
 }
 
@@ -382,7 +265,7 @@ pub struct MeResponse {
 )]
 pub async fn me(user: CurrentUser) -> Json<MeResponse> {
     Json(MeResponse {
-        sso_subject: user.sso_subject.clone(),
+        username: user.username.clone(),
         role: user
             .effective_role
             .map(|role| db::filters::role_label(role).to_owned()),
@@ -390,91 +273,6 @@ pub async fn me(user: CurrentUser) -> Json<MeResponse> {
         scope: user.scope.map(Into::into),
         request_access_path: auth::REQUEST_ACCESS_PATH,
         csrf_token: hex::encode(&user.csrf_token),
-    })
-}
-
-// ── establishing a session from verified claims ─────────────────────────────
-
-/// What a successful callback produced.
-pub struct EstablishedSession {
-    pub session_id_hex: String,
-    pub scope: Option<compliance::Scope>,
-}
-
-/// Upsert the account, apply the group mapping, and mint a fresh session.
-///
-/// Group mapping is **additive**: a mapped group grants the role it names, and
-/// grants an administrator added by hand survive (TZ §5 routes assignment and
-/// revocation through the head of unit and the system administrator, not
-/// through AD alone). Revocation is therefore an admin action -
-/// `DELETE /api/admin/roles` - and ADR-014 §3 records the trade.
-pub async fn establish(
-    state: &AppState,
-    claims: &crate::auth::oidc::IdClaims,
-    presented_session_hex: Option<&str>,
-) -> Result<EstablishedSession, ApiError> {
-    // Session fixation: whatever id the browser arrived with is destroyed, and
-    // the id below is freshly generated. A planted cookie is dead by the time
-    // the victim is signed in.
-    if let Some(hex) = presented_session_hex
-        && let Ok(id) = hex::decode(hex)
-        && id.len() == store::TOKEN_LEN
-        && let Err(error) = store::delete(&state.db, &id).await
-    {
-        tracing::warn!(%error, "presented session could not be rotated away");
-    }
-
-    let email = claims.email.clone().unwrap_or_else(|| {
-        // The account row needs something; an opaque, non-routable placeholder
-        // beats inventing an address.
-        format!("{}@sso.invalid", claims.sub)
-    });
-    let user =
-        db::users::upsert_by_sso_subject(&state.db, &claims.sub, &email, claims.display_name())
-            .await?;
-
-    let mappings = state.role_mappings().await?;
-    let groups = claims.groups(
-        state
-            .oidc
-            .as_ref()
-            .map_or(crate::auth::oidc::DEFAULT_GROUPS_CLAIM, |client| {
-                client.config().groups_claim.as_str()
-            }),
-    );
-    let faculty_ids = db::dicts::faculty_ids(&state.db).await?;
-    let department_ids = db::dicts::department_ids(&state.db).await?;
-    for grant in mapping::grants_for(&mappings, &groups, &faculty_ids, &department_ids) {
-        db::users::add_role(
-            &state.db,
-            user.id,
-            grant.role,
-            grant.scope_faculty_id,
-            grant.scope_department_id,
-        )
-        .await?;
-    }
-
-    if let Err(error) = store::delete_expired(&state.db).await {
-        tracing::warn!(%error, "expired session sweep failed");
-    }
-    let session = store::create(&state.db, user.id, state.config.session_ttl_seconds)
-        .await
-        .map_err(session_error)?;
-
-    let grants = load_grants(state, user.id).await?;
-    // The subject is an opaque IdP identifier and the user id is a warehouse
-    // key; neither is an address. The e-mail and the display name never reach a
-    // log line (ARCHITECTURE.md §8).
-    tracing::info!(
-        user_id = user.id,
-        grants = grants.len(),
-        "portal SSO session established"
-    );
-
-    Ok(EstablishedSession {
-        session_id_hex: session.id_hex(),
-        scope: auth::widest_scope(&grants),
     })
 }
 
@@ -486,24 +284,6 @@ fn append_cookie(response: &mut Response, value: &str) {
             response.headers_mut().append(header::SET_COOKIE, header);
         }
         Err(error) => tracing::error!(%error, "cookie could not be encoded"),
-    }
-}
-
-fn oidc_error(error: crate::auth::oidc::OidcError) -> ApiError {
-    use crate::auth::oidc::OidcError;
-    match error {
-        OidcError::NotConfigured => {
-            ApiError::NotImplementedYet("no identity provider is configured for this deployment")
-        }
-        OidcError::FlowState => {
-            ApiError::Forbidden("this sign-in could not be matched to your browser")
-        }
-        OidcError::IdToken(_) => {
-            ApiError::Forbidden("the identity provider's token could not be validated")
-        }
-        OidcError::Transport(_) | OidcError::Malformed { .. } | OidcError::TokenExchange(_) => {
-            ApiError::Upstream("the identity provider could not be reached")
-        }
     }
 }
 
@@ -531,25 +311,4 @@ async fn load_grants(state: &AppState, user_id: i64) -> Result<Vec<auth::RoleGra
             })
         })
         .collect())
-}
-
-async fn resolve_faculty(state: &AppState, code: &str) -> Result<i64, ApiError> {
-    db::dicts::faculty_ids(&state.db)
-        .await?
-        .get(code)
-        .copied()
-        .ok_or_else(|| ApiError::field("scope_faculty_code", format!("unknown faculty `{code}`")))
-}
-
-async fn resolve_department(state: &AppState, code: &str) -> Result<i64, ApiError> {
-    db::dicts::department_ids(&state.db)
-        .await?
-        .get(code)
-        .copied()
-        .ok_or_else(|| {
-            ApiError::field(
-                "scope_department_code",
-                format!("unknown department `{code}`"),
-            )
-        })
 }

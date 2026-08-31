@@ -11,7 +11,7 @@
 
 # The tag is pinned to the exact patch in `server/rust-toolchain.toml`; a
 # mismatch makes the image silently download a second toolchain on every build.
-FROM rust:1.97.1-slim-bookworm AS build
+FROM rust:1.98.0-slim-bookworm AS build
 WORKDIR /build
 
 # No database at build time: resolve `sqlx::query!` from the committed cache and
@@ -44,6 +44,10 @@ COPY --from=build /build/server/target/release/ingest-csv /usr/local/bin/
 # procedure invokes it, and until it was copied here that procedure could only
 # be carried out by installing a Rust toolchain next to the production database.
 COPY --from=build /build/server/target/release/generate-report /usr/local/bin/
+# `manage-users` is not optional here: it is the *only* way to create an account
+# (ADR-017 §3), so without it a fresh deployment can be started and never signed
+# into. `docker compose exec server manage-users …` is the documented bootstrap.
+COPY --from=build /build/server/target/release/manage-users /usr/local/bin/
 
 # APP_REPORTS_DIR. Created here so the mount point has the right owner before
 # Compose attaches the named volume; snapshots are written by `appuser`.

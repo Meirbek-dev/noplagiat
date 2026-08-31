@@ -104,6 +104,11 @@ pub enum DbError {
     Migrate(#[from] sqlx::migrate::MigrateError),
     #[error("database migrations have not completed successfully")]
     MigrationsNotApplied,
+    /// A `create-user` naming an account that already exists (ADR-017 §3).
+    /// Typed rather than left as a unique-violation `Sqlx`, so the CLI can say
+    /// which name is taken instead of printing a constraint name.
+    #[error("a user named `{0}` already exists")]
+    UsernameTaken(String),
     #[error("setting `{key}` is missing")]
     MissingSetting { key: &'static str },
     /// A malformed setting is an error, never a silent fallback to the default:

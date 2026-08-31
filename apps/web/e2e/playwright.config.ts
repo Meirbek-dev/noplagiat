@@ -132,15 +132,29 @@ export default defineConfig({
   webServer: [
     {
       // `cwd: server` so the binary finds `server/.env` exactly as it does
-      // under `cargo run` by hand. `APP_AUTH_MODE=dev` mounts
-      // `POST /api/auth/dev-login`, which is how `rbac.spec.ts` becomes each
-      // role without an identity provider.
+      // under `cargo run` by hand. The accounts `rbac.spec.ts` signs in as are
+      // created by `bun fixtures/seed.ts` through the `manage-users` CLI
+      // (ADR-017) - the server has no endpoint that would make one.
+      //
+      // Every variable the server *requires* is listed below rather than left
+      // to `server/.env`: that file is gitignored, so on a CI runner it does
+      // not exist and the process dies at startup with
+      // `required environment variable ... is not set` - which Playwright then
+      // reports only as "Process from config.webServer was not able to start".
+      // `dotenvy` does not override variables that are already set, so naming
+      // them here is also safe on a developer's machine.
       command: "cargo run --quiet --bin noplagiat-server",
       cwd: path.join(repoRoot, "server"),
       url: `${apiOrigin}/healthz`,
       env: {
         APP_LISTEN_ADDR: `127.0.0.1:${String(apiPort)}`,
-        APP_AUTH_MODE: "dev",
+        // The externally visible origin: here that is the preview server, which
+        // serves the app and proxies `/api` to the Rust process on one origin,
+        // the same shape nginx gives it in production.
+        APP_PUBLIC_BASE_URL: baseURL,
+        APP_DATABASE_URL:
+          process.env.APP_DATABASE_URL ??
+          "postgres://noplagiat:noplagiat@localhost:5432/noplagiat",
         APP_INGEST_PEPPER: process.env.APP_INGEST_PEPPER ?? "dev-pepper",
         RUST_LOG: process.env.RUST_LOG ?? "warn",
       },
@@ -167,10 +181,6 @@ export default defineConfig({
         // back to `127.0.0.1:8080` and every loader renders an error.
         API_PROXY_TARGET: apiOrigin,
         API_ORIGIN: apiOrigin,
-        // `import.meta.env.DEV` is false in a production bundle, so the
-        // sign-in page would otherwise hide the development form that
-        // `rbac.spec.ts` documents (`routes/login.tsx`).
-        VITE_AUTH_MODE: "dev",
       },
       timeout: 300_000,
       // `E2E_REUSE_WEB=1` keeps a preview server between runs while iterating

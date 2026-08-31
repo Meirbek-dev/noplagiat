@@ -261,8 +261,10 @@ async fn seeded_settings_parse_into_the_domain_types(pool: PgPool) -> sqlx::Resu
 
 #[sqlx::test(migrations = "../../migrations")]
 async fn audit_log_is_append_only(pool: PgPool) -> sqlx::Result<()> {
+    // `username` is the account key since migration 0006 (ADR-017 §5); this
+    // test only needs a `users` row for the foreign key.
     let user_id: i64 =
-        sqlx::query_scalar("INSERT INTO users (sso_subject) VALUES ('subject-1') RETURNING id")
+        sqlx::query_scalar("INSERT INTO users (username) VALUES ('subject-1') RETURNING id")
             .fetch_one(&pool)
             .await?;
 

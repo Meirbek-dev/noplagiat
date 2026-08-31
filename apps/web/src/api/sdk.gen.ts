@@ -8,7 +8,7 @@
 
 import type { Client, ClientMeta, Options as Options2, RequestResult, TDataShape } from './client';
 import { client } from './client.gen';
-import type { AuditData, AuditErrors, AuditResponses, CallbackData, CallbackErrors, CreateEthicsData, CreateEthicsErrors, CreateEthicsResponses, CreateInitiatorRuleData, CreateInitiatorRuleErrors, CreateInitiatorRuleResponses, CreateSourceData, CreateSourceErrors, CreateSourceResponses, CreateWorkTypeRuleData, CreateWorkTypeRuleErrors, CreateWorkTypeRuleResponses, DeleteAliasData, DeleteAliasErrors, DeleteAliasResponses, DeleteDictionaryData, DeleteDictionaryErrors, DeleteDictionaryResponses, DeleteEthicsData, DeleteEthicsErrors, DeleteEthicsResponses, DeleteInitiatorRuleData, DeleteInitiatorRuleErrors, DeleteInitiatorRuleResponses, DeleteSourceData, DeleteSourceErrors, DeleteSourceResponses, DeleteStaffUnitData, DeleteStaffUnitErrors, DeleteStaffUnitResponses, DeleteSubmissionTotalData, DeleteSubmissionTotalErrors, DeleteSubmissionTotalResponses, DeleteUsageStatData, DeleteUsageStatErrors, DeleteUsageStatResponses, DeleteWorkTypeRuleData, DeleteWorkTypeRuleErrors, DeleteWorkTypeRuleResponses, DepartmentsMatrixData, DepartmentsMatrixErrors, DepartmentsMatrixResponses, DevLoginData, DevLoginErrors, DevLoginResponses, DownloadData, DownloadErrors, DownloadResponses, EscalationsData, EscalationsErrors, EscalationsResponses, FacultiesData, FacultiesErrors, FacultiesResponses, GenerateReportData, GenerateReportErrors, GenerateReportResponses, GetBatchData, GetBatchErrors, GetBatchResponses, GrantRoleData, GrantRoleErrors, GrantRoleResponses, HealthzData, HealthzResponses, Histogram2Data, Histogram2Errors, Histogram2Responses, HistogramData, HistogramErrors, HistogramResponses, InternalExportData, InternalExportErrors, InternalExportResponses, ListAliasesData, ListAliasesErrors, ListAliasesResponses, ListBatchesData, ListBatchesErrors, ListBatchesResponses, ListDictionaryData, ListDictionaryErrors, ListDictionaryResponses, ListEthicsData, ListEthicsErrors, ListEthicsResponses, ListInitiatorRulesData, ListInitiatorRulesErrors, ListInitiatorRulesResponses, ListReportsData, ListReportsErrors, ListReportsResponses, ListRolesData, ListRolesErrors, ListRolesResponses, ListSourcesData, ListSourcesErrors, ListSourcesResponses, ListStaffUnitsData, ListStaffUnitsErrors, ListStaffUnitsResponses, ListSubmissionTotalsData, ListSubmissionTotalsErrors, ListSubmissionTotalsResponses, ListUsageStatsData, ListUsageStatsErrors, ListUsageStatsResponses, ListWorkTypeRulesData, ListWorkTypeRulesErrors, ListWorkTypeRulesResponses, LoginData, LoginErrors, LogoutData, LogoutErrors, LogoutResponses, MeData, MeErrors, MeResponses, Ping2Data, Ping2Errors, Ping2Responses, PingData, PingErrors, PingResponses, PublicExportData, PublicExportErrors, PublicExportResponses, PublishReportData, PublishReportErrors, PublishReportResponses, ReadyzData, ReadyzErrors, ReadyzResponses, RechecksData, RechecksErrors, RechecksResponses, ReportsData, ReportsResponses, RevokeRoleData, RevokeRoleErrors, RevokeRoleResponses, RunIngestData, RunIngestErrors, RunIngestResponses, SettingsData, SettingsErrors, SettingsResponses, StatusData, StatusResponses, Summary2Data, Summary2Errors, Summary2Responses, SummaryData, SummaryErrors, SummaryResponses, Timeseries2Data, Timeseries2Errors, Timeseries2Responses, TimeseriesData, TimeseriesErrors, TimeseriesResponses, UnpublishReportData, UnpublishReportErrors, UnpublishReportResponses, UpdateEthicsData, UpdateEthicsErrors, UpdateEthicsResponses, UpdateInitiatorRuleData, UpdateInitiatorRuleErrors, UpdateInitiatorRuleResponses, UpdateSettingsData, UpdateSettingsErrors, UpdateSettingsResponses, UpdateSourceData, UpdateSourceErrors, UpdateSourceResponses, UpdateWorkTypeRuleData, UpdateWorkTypeRuleErrors, UpdateWorkTypeRuleResponses, UpsertAliasData, UpsertAliasErrors, UpsertAliasResponses, UpsertDictionaryData, UpsertDictionaryErrors, UpsertDictionaryResponses, UpsertStaffUnitData, UpsertStaffUnitErrors, UpsertStaffUnitResponses, UpsertSubmissionTotalData, UpsertSubmissionTotalErrors, UpsertSubmissionTotalResponses, UpsertUsageStatData, UpsertUsageStatErrors, UpsertUsageStatResponses, UsageData, UsageErrors, UsageResponses, WorkTypes2Data, WorkTypes2Errors, WorkTypes2Responses, WorkTypesData, WorkTypesErrors, WorkTypesResponses, Yoy2Data, Yoy2Errors, Yoy2Responses, YoyData, YoyErrors, YoyResponses } from './types.gen';
+import type { AuditData, AuditErrors, AuditResponses, CreateEthicsData, CreateEthicsErrors, CreateEthicsResponses, CreateInitiatorRuleData, CreateInitiatorRuleErrors, CreateInitiatorRuleResponses, CreateSourceData, CreateSourceErrors, CreateSourceResponses, CreateWorkTypeRuleData, CreateWorkTypeRuleErrors, CreateWorkTypeRuleResponses, DeleteAliasData, DeleteAliasErrors, DeleteAliasResponses, DeleteDictionaryData, DeleteDictionaryErrors, DeleteDictionaryResponses, DeleteEthicsData, DeleteEthicsErrors, DeleteEthicsResponses, DeleteInitiatorRuleData, DeleteInitiatorRuleErrors, DeleteInitiatorRuleResponses, DeleteSourceData, DeleteSourceErrors, DeleteSourceResponses, DeleteStaffUnitData, DeleteStaffUnitErrors, DeleteStaffUnitResponses, DeleteSubmissionTotalData, DeleteSubmissionTotalErrors, DeleteSubmissionTotalResponses, DeleteUsageStatData, DeleteUsageStatErrors, DeleteUsageStatResponses, DeleteWorkTypeRuleData, DeleteWorkTypeRuleErrors, DeleteWorkTypeRuleResponses, DepartmentsMatrixData, DepartmentsMatrixErrors, DepartmentsMatrixResponses, DownloadData, DownloadErrors, DownloadResponses, EscalationsData, EscalationsErrors, EscalationsResponses, FacultiesData, FacultiesErrors, FacultiesResponses, GenerateReportData, GenerateReportErrors, GenerateReportResponses, GetBatchData, GetBatchErrors, GetBatchResponses, GrantRoleData, GrantRoleErrors, GrantRoleResponses, HealthzData, HealthzResponses, Histogram2Data, Histogram2Errors, Histogram2Responses, HistogramData, HistogramErrors, HistogramResponses, InternalExportData, InternalExportErrors, InternalExportResponses, ListAliasesData, ListAliasesErrors, ListAliasesResponses, ListBatchesData, ListBatchesErrors, ListBatchesResponses, ListDictionaryData, ListDictionaryErrors, ListDictionaryResponses, ListEthicsData, ListEthicsErrors, ListEthicsResponses, ListInitiatorRulesData, ListInitiatorRulesErrors, ListInitiatorRulesResponses, ListReportsData, ListReportsErrors, ListReportsResponses, ListRolesData, ListRolesErrors, ListRolesResponses, ListSourcesData, ListSourcesErrors, ListSourcesResponses, ListStaffUnitsData, ListStaffUnitsErrors, ListStaffUnitsResponses, ListSubmissionTotalsData, ListSubmissionTotalsErrors, ListSubmissionTotalsResponses, ListUsageStatsData, ListUsageStatsErrors, ListUsageStatsResponses, ListWorkTypeRulesData, ListWorkTypeRulesErrors, ListWorkTypeRulesResponses, LoginData, LoginErrors, LoginResponses, LogoutData, LogoutErrors, LogoutResponses, MeData, MeErrors, MeResponses, Ping2Data, Ping2Errors, Ping2Responses, PingData, PingErrors, PingResponses, PublicExportData, PublicExportErrors, PublicExportResponses, PublishReportData, PublishReportErrors, PublishReportResponses, ReadyzData, ReadyzErrors, ReadyzResponses, RechecksData, RechecksErrors, RechecksResponses, ReportsData, ReportsResponses, RevokeRoleData, RevokeRoleErrors, RevokeRoleResponses, RunIngestData, RunIngestErrors, RunIngestResponses, SettingsData, SettingsErrors, SettingsResponses, StatusData, StatusResponses, Summary2Data, Summary2Errors, Summary2Responses, SummaryData, SummaryErrors, SummaryResponses, Timeseries2Data, Timeseries2Errors, Timeseries2Responses, TimeseriesData, TimeseriesErrors, TimeseriesResponses, UnpublishReportData, UnpublishReportErrors, UnpublishReportResponses, UpdateEthicsData, UpdateEthicsErrors, UpdateEthicsResponses, UpdateInitiatorRuleData, UpdateInitiatorRuleErrors, UpdateInitiatorRuleResponses, UpdateSettingsData, UpdateSettingsErrors, UpdateSettingsResponses, UpdateSourceData, UpdateSourceErrors, UpdateSourceResponses, UpdateWorkTypeRuleData, UpdateWorkTypeRuleErrors, UpdateWorkTypeRuleResponses, UpsertAliasData, UpsertAliasErrors, UpsertAliasResponses, UpsertDictionaryData, UpsertDictionaryErrors, UpsertDictionaryResponses, UpsertStaffUnitData, UpsertStaffUnitErrors, UpsertStaffUnitResponses, UpsertSubmissionTotalData, UpsertSubmissionTotalErrors, UpsertSubmissionTotalResponses, UpsertUsageStatData, UpsertUsageStatErrors, UpsertUsageStatResponses, UsageData, UsageErrors, UsageResponses, WorkTypes2Data, WorkTypes2Errors, WorkTypes2Responses, WorkTypesData, WorkTypesErrors, WorkTypesResponses, Yoy2Data, Yoy2Errors, Yoy2Responses, YoyData, YoyErrors, YoyResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean, TResponse = unknown> = Options2<TData, ThrowOnError, TResponse> & {
     /**
@@ -500,8 +500,8 @@ export class Admin {
     }
     
     /**
-     * Grant a role. Idempotent; the account must already exist (it is created on
-     * first sign-in).
+     * Grant a role. Idempotent; the account must already exist - `manage-users
+     * create-user` is what creates one (ADR-017 §3).
      */
     public static grantRole<ThrowOnError extends boolean = false>(options: Options<GrantRoleData, ThrowOnError>): RequestResult<GrantRoleResponses, GrantRoleErrors, ThrowOnError> {
         return (options.client ?? client).post<GrantRoleResponses, GrantRoleErrors, ThrowOnError>({
@@ -766,39 +766,22 @@ export class Admin {
 
 export class Auth {
     /**
-     * Finish the portal SSO flow.
-     */
-    public static callback<ThrowOnError extends boolean = false>(options?: Options<CallbackData, ThrowOnError>): RequestResult<unknown, CallbackErrors, ThrowOnError> {
-        return (options?.client ?? client).get<unknown, CallbackErrors, ThrowOnError>({ url: '/api/auth/callback', ...options });
-    }
-    
-    /**
-     * Mint a session directly. `APP_AUTH_MODE=dev` only.
+     * Sign in with a local account.
      *
-     * Idempotent and additive: repeating it for the same subject re-uses the user
-     * row and adds the requested grant if it is missing. It never revokes, so a
-     * test that needs a different role uses a different subject.
+     * Every failure - unknown name, deactivated account, no password set, wrong
+     * password - is one `401` with one message. Distinguishing them would turn the
+     * endpoint into an oracle for which login names exist, and the operator who
+     * can create accounts is not the person doing the guessing.
      */
-    public static devLogin<ThrowOnError extends boolean = false>(options: Options<DevLoginData, ThrowOnError>): RequestResult<DevLoginResponses, DevLoginErrors, ThrowOnError> {
-        return (options.client ?? client).post<DevLoginResponses, DevLoginErrors, ThrowOnError>({
-            url: '/api/auth/dev-login',
+    public static login<ThrowOnError extends boolean = false>(options: Options<LoginData, ThrowOnError>): RequestResult<LoginResponses, LoginErrors, ThrowOnError> {
+        return (options.client ?? client).post<LoginResponses, LoginErrors, ThrowOnError>({
+            url: '/api/auth/login',
             ...options,
             headers: {
                 'Content-Type': 'application/json',
                 ...options.headers
             }
         });
-    }
-    
-    /**
-     * Start the portal SSO flow.
-     *
-     * Answers `303 See Other` to the provider's authorization endpoint, carrying
-     * `state`, `nonce` and an S256 PKCE challenge, and sets the ten-minute flow
-     * cookie the callback validates against.
-     */
-    public static login<ThrowOnError extends boolean = false>(options?: Options<LoginData, ThrowOnError>): RequestResult<unknown, LoginErrors, ThrowOnError> {
-        return (options?.client ?? client).get<unknown, LoginErrors, ThrowOnError>({ url: '/api/auth/login', ...options });
     }
     
     /**

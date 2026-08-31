@@ -16,15 +16,15 @@ use axum::body::Body;
 use axum::http::{Request, StatusCode, header};
 use serde_json::{Value, json};
 use sqlx::PgPool;
-use support::{Session, authenticated, dev_login, send};
+use support::{Session, authenticated, send};
 
-async fn admin_router(pool: PgPool) -> (axum::Router, db::Pool, Session) {
+async fn admin_router(pool: PgPool) -> (support::Harness, db::Pool, Session) {
     let pool = db::Pool::for_tests(pool);
     support::load_dictionaries(&pool)
         .await
         .expect("the fixture dictionaries load");
-    let router = api::build_router(support::state_from(pool.clone()));
-    let session = dev_login(&router, json!({"sso_subject": "root", "role": "admin"})).await;
+    let router = support::Harness::new(support::state_from(pool.clone()));
+    let session = router.sign_in(json!({"username": "root", "role": "admin"})).await;
     (router, pool, session)
 }
 
@@ -66,9 +66,8 @@ async fn settings_are_validated_through_the_domain_types(pool: PgPool) -> sqlx::
         .iter()
         .filter_map(|item| item["key"].as_str().map(str::to_owned))
         .collect();
-    // Every editable key is offered, `role_mappings` included even though it
-    // has never been written (ADR-014 §3).
-    for key in ["k_threshold", "status_rules", "role_mappings"] {
+    // Every editable key is offered.
+    for key in ["k_threshold", "status_rules"] {
         assert!(
             keys.contains(&key.to_owned()),
             "{key} missing from {keys:?}"
@@ -82,7 +81,9 @@ async fn settings_are_validated_through_the_domain_types(pool: PgPool) -> sqlx::
         ("originality_threshold", json!(140)),
         ("histogram_buckets", json!("50,70")),
         ("exclude_deleted", json!("yes")),
-        ("role_mappings", json!([{"group": "g", "role": "dean"}])),
+        // The SSO-era group mapping is not a setting this build knows any more
+        // (ADR-017 §5), so writing it is refused like any other unknown key.
+        ("role_mappings", json!([{"group": "g", "role": "admin"}])),
         ("not_a_setting", json!(1)),
     ] {
         let reply = send(
@@ -148,8 +149,8 @@ async fn raising_k_invalidates_the_policy_cache(pool: PgPool) -> sqlx::Result<()
     support::load_warehouse(&pool)
         .await
         .expect("the fixture warehouse loads");
-    let router = api::build_router(support::state_from(pool));
-    let session = dev_login(&router, json!({"sso_subject": "root", "role": "admin"})).await;
+    let router = support::Harness::new(support::state_from(pool));
+    let session = router.sign_in(json!({"username": "root", "role": "admin"})).await;
 
     let before = support::get(&router, "/api/public/summary?from=2023-09-01&to=2026-08-31").await;
     assert_eq!(before.json()["k_threshold"], json!(5));
@@ -442,7 +443,7 @@ async fn aliases_map_source_labels_onto_dictionary_rows(pool: PgPool) -> sqlx::R
 async fn roles_are_granted_and_revoked_by_an_administrator(pool: PgPool) -> sqlx::Result<()> {
     let (router, pool, session) = admin_router(pool).await;
     // The account exists because it has signed in once.
-    dev_login(&router, json!({"sso_subject": "new.dean"})).await;
+    router.sign_in(json!({"username": "new.dean"})).await;
 
     // A dean grant without a faculty sees nothing, so it is refused outright.
     send(
@@ -451,7 +452,7 @@ async fn roles_are_granted_and_revoked_by_an_administrator(pool: PgPool) -> sqlx
             &session,
             "POST",
             "/api/admin/roles",
-            &json!({"sso_subject": "new.dean", "role": "dean"}),
+            &json!({"username": "new.dean", "role": "dean"}),
         ),
     )
     .await
@@ -464,7 +465,7 @@ async fn roles_are_granted_and_revoked_by_an_administrator(pool: PgPool) -> sqlx
             &session,
             "POST",
             "/api/admin/roles",
-            &json!({"sso_subject": "ghost", "role": "ethics"}),
+            &json!({"username": "ghost", "role": "ethics"}),
         ),
     )
     .await
@@ -477,7 +478,7 @@ async fn roles_are_granted_and_revoked_by_an_administrator(pool: PgPool) -> sqlx
             "POST",
             "/api/admin/roles",
             &json!({
-                "sso_subject": "new.dean", "role": "dean", "scope_faculty_code": "FAC03",
+                "username": "new.dean", "role": "dean", "scope_faculty_code": "FAC03",
             }),
         ),
     )
@@ -487,13 +488,13 @@ async fn roles_are_granted_and_revoked_by_an_administrator(pool: PgPool) -> sqlx
         .as_array()
         .expect("items")
         .iter()
-        .find(|item| item["sso_subject"] == json!("new.dean"))
+        .find(|item| item["username"] == json!("new.dean"))
         .cloned()
         .expect("the account is listed");
     assert_eq!(account["roles"][0]["role"], json!("dean"));
 
     // The grant takes effect on the next request, not the next login.
-    let dean = dev_login(&router, json!({"sso_subject": "new.dean"})).await;
+    let dean = router.sign_in(json!({"username": "new.dean"})).await;
     let ping = send(&router, authenticated(&dean, "GET", "/api/internal/ping")).await;
     assert_eq!(ping.status, StatusCode::OK);
     assert_eq!(ping.json()["scope"]["kind"], json!("faculty"));
@@ -506,7 +507,7 @@ async fn roles_are_granted_and_revoked_by_an_administrator(pool: PgPool) -> sqlx
             "DELETE",
             "/api/admin/roles",
             &json!({
-                "sso_subject": "new.dean", "role": "dean", "scope_faculty_code": "FAC03",
+                "username": "new.dean", "role": "dean", "scope_faculty_code": "FAC03",
             }),
         ),
     )
@@ -863,9 +864,8 @@ async fn the_manual_registers_round_trip(pool: PgPool) -> sqlx::Result<()> {
 #[sqlx::test(migrations = "../../migrations")]
 async fn the_audit_browser_paginates_and_filters(pool: PgPool) -> sqlx::Result<()> {
     let (router, _pool, session) = admin_router(pool).await;
-    let compliance = dev_login(
-        &router,
-        json!({"sso_subject": "compliance-browser", "role": "compliance"}),
+    let compliance = router.sign_in(
+        json!({"username": "compliance-browser", "role": "compliance"}),
     )
     .await;
 

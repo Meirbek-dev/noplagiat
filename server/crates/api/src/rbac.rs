@@ -66,7 +66,7 @@ impl Caller {
         Self::Admin,
     ];
 
-    /// The grant a dev-login session is minted with, or `None` for anonymous.
+    /// The grant the session holds, or `None` for anonymous.
     #[must_use]
     pub fn role(self) -> Option<RoleKind> {
         match self {
@@ -458,7 +458,7 @@ pub async fn require_section_role(request: Request, next: Next) -> Response {
     };
 
     let Some(user) = request.extensions().get::<CurrentUser>() else {
-        return ApiError::Unauthorized("a valid portal session is required").into_response();
+        return ApiError::Unauthorized("a valid session is required").into_response();
     };
     // Any held grant that the row names is enough: a user who is both a dean and
     // a member of Комплаенс reads the section through the second grant.

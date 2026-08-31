@@ -2,9 +2,9 @@
 //!
 //! The public contour publishes faculty grain only; department grain is
 //! internal (TZ §5). Both are produced here **raw**: the caller assembles a
-//! [`compliance::AggregateMatrix`] from these rows and screens it as one object
-//! - which is why every row carries its observation count and not just its
-//! average (`compliance::suppress_matrix`).
+//! [`compliance::AggregateMatrix`] from these rows and screens it as one
+//! object - which is why every row carries its observation count and not just
+//! its average (`compliance::suppress_matrix`).
 
 use compliance::Scope;
 use domain::Filters;

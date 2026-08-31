@@ -29,7 +29,13 @@ const config = defineConfig({
     devtools(),
     tailwindcss(),
     tanstackStart(),
-    viteReact(),
+    // React Compiler auto-memoises components and hooks, so the tree no
+    // longer depends on hand-written `memo`/`useMemo`/`useCallback`. This is
+    // the oxc-backed compiler (`oxc-transform-react`, an optional peer of
+    // `@vitejs/plugin-react`) rather than the Babel plugin: it runs inside the
+    // existing Rust transform instead of adding a second JS pass. The plugin
+    // only compiles the client environment, so the SSR bundle is untouched.
+    viteReact({ compiler: true }),
   ]),
 })
 

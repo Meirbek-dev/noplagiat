@@ -6,8 +6,7 @@
 //! request, so revoking a role takes effect immediately rather than at the next
 //! login.
 
-pub mod mapping;
-pub mod oidc;
+pub mod password;
 pub mod store;
 
 use axum::extract::FromRequestParts;
@@ -38,13 +37,15 @@ pub const REQUEST_ACCESS_DETAIL: &str =
 #[derive(Debug, Clone)]
 pub struct CurrentUser {
     pub user_id: i64,
-    pub sso_subject: String,
+    /// Login name the account was created under (ADR-017).
+    pub username: String,
     /// Widest role held, used as the `audit_log.role` of this request.
     /// `None` for an authenticated user with no grants at all.
     pub effective_role: Option<RoleKind>,
     /// Widest visibility the held roles grant. `None` means "sees nothing
-    /// internal" - the default for an unknown SSO subject (ARCHITECTURE.md
-    /// §4.2) and for `staff`, whose own-discipline view is not built yet.
+    /// internal" - the default for an account the CLI created without a role
+    /// (ARCHITECTURE.md §4.2) and for `staff`, whose own-discipline view is not
+    /// built yet.
     pub scope: Option<Scope>,
     /// Every grant, for `/api/auth/me`.
     pub roles: Vec<RoleGrant>,
@@ -179,8 +180,8 @@ pub fn session_cookie(headers: &HeaderMap) -> Option<String> {
 /// `Set-Cookie` value establishing a session.
 ///
 /// `HttpOnly` keeps it out of scripts, `Secure` off plaintext transports, and
-/// `SameSite=Lax` blocks cross-site POSTs while still allowing the top-level
-/// navigation the SSO redirect needs (ARCHITECTURE.md §6).
+/// `SameSite=Lax` blocks cross-site POSTs while still allowing a top-level
+/// navigation into the dashboard to carry the session (ARCHITECTURE.md §6).
 #[must_use]
 pub fn set_cookie(session_id_hex: &str, max_age_seconds: i64) -> String {
     format!(

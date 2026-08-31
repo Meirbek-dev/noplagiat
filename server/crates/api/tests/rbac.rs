@@ -23,12 +23,11 @@
 mod support;
 
 use api::rbac::{Caller, Outcome, RouteSpec, ScopeCase};
-use axum::Router;
 use axum::body::Body;
 use axum::http::{Request, StatusCode, header};
 use serde_json::json;
 use sqlx::PgPool;
-use support::{Session, dev_login, send};
+use support::{Session, send};
 
 /// The department a `dept_head` in this matrix heads, and its faculty.
 const HEAD_DEPARTMENT: &str = "DEP11";
@@ -38,16 +37,15 @@ const FOREIGN_FACULTY: &str = "FAC01";
 const FOREIGN_DEPARTMENT: &str = "DEP12";
 
 /// Mint one session per caller, in one pass.
-async fn sessions(router: &Router) -> Vec<(Caller, Option<Session>)> {
+async fn sessions(router: &support::Harness) -> Vec<(Caller, Option<Session>)> {
     let mut out = Vec::new();
     for caller in Caller::ALL {
         let session = match caller {
             Caller::Anonymous => None,
             Caller::DeptHead => Some(
-                dev_login(
-                    router,
+                router.sign_in(
                     json!({
-                        "sso_subject": "matrix-dept-head",
+                        "username": "matrix-dept-head",
                         "role": "dept_head",
                         "scope_department_code": HEAD_DEPARTMENT,
                     }),
@@ -55,10 +53,9 @@ async fn sessions(router: &Router) -> Vec<(Caller, Option<Session>)> {
                 .await,
             ),
             Caller::Dean => Some(
-                dev_login(
-                    router,
+                router.sign_in(
                     json!({
-                        "sso_subject": "matrix-dean",
+                        "username": "matrix-dean",
                         "role": "dean",
                         "scope_faculty_code": DEAN_FACULTY,
                     }),
@@ -66,10 +63,9 @@ async fn sessions(router: &Router) -> Vec<(Caller, Option<Session>)> {
                 .await,
             ),
             other => Some(
-                dev_login(
-                    router,
+                router.sign_in(
                     json!({
-                        "sso_subject": format!("matrix-{}", other.label()),
+                        "username": format!("matrix-{}", other.label()),
                         "role": other.label(),
                     }),
                 )
@@ -133,7 +129,7 @@ async fn the_rbac_matrix_holds(pool: PgPool) -> sqlx::Result<()> {
     support::load_dictionaries(&pool)
         .await
         .expect("the fixture dictionaries load");
-    let router = api::build_router(support::state_from(pool));
+    let router = support::Harness::new(support::state_from(pool));
     let sessions = sessions(&router).await;
 
     let mut executed = 0_usize;
@@ -216,17 +212,15 @@ async fn a_unit_role_cannot_read_a_neighbouring_unit(pool: PgPool) -> sqlx::Resu
     support::load_dictionaries(&pool)
         .await
         .expect("the fixture dictionaries load");
-    let router = api::build_router(support::state_from(pool));
+    let router = support::Harness::new(support::state_from(pool));
 
-    let dean = dev_login(
-        &router,
-        json!({"sso_subject": "fac03-dean", "role": "dean", "scope_faculty_code": DEAN_FACULTY}),
+    let dean = router.sign_in(
+        json!({"username": "fac03-dean", "role": "dean", "scope_faculty_code": DEAN_FACULTY}),
     )
     .await;
-    let head = dev_login(
-        &router,
+    let head = router.sign_in(
         json!({
-            "sso_subject": "dep11-head", "role": "dept_head",
+            "username": "dep11-head", "role": "dept_head",
             "scope_department_code": HEAD_DEPARTMENT,
         }),
     )
@@ -309,10 +303,9 @@ async fn an_unknown_unit_code_is_a_field_error(pool: PgPool) -> sqlx::Result<()>
     support::load_dictionaries(&pool)
         .await
         .expect("the fixture dictionaries load");
-    let router = api::build_router(support::state_from(pool));
-    let session = dev_login(
-        &router,
-        json!({"sso_subject": "compliance-matrix", "role": "compliance"}),
+    let router = support::Harness::new(support::state_from(pool));
+    let session = router.sign_in(
+        json!({"username": "compliance-matrix", "role": "compliance"}),
     )
     .await;
 

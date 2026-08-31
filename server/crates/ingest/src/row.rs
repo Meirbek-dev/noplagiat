@@ -132,8 +132,15 @@ pub fn parse_row(
         // metric columns that have no value («ИИ-контент» is `-` for every
         // pre-AI-detector row). A dash is absence, not a malformed number -
         // but only here: a dash in «Оригинальность» stays a rejection.
+        //
+        // Two forms, not three: a third alternative here used to be a second
+        // copy of U+002D, which the compiler reads as unreachable. Across every
+        // export in `stats/` the only whole-field dash is U+002D, all of it in
+        // «ИИ-контент»; U+2013 is kept because it costs nothing and a vendor
+        // that changes typography would otherwise reject a year of rows. Add a
+        // form when an export shows one, not on the guess that it might.
         let raw = field(column);
-        if matches!(raw.trim(), "-" | "–" | "-") {
+        if matches!(raw.trim(), "-" | "–") {
             continue;
         }
         match parse_percentage(raw) {

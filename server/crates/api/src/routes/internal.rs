@@ -185,7 +185,7 @@ fn observations(checks: i64) -> u64 {
 /// Who the caller is and what they may see.
 #[derive(Debug, Serialize, ToSchema)]
 pub struct InternalPing {
-    pub sso_subject: String,
+    pub username: String,
     /// Widest role held - the value written to `audit_log.role`.
     pub role: String,
     pub scope: ScopeDto,
@@ -215,7 +215,7 @@ pub async fn ping(
         .effective_role
         .ok_or(ApiError::Forbidden(crate::auth::REQUEST_ACCESS_DETAIL))?;
     Ok(Json(InternalPing {
-        sso_subject: user.sso_subject,
+        username: user.username,
         role: db::filters::role_label(role).to_owned(),
         scope: scope.into(),
         screening: if Screening::for_role(Some(role)).is_raw() {

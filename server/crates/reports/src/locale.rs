@@ -148,7 +148,7 @@ pub struct Strings {
     pub note_no_duration: &'static str,
     /// Shown when the unit breakdown actually holds a unit other than the
     /// `UNASSIGNED` sentinel.
-    pub note_units_since_2025: &'static str,
+    pub note_units_current_mapping: &'static str,
     /// Shown instead when every row is the sentinel: there is no breakdown yet,
     /// and claiming one exists would read as a data error.
     pub note_units_pending_mapping: &'static str,
@@ -170,6 +170,19 @@ pub struct Strings {
     pub work_type_other: &'static str,
 
     pub unit_unassigned: &'static str,
+    /// The tou.edu.kz faculty-level units the interim mapping attributes to
+    /// (deploy/RUNBOOK.md «Временный обход»). Names are the university's own
+    /// published ones, verbatim per locale - ADR-013: a printed form that
+    /// needs a name gets a locale-table row, never free text from the DB.
+    pub unit_college: &'static str,
+    pub unit_fac91: &'static str,
+    pub unit_fac92: &'static str,
+    pub unit_fac94: &'static str,
+    pub unit_fac95: &'static str,
+    pub unit_fac96: &'static str,
+    pub unit_fac97: &'static str,
+    pub unit_fac98: &'static str,
+    pub unit_fac211: &'static str,
     pub category_other: &'static str,
 }
 
@@ -203,11 +216,24 @@ impl Strings {
         })
     }
 
-    /// The sentinel unit of migration 0002 gets a phrase; every real faculty is
-    /// printed as its dictionary code (docs/PLAN.md §1.2).
+    /// The sentinel unit of migration 0002 and the units of the interim
+    /// tou.edu.kz mapping get phrases; any other faculty is printed as its
+    /// dictionary code (docs/PLAN.md §1.2) - never an invented name.
     #[must_use]
     pub fn unit(&'static self, code: &str) -> Option<&'static str> {
-        (code == "UNASSIGNED").then_some(self.unit_unassigned)
+        Some(match code {
+            "UNASSIGNED" => self.unit_unassigned,
+            "COLLEGE" => self.unit_college,
+            "FAC91" => self.unit_fac91,
+            "FAC92" => self.unit_fac92,
+            "FAC94" => self.unit_fac94,
+            "FAC95" => self.unit_fac95,
+            "FAC96" => self.unit_fac96,
+            "FAC97" => self.unit_fac97,
+            "FAC98" => self.unit_fac98,
+            "FAC211" => self.unit_fac211,
+            _ => return None,
+        })
     }
 
     /// Every phrase in this table, for the parity and anti-PII guard tests.
@@ -266,7 +292,7 @@ impl Strings {
             self.note_coverage_missing,
             self.note_ethics_separate,
             self.note_no_duration,
-            self.note_units_since_2025,
+            self.note_units_current_mapping,
             self.note_units_pending_mapping,
             self.note_unassigned_unit,
             self.bucket_lt50,
@@ -282,6 +308,15 @@ impl Strings {
             self.work_type_thesis_phd,
             self.work_type_other,
             self.unit_unassigned,
+            self.unit_college,
+            self.unit_fac91,
+            self.unit_fac92,
+            self.unit_fac94,
+            self.unit_fac95,
+            self.unit_fac96,
+            self.unit_fac97,
+            self.unit_fac98,
+            self.unit_fac211,
             self.category_other,
         ]
     }
@@ -350,7 +385,9 @@ static RU: Strings = Strings {
                            с числом проверок (ADR-008 §9).",
     note_no_duration: "Среднее время выполнения проверки отсутствует в источнике данных \
                        (ADR-008 §9).",
-    note_units_since_2025: "Разбивка по подразделениям доступна с 2025/26 учебного года.",
+    note_units_current_mapping: "Разбивка по подразделениям построена по текущему сопоставлению \
+                                 рецензентов и подразделений; для прошлых учебных лет она \
+                                 приблизительна.",
     note_units_pending_mapping: "Разбивка по подразделениям станет доступна после загрузки \
                                  сопоставления рецензентов и подразделений.",
     note_unassigned_unit: "«Не распределено» - проверки, для которых подразделение \
@@ -371,6 +408,15 @@ static RU: Strings = Strings {
     work_type_other: "Иное",
 
     unit_unassigned: "Не распределено",
+    unit_college: "Высший колледж Торайгыров университета",
+    unit_fac91: "Факультет экономики и права",
+    unit_fac92: "Факультет Архитектуры и строительства",
+    unit_fac94: "Факультет гуманитарных и социальных наук",
+    unit_fac95: "Факультет естественных наук",
+    unit_fac96: "Факультет сельскохозяйственных наук",
+    unit_fac97: "Факультет инженерии",
+    unit_fac98: "Факультет энергетики",
+    unit_fac211: "Факультет Computer Science",
     category_other: "Иная категория",
 };
 
@@ -436,7 +482,9 @@ static KK: Strings = Strings {
     note_ethics_separate: "Этика кеңесінің есептегіштері қолмен жүргізіледі және тексерулер \
                            санымен қосылмайды (ADR-008 §9).",
     note_no_duration: "Тексерудің орташа орындалу уақыты дереккөзде жоқ (ADR-008 §9).",
-    note_units_since_2025: "Бөлімшелер бойынша бөлу 2025/26 оқу жылынан бастап қолжетімді.",
+    note_units_current_mapping: "Бөлімшелер бойынша бөлу рецензенттер мен бөлімшелердің ағымдағы \
+                                 сәйкестігі бойынша құрылған; өткен оқу жылдары үшін ол шамамен \
+                                 алынған.",
     note_units_pending_mapping: "Бөлімшелер бойынша бөлу рецензенттер мен бөлімшелердің \
                                  сәйкестігі жүктелгеннен кейін қолжетімді болады.",
     note_unassigned_unit: "«Бөлінбеген» - бастамашының бөлімшесі сәйкестендірілмеген \
@@ -457,6 +505,15 @@ static KK: Strings = Strings {
     work_type_other: "Өзгесі",
 
     unit_unassigned: "Бөлінбеген",
+    unit_college: "Торайғыров университетінің жоғары колледжі",
+    unit_fac91: "Экономика және құқық факультеті",
+    unit_fac92: "Сәулет және құрылыс факультеті",
+    unit_fac94: "Гуманитарлық және әлеуметтік ғылымдар факультеті",
+    unit_fac95: "Жаратылыстану ғылымдары факультеті",
+    unit_fac96: "Ауыл шаруашылық ғылымдар факультеті",
+    unit_fac97: "Инженерия факультеті",
+    unit_fac98: "Энергетика факультеті",
+    unit_fac211: "Computer Science факультеті",
     category_other: "Өзге санат",
 };
 
@@ -522,7 +579,8 @@ static EN: Strings = Strings {
     note_ethics_separate: "Ethics Council counters are maintained by hand and are never \
                            added to the check counts (ADR-008 §9).",
     note_no_duration: "Mean check duration has no source in the upstream data (ADR-008 §9).",
-    note_units_since_2025: "The breakdown by unit is available from academic year 2025/26.",
+    note_units_current_mapping: "The breakdown by unit follows the current reviewer-to-unit \
+                                 mapping; for past academic years it is approximate.",
     note_units_pending_mapping: "The breakdown by unit becomes available once the mapping of \
                                  reviewers to units has been loaded.",
     note_unassigned_unit: "«Unassigned» covers checks whose initiating unit could not be \
@@ -543,6 +601,15 @@ static EN: Strings = Strings {
     work_type_other: "Other",
 
     unit_unassigned: "Unassigned",
+    unit_college: "Higher College of Toraighyrov University",
+    unit_fac91: "Faculty of Economics and Law",
+    unit_fac92: "Faculty of Architecture and Construction",
+    unit_fac94: "Faculty of Humanities and Social Sciences",
+    unit_fac95: "Faculty of Natural Science",
+    unit_fac96: "Faculty of Agriculture Science",
+    unit_fac97: "Faculty of Engineering",
+    unit_fac98: "Faculty of Energetics",
+    unit_fac211: "Faculty of Computer Science",
     category_other: "Other category",
 };
 

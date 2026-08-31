@@ -51,7 +51,7 @@ function RequestAccessPage() {
           <span className="text-muted-foreground">
             {m.request_access_account({}, { locale })}
           </span>
-          <span className="font-medium break-all">{session.sso_subject}</span>
+          <span className="font-medium break-all">{session.username}</span>
           <Badge variant="secondary" className="self-start">
             {roleLabel(session.role, locale)}
           </Badge>

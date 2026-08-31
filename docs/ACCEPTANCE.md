@@ -290,30 +290,30 @@ cargo test --manifest-path server/Cargo.toml -p api --test rbac
 # Sessions, CSRF, role-less users, expiry, deactivation.
 cargo test --manifest-path server/Cargo.toml -p api --test auth
 
-# The OIDC code flow against a mock identity provider.
-cargo test --manifest-path server/Cargo.toml -p api --test oidc
-
 # Scope enforced in SQL, observed through the router.
 cargo test --manifest-path server/Cargo.toml -p api --test internal
 ```
 
-| Доказательство                                                                                  | Что фиксирует                                                                                                                                                      |
-| ----------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `api::rbac::the_rbac_matrix_holds`                                                              | **446 случаев** - 56 зарегистрированных маршрутов × 7 вызывающих, плюс случай выхода за область видимости для каждого из 9 маршрутов, фильтруемых по подразделению |
-| `api::rbac::every_route_has_a_matrix_row`                                                       | реестр и сгенерированный контракт описывают одну и ту же поверхность: новая конечная точка без строки в матрице роняет CI                                          |
-| `api::rbac::a_unit_role_cannot_read_a_neighbouring_unit`                                        | заведующему DEP11 отказано в DEP12 - самая узкая эскалация, которую проверка на уровне факультета пропустила бы                                                    |
-| `api::internal::a_dean_sees_exactly_their_faculty`                                              | тело ответа, а не только код состояния, содержит только факультет декана                                                                                           |
-| `api::internal::a_head_of_department_sees_exactly_their_department`                             | то же самое на уровень ниже                                                                                                                                        |
-| `api::auth::an_unauthenticated_internal_request_is_401`                                         | анонимного доступа к внутреннему контуру нет                                                                                                                       |
-| `api::auth::an_authenticated_role_less_user_is_403`                                             | неизвестный субъект SSO аутентифицируется, но ничего не видит                                                                                                      |
-| `api::auth::a_staff_only_grant_does_not_open_the_internal_contour`                              | ППС не является ролью внутреннего контура (ТЗ §5)                                                                                                                  |
-| `api::auth::a_mutation_without_a_matching_csrf_token_is_403`                                    | CSRF-защита на каждой мутации                                                                                                                                      |
-| `api::auth::deactivating_a_user_closes_their_live_session`                                      | отзыв доступа происходит немедленно, а не при следующем входе                                                                                                      |
-| `api::oidc::the_code_flow_signs_a_mapped_group_into_its_role`                                   | соответствие группа AD → `role_kind` на настоящем маршрутизаторе                                                                                                   |
-| `api::oidc::a_group_mapping_resolves_a_unit_scope`                                              | группа также несёт область видимости                                                                                                                               |
-| `api::oidc::an_unmapped_group_lands_on_the_request_access_path`                                 | случайных выдач прав нет                                                                                                                                           |
-| `api::oidc::*_is_refused` (state, nonce, audience, issuer, expiry, unknown key, provider error) | семь режимов отказа при валидации токена                                                                                                                           |
-| `api::oidc::the_session_id_rotates_at_login`                                                    | фиксация сессии                                                                                                                                                    |
+| Доказательство                                                      | Что фиксирует                                                                                                                                                      |
+| ------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `api::rbac::the_rbac_matrix_holds`                                  | **446 случаев** - 56 зарегистрированных маршрутов × 7 вызывающих, плюс случай выхода за область видимости для каждого из 9 маршрутов, фильтруемых по подразделению |
+| `api::rbac::every_route_has_a_matrix_row`                           | реестр и сгенерированный контракт описывают одну и ту же поверхность: новая конечная точка без строки в матрице роняет CI                                          |
+| `api::rbac::a_unit_role_cannot_read_a_neighbouring_unit`            | заведующему DEP11 отказано в DEP12 - самая узкая эскалация, которую проверка на уровне факультета пропустила бы                                                    |
+| `api::internal::a_dean_sees_exactly_their_faculty`                  | тело ответа, а не только код состояния, содержит только факультет декана                                                                                           |
+| `api::internal::a_head_of_department_sees_exactly_their_department` | то же самое на уровень ниже                                                                                                                                        |
+| `api::auth::an_unauthenticated_internal_request_is_401`             | анонимного доступа к внутреннему контуру нет                                                                                                                       |
+| `api::auth::an_authenticated_role_less_user_is_403`                 | учётная запись без грантов аутентифицируется, но ничего не видит                                                                                                   |
+| `api::auth::a_staff_only_grant_does_not_open_the_internal_contour`  | ППС не является ролью внутреннего контура (ТЗ §5)                                                                                                                  |
+| `api::auth::a_mutation_without_a_matching_csrf_token_is_403`        | CSRF-защита на каждой мутации                                                                                                                                      |
+| `api::auth::a_deactivated_account_is_closed_out_and_locked_out`     | отзыв доступа происходит немедленно, а не при следующем входе, и войти заново нельзя                                                                               |
+| `api::auth::every_sign_in_failure_is_the_same_answer`               | неизвестный логин и неверный пароль неразличимы - маршрут не является оракулом существования учётных записей (ADR-017 §4)                                          |
+| `api::auth::an_account_with_no_password_cannot_sign_in`             | запись, созданная без пароля, существует и может держать гранты, но не пускает                                                                                     |
+| `api::auth::setting_a_password_ends_the_accounts_sessions`          | смена пароля закрывает прежние сеансы                                                                                                                              |
+| `api::auth::the_login_name_is_matched_without_regard_to_case`       | `Admin` и `admin` - одна учётная запись, а не две                                                                                                                  |
+| `api::auth::signing_in_rotates_away_the_presented_session`          | фиксация сессии                                                                                                                                                    |
+| `api::auth::repeated_sign_in_attempts_are_throttled`                | у маршрута с паролем собственная, куда более узкая корзина ограничителя частоты                                                                                    |
+| `api::auth::the_retired_sso_endpoints_no_longer_exist`              | `callback`, `dev-login` и редирект `GET /login` удалены, а не отключены                                                                                            |
+| `api::auth::password::*` (6 модульных тестов)                       | Argon2id PHC, соль на запись, политика длины в символах, отсутствующий или испорченный хеш никогда не проходит                                                     |
 
 ТЗ §10.5 прямо требует доказательства на уровне API «а не только интерфейса», и
 приведённая выше матрица является таким доказательством.
@@ -321,26 +321,19 @@ cargo test --manifest-path server/Cargo.toml -p api --test internal
 страницу запроса доступа и собственные числа декана, - но здесь она
 вспомогательна, и её состояние описано в §10.8.
 
-**Статус: частично зелёный - одно зафиксированное отклонение.**
+**Статус: зелёный.**
 
-**Отклонение (D7 - реальный IdP пока недоступен).** Все приведённые выше
-проверки выполняются против **имитационного (mock)** поставщика идентификации,
-реализованного в `api/tests/support/idp.rs`, который отдаёт настоящий
-discovery-документ, JWKS и token-эндпоинт. Регистрация клиента у IdP портала
-была запрошена 30.08.2026 и до сих пор остаётся без ответа (docs/REQUESTS.md,
-D7), поэтому поток **не** проверялся против продуктивного IdP, работающего
-поверх Active Directory. Непроверенным это оставляет ровно одно: значения
-issuer, audience и group-claim, которые выдаёт реальный IdP. Всё, что код с ними
-делает, зафиксировано выше.
+Отклонение «D7 - реальный IdP пока недоступен», которое стояло здесь раньше,
+снято вместе с самим поставщиком идентичности: ADR-017 заменил поток OIDC
+локальными учётными записями, и приведённые выше проверки выполняются против
+той же конфигурации аутентификации, что и продуктивная, а не против
+имитационного IdP. Ждать регистрации клиента у портала больше нечего.
 
-До завершения регистрации система поставляется с `APP_AUTH_MODE=dev` - входом по
-заголовкам, используемым только в тестах и при разработке;
-`api::auth::oidc_mode_hides_the_dev_login_and_answers_503_from_login` и
-`api::oidc::the_dev_login_is_absent_in_oidc_mode` утверждают, что в продуктивной
-конфигурации его не существует. Приёмочная репетиция против реального IdP - это
-повторный прогон `--test oidc` с `APP_OIDC_*`, направленными на портал, плюс по
-одному ручному входу на каждую роль; она должна состояться до мониторинга ЛАЧ в
-октябре.
+Учётные записи создаёт CLI `manage-users` на хосте развёртывания; ни один
+HTTP-маршрут не создаёт запись и не задаёт пароль, поэтому у приёмки §10.5 есть
+и второе, более сильное утверждение: администратора нельзя завести через API
+вообще. Процедура на стенде - `deploy/RUNBOOK.md`, раздел «Учётные записи и
+первый администратор».
 
 ---
 
@@ -361,16 +354,16 @@ cargo test --manifest-path server/Cargo.toml -p db --test schema_0002
 cargo test --manifest-path server/Cargo.toml -p db --test queries
 ```
 
-| Доказательство                                                            | Что фиксирует                                                                       |
-| ------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
-| `api::auth::an_audit_row_is_written_for_every_internal_2xx`               | строку пишет слой, а не обработчик - новая конечная точка аудируется по умолчанию   |
-| `api::internal::every_internal_section_is_audited`                        | одна строка на просмотр раздела, с нормализованным состоянием фильтров              |
-| `api::export::an_internal_export_produces_a_marked_file_and_an_audit_row` | действия `export_pdf` / `export_xlsx`                                               |
-| `api::admin::the_audit_browser_paginates_and_filters`                     | `/api/admin/audit` пригоден как поверхность для проверки                            |
-| `api::admin::the_audit_log_cannot_be_rewritten`                           | и UPDATE, и DELETE вызывают ошибку, причём через собственный пул соединений API     |
-| `db::schema_0002::audit_log_is_append_only`                               | то же самое на уровне схемы - триггер `trg_audit_log_immutable` (миграция 0001)     |
-| `db::queries::audit_entries_are_appended_and_filterable`                  | слой запросов                                                                       |
-| `api::ops::authentication_never_surfaces_an_address`                      | строка аудита существует, но субъект SSO и e-mail никогда не попадают в строку лога |
+| Доказательство                                                            | Что фиксирует                                                                     |
+| ------------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
+| `api::auth::an_audit_row_is_written_for_every_internal_2xx`               | строку пишет слой, а не обработчик - новая конечная точка аудируется по умолчанию |
+| `api::internal::every_internal_section_is_audited`                        | одна строка на просмотр раздела, с нормализованным состоянием фильтров            |
+| `api::export::an_internal_export_produces_a_marked_file_and_an_audit_row` | действия `export_pdf` / `export_xlsx`                                             |
+| `api::admin::the_audit_browser_paginates_and_filters`                     | `/api/admin/audit` пригоден как поверхность для проверки                          |
+| `api::admin::the_audit_log_cannot_be_rewritten`                           | и UPDATE, и DELETE вызывают ошибку, причём через собственный пул соединений API   |
+| `db::schema_0002::audit_log_is_append_only`                               | то же самое на уровне схемы - триггер `trg_audit_log_immutable` (миграция 0001)   |
+| `db::queries::audit_entries_are_appended_and_filterable`                  | слой запросов                                                                     |
+| `api::ops::authentication_never_surfaces_an_address`                      | строка аудита существует, но логин и e-mail никогда не попадают в строку лога     |
 
 Срок хранения обеспечивается отсутствием: нигде в `server/` нет пути UPDATE или
 DELETE к `audit_log`, кроме тестов, утверждающих срабатывание триггера, и не
@@ -597,7 +590,7 @@ KPI охвата в _общие показатели_ и среднее врем
 | A1  | §10.1, §10.9   | Охват проверками (coverage KPI) скрыт - в источнике нет знаменателя                                                                                                                                                                                                   | **D2** (офис регистратора), без ответа                                                         | KPI не отображается; `submission_totals` заполняется через интерфейс администратора; ТЗ §4.2 §1 это допускает   | офис регистратора предоставит погодовые итоги поданных работ                                            |
 | A2  | §10.1, §10.9   | Среднее время проверки сообщает «нет данных» - ни в одной выгрузке нет длительности по строке                                                                                                                                                                         | в исходной системе нет такого поля                                                             | существует путь ручного ввода в `usage_stats`                                                                   | новая исходная система начнёт выдавать длительности (в контракте ADR-010 поле присутствует)             |
 | A3  | §10.1, §4.2 §4 | Разрез по подразделениям осмыслен только начиная с 2025/26 учебного года; более ранние годы - «Не распределено»                                                                                                                                                       | реальность источника (PLAN.md §1.2)                                                            | явная сноска на странице; отнесение определяется строго членством в `staff_units`                               | **D2** предоставит историческое соответствие проверяющий→кафедра                                        |
-| A4  | §10.5          | SSO проверено только против **имитационного (mock)** IdP                                                                                                                                                                                                              | **D7** (регистрация клиента), без ответа                                                       | `APP_AUTH_MODE=dev` для тестов, отсутствует в продуктивной конфигурации                                         | портал зарегистрирует клиента; повторно прогнать `--test oidc` против него                              |
+| A4  | §10.5          | ~~SSO проверено только против имитационного IdP~~ **снято 31.08.2026**                                                                                                                                                                                                | -                                                                                              | ADR-017: поставщик идентичности убран, вход локальный и проверяется в той же конфигурации, что и продуктивная   | -                                                                                                       |
 | A5  | §10.7          | Доказательство по нагрузке - локальный прогон; еженочный прогон в CI пока не зафиксирован                                                                                                                                                                             | задание закоммичено 30.08, ещё не срабатывало                                                  | `fixtures/load/RESULTS.md` с указанием машины                                                                   | первый еженочный прогон опубликует свою сводку k6                                                       |
 | A6  | §10.7          | Профиль k6 был перекалиброван (постоянные 40 req/s) после первого измерения                                                                                                                                                                                           | насыщение совмещённой 3-звенной установки                                                      | порог не изменён: p95 < 300 мс; насыщающая кривая сохранена, только для записи                                  | появится раннер с отдельным хостом базы данных, если таковой станет доступен                            |
 | A7  | §10.7 / W4.6   | `docker compose up` не проверен на машине разработки                                                                                                                                                                                                                  | хост разработки работает на PostgreSQL 19 beta под WSL2; Compose закрепляет 18                 | `docker compose … config` разворачивается; RUNBOOK документирует риск несовпадения версий                       | стек будет поднят на staging-хосте с PostgreSQL 18                                                      |
@@ -638,7 +631,7 @@ KPI охвата в _общие показатели_ и среднее врем
 | `cargo test … -p compliance` (включая `reconstruction`)                                         | 19 пройдено + 3 doctest, один из них - страж `compile_fail` для `Screened<T>`                                                                                                                                                                                                                          |
 | `cargo test … -p db --test expected_values`                                                     | 2 пройдено                                                                                                                                                                                                                                                                                             |
 | `cargo test … -p db --test queries` / `--test schema_0002`                                      | 15 / 7 пройдено                                                                                                                                                                                                                                                                                        |
-| `cargo test … -p api` (lib + admin, auth, export, internal, layers, oidc, ops, public, rbac)    | 76 + 10, 12, 7, 8, 12, 15, 6, 3, 4 пройдено                                                                                                                                                                                                                                                            |
+| `cargo test … -p api` (lib + admin, auth, closure, export, internal, layers, ops, public, rbac) | 76 + 10, 12, 7, 8, 12, 15, 6, 3, 4 пройдено                                                                                                                                                                                                                                                            |
 | `cargo test … -p ingest` (lib + api_mode, batch_errors, golden_parse, idempotency, pii_absence) | 57 + 7, 6, 6, 7, 1 пройдено                                                                                                                                                                                                                                                                            |
 | `cargo test … -p reports` (lib + annual_tables, fonts, rendering, scheduler, snapshots)         | 24 + 2, 3, 9, 2, 2 пройдено                                                                                                                                                                                                                                                                            |
 | `cargo test … -p domain`                                                                        | 35 пройдено + 4 doctest                                                                                                                                                                                                                                                                                |

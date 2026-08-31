@@ -41,15 +41,9 @@ services:
       APP_LISTEN_ADDR: 0.0.0.0:8080
       APP_PUBLIC_BASE_URL: ${APP_PUBLIC_BASE_URL:-http://localhost:8080}
       RUST_LOG: ${RUST_LOG:-info}
-      # Authentication (ADR-014). The default is the secure one: an unset or
-      # misspelled APP_AUTH_MODE means `oidc`, never `dev`.
-      APP_AUTH_MODE: ${APP_AUTH_MODE:-oidc}
-      APP_OIDC_ISSUER: ${APP_OIDC_ISSUER:-}
-      APP_OIDC_CLIENT_ID: ${APP_OIDC_CLIENT_ID:-}
-      APP_OIDC_CLIENT_SECRET: ${APP_OIDC_CLIENT_SECRET:-}
-      APP_OIDC_SCOPES: ${APP_OIDC_SCOPES:-}
-      APP_OIDC_GROUPS_CLAIM: ${APP_OIDC_GROUPS_CLAIM:-}
-      APP_OIDC_POST_LOGOUT_REDIRECT: ${APP_OIDC_POST_LOGOUT_REDIRECT:-}
+      # Authentication (ADR-017). Local accounts only: there is nothing to
+      # configure here, because there is no identity provider. Accounts are
+      # created with `manage-users` inside this container - see deploy/RUNBOOK.md.
       APP_SESSION_TTL_SECONDS: ${APP_SESSION_TTL_SECONDS:-}
       # Ingest. The pepper is not rotatable - see deploy/env.example.
       APP_INGEST_PEPPER: ${APP_INGEST_PEPPER:-}

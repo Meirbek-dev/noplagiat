@@ -1,8 +1,6 @@
 import { Auth, Internal } from "../api/sdk.gen"
 import type {
   DepartmentsMatrix,
-  DevLoginRequest,
-  DevLoginResponse,
   InternalBreakdown,
   InternalEscalations,
   InternalFilterQuery,
@@ -12,12 +10,12 @@ import type {
   InternalTimeseries,
   InternalUsage,
   InternalYoy,
+  LoginRequest,
   LogoutResponse,
   MeResponse,
 } from "../api/types.gen"
 import {
   vDepartmentsMatrix,
-  vDevLoginResponse,
   vInternalBreakdown,
   vInternalEscalations,
   vInternalHistogram,
@@ -74,18 +72,16 @@ export const authApi = {
   },
 
   /**
-   * `APP_AUTH_MODE=dev` only - mints a session without an identity provider.
-   * The sign-in page that calls this is labelled «режим разработки» and the
-   * endpoint 404s on any deployment running OIDC.
+   * Signs in with a local account (ADR-017). Answers the same document `me`
+   * does, so the caller needs no second round trip to learn its own role.
+   *
+   * A refusal is an `ApiError`: `401` for any bad credential - the server does
+   * not say which half - and `429` when the address has been trying too often.
    */
-  devLogin: (body: DevLoginRequest): Promise<DevLoginResponse> =>
-    fetchScreened(
-      "auth/dev-login",
-      () => Auth.devLogin({ body }),
-      vDevLoginResponse
-    ),
+  login: (body: LoginRequest): Promise<MeResponse> =>
+    fetchScreened("auth/login", () => Auth.login({ body }), vMeResponse),
 
-  /** Ends the local session; follow `end_session_url` when the IdP sends one. */
+  /** Ends the session; the browser goes to `next_path` afterwards. */
   logout: (csrf: string): Promise<LogoutResponse> =>
     fetchScreened(
       "auth/logout",

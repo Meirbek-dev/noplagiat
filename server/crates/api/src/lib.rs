@@ -21,7 +21,7 @@ use utoipa::OpenApi;
 use utoipa::openapi::security::{ApiKey, ApiKeyValue, SecurityScheme};
 
 pub use error::{ApiError, Problem};
-pub use state::{AppConfig, AppState, AuthMode, Screening};
+pub use state::{AppConfig, AppState, Screening};
 
 /// Build the full application router.
 ///
@@ -110,7 +110,7 @@ pub fn build_router(state: AppState) -> Router {
     ),
     tags(
         (name = "public", description = "Public contour - anonymized aggregates, k-anonymity screened (TZ §4.1)"),
-        (name = "internal", description = "Internal contour - SSO session, RBAC scope, audit logged (TZ §5)"),
+        (name = "internal", description = "Internal contour - local session, RBAC scope, audit logged (TZ §5)"),
         (name = "admin", description = "Administrative area - requires the admin role (TZ §4.6)"),
         (name = "auth", description = "Session lifecycle"),
         (name = "ops", description = "Liveness and readiness probes"),
@@ -186,8 +186,6 @@ pub fn build_router(state: AppState) -> Router {
         routes::admin::unpublish_report,
         routes::admin::audit,
         routes::auth::login,
-        routes::auth::callback,
-        routes::auth::dev_login,
         routes::auth::logout,
         routes::auth::me,
     ),
@@ -215,7 +213,6 @@ pub fn build_router(state: AppState) -> Router {
         dto::ReportFileDto,
         dto::ScopeDto,
         dto::RoleGrantDto,
-        auth::mapping::RoleMapping,
         query::PublicFilterQuery,
         query::InternalFilterQuery,
     ))

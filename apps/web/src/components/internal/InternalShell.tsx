@@ -245,22 +245,19 @@ export function UserBadge({
 
   const signOut = () => {
     void (async () => {
-      const result = await authApi.logout(session.csrf_token)
+      await authApi.logout(session.csrf_token)
       // The cached session must go before the navigation, otherwise the guard
       // on the next route reads a session the server has already destroyed.
       queryClient.clear()
-      if (result.end_session_url != null && result.end_session_url !== "") {
-        // RP-initiated logout: end the portal session too (ARCHITECTURE §4.2).
-        window.location.assign(result.end_session_url)
-        return
-      }
+      // There is no identity provider to sign out of as well: the local session
+      // was the whole of it (ADR-017 §2).
       await navigate({ to: "/login" })
     })()
   }
 
   return (
     <div className="flex flex-col gap-2 rounded-md border p-3 text-sm">
-      <span className="font-medium break-all">{session.sso_subject}</span>
+      <span className="font-medium break-all">{session.username}</span>
       <div className="flex flex-wrap gap-1.5">
         <Badge variant="secondary">{roleLabel(session.role, locale)}</Badge>
         {showScope ? (

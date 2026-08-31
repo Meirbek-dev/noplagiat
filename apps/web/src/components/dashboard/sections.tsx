@@ -250,8 +250,8 @@ export function FacultiesSection({ query, locale }: SectionProps) {
   const { data } = useSuspenseQuery(publicQueries.faculties(query))
 
   // The footnote follows the data, exactly as `reports::annual` already does
-  // for the same table: promising a breakdown «доступна с 2025/26» above a
-  // table whose every row is the `UNASSIGNED` sentinel reads as a data error.
+  // for the same table: describing the reviewer-to-unit mapping above a table
+  // whose every row is the `UNASSIGNED` sentinel reads as a data error.
   // While nothing is attributed, the note says what is missing instead.
   const mapped = data.items.some((item) => item.code !== UNASSIGNED_CODE)
   const sentinel = data.items.some((item) => item.code === UNASSIGNED_CODE)

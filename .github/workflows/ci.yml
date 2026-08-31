@@ -113,8 +113,11 @@ jobs:
       # Applies the committed migrations in filename order so the compile-time
       # SQL checks have a schema to verify against. `#[sqlx::test]` still creates
       # and migrates its own throwaway databases.
-      # TODO(W1.1): if a slice needs `_sqlx_migrations` bookkeeping in CI,
-      # replace this with sqlx-cli 0.9.0 + `sqlx migrate run --source server/migrations`.
+      # No `_sqlx_migrations` bookkeeping, which is fine *here*: nothing in this
+      # job migrates at runtime, and `#[sqlx::test]` creates and migrates its
+      # own throwaway databases. The e2e job does run binaries that migrate, and
+      # for that reason applies its schema through the migrator itself rather
+      # than through this loop - see the note there before copying this one.
       - name: Apply migrations
         run: |
           for f in server/migrations/*.sql; do
@@ -226,9 +229,6 @@ jobs:
     env:
       DATABASE_URL: postgres://noplagiat:noplagiat@localhost:5432/noplagiat
       APP_DATABASE_URL: postgres://noplagiat:noplagiat@localhost:5432/noplagiat
-      # The suite signs in through `POST /api/auth/dev-login`; the endpoint
-      # answers 404 under `APP_AUTH_MODE=oidc`, which is the default.
-      APP_AUTH_MODE: dev
       # ADR-008 §2 - a throwaway pepper, matching the one the fixtures are
       # seeded with so the derived reviewer keys line up.
       APP_INGEST_PEPPER: dev-pepper
@@ -280,20 +280,34 @@ jobs:
       # than left to the config's `cargo run`, so a compile error is reported
       # as a build failure instead of a web-server start-up timeout.
       # `SQLX_OFFLINE` because the service database has no schema yet.
+      # `manage-users` too: the seeding step creates the fixture accounts with
+      # it, and nothing in the HTTP surface can create one (ADR-017).
       - name: Build the API server
         env:
           SQLX_OFFLINE: "true"
-        run: cargo build --manifest-path server/Cargo.toml --bin noplagiat-server
-
-      # Same migration loop as the backend job. `seed.ts --reset` would drop
-      # and re-apply the schema through sqlx-cli, which is not installed here
-      # and would have nothing to drop: the service database starts empty.
-      - name: Apply migrations
         run: |
-          for f in server/migrations/*.sql; do
-            echo "applying $f"
-            psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -q -f "$f"
-          done
+          cargo build --manifest-path server/Cargo.toml \
+            --bin noplagiat-server --bin manage-users
+
+      # NOT the backend job's `psql` loop, and this is the one job where the
+      # difference matters. That loop creates the schema but writes no
+      # `_sqlx_migrations` rows, and every binary this job then runs -
+      # `ingest-csv` and `manage-users` from `seed.ts`, `noplagiat-server` from
+      # the Playwright config - calls `db::migrate` at startup. With no
+      # bookkeeping the migrator re-applies migration 1 against a schema that
+      # already has it and dies on `type "check_status" already exists`.
+      #
+      # So the schema is created by the migrator that owns it. `manage-users
+      # list` is the cheapest command that runs it: read-only, exits 0 on an
+      # empty database, already built by the step above, and it fails fast and
+      # legibly if the database is unreachable at all. sqlx-cli would work too
+      # (the TODO in the backend job) but has to be compiled first.
+      #
+      # The backend job's loop stays as it is: it only needs a schema for the
+      # compile-time `sqlx::query!` checks, and nothing there migrates at
+      # runtime - `#[sqlx::test]` creates and migrates its own databases.
+      - name: Apply migrations
+        run: ./server/target/debug/manage-users list
 
       # Deterministic by construction (seeded RNG), so CI and a developer's
       # machine assert against identical numbers. `expected.ts` writes both
@@ -304,15 +318,20 @@ jobs:
           bun fixtures/generate.ts --scale small
           bun fixtures/expected.ts
 
-      # Dictionaries, rules, staff-unit HMACs, then the CSV ingest through
-      # `cargo run --bin ingest-csv`.
+      # Dictionaries, rules, staff-unit HMACs, the CSV ingest through
+      # `cargo run --bin ingest-csv`, and finally the fixture accounts through
+      # `cargo run --bin manage-users` (ADR-017).
       - name: Seed the fixture database
         run: bun fixtures/seed.ts
 
-      # Chromium only: it is the engine the LCP budget in `perf.spec.ts` is
-      # defined against, and the one CDP throttling needs.
+      # Every engine the config declares a project for, not just chromium.
+      # `perf.spec.ts` and the CDP throttling it needs are chromium-only, but
+      # `playwright.config.ts` also runs the browser-sensitive public surface
+      # (public/embed/i18n) under firefox and webkit as the TZ §7
+      # «Совместимость» evidence. Installing chromium alone does not skip those
+      # projects - it makes them fail to launch.
       - name: Install Playwright browsers
-        run: bunx playwright install --with-deps chromium
+        run: bunx playwright install --with-deps chromium firefox webkit
 
       - name: vp run e2e
         run: vp run e2e

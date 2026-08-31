@@ -5,9 +5,9 @@
 //! handed to the client once, in the login response body, so a cross-site page
 //! can neither read it (it is not in a cookie) nor guess it (32 CSPRNG bytes).
 //!
-//! Safe methods pass untouched. `POST /api/auth/dev-login` is not behind this
-//! layer at all: it is the request that *creates* the session, so there is no
-//! token to present yet.
+//! Safe methods pass untouched. `POST /api/auth/login` is not behind this layer
+//! at all: it is the request that *creates* the session, so there is no token
+//! to present yet.
 
 use axum::extract::Request;
 use axum::http::Method;
@@ -28,7 +28,7 @@ pub async fn protect(request: Request, next: Next) -> Response {
     }
 
     let Some(user) = request.extensions().get::<CurrentUser>() else {
-        return ApiError::Unauthorized("a valid portal session is required").into_response();
+        return ApiError::Unauthorized("a valid session is required").into_response();
     };
     let presented = request
         .headers()

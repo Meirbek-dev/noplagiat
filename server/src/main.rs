@@ -2,8 +2,7 @@ use std::net::SocketAddr;
 use std::time::Duration;
 
 use anyhow::{Context, bail};
-use api::auth::oidc::OidcConfig;
-use api::state::{AppConfig, AppState, AuthMode};
+use api::state::{AppConfig, AppState};
 use axum::http::Uri;
 use tracing_subscriber::EnvFilter;
 
@@ -13,54 +12,14 @@ struct RuntimeConfig {
     database: db::DatabaseConfig,
     listen_addr: SocketAddr,
     public_base_url: Uri,
-    /// `APP_AUTH_MODE` - `oidc` (default) or `dev`. The default is the secure
-    /// one: an unset or misspelled variable must never open the dev login.
-    auth_mode: AuthMode,
-}
-
-/// Portal IdP parameters (`APP_OIDC_*`, ADR-014 §1).
-///
-/// All three of issuer, client id and client secret or none: a half-configured
-/// provider would redirect a browser into a flow that cannot complete, so the
-/// partial case is a **startup failure** rather than a silently disabled login.
-fn oidc_from_env(public_base_url: &Uri) -> anyhow::Result<Option<OidcConfig>> {
-    let issuer = optional_env("APP_OIDC_ISSUER");
-    let client_id = optional_env("APP_OIDC_CLIENT_ID");
-    let client_secret = optional_env("APP_OIDC_CLIENT_SECRET");
-
-    match (issuer, client_id, client_secret) {
-        (None, None, None) => Ok(None),
-        (Some(issuer), Some(client_id), Some(client_secret)) => {
-            let origin = public_base_url.to_string().trim_end_matches('/').to_owned();
-            Ok(Some(OidcConfig {
-                redirect_uri: OidcConfig::redirect_uri_for(&origin),
-                issuer,
-                client_id,
-                client_secret,
-                scopes: optional_env("APP_OIDC_SCOPES")
-                    .unwrap_or_else(|| api::auth::oidc::DEFAULT_SCOPES.to_owned()),
-                groups_claim: optional_env("APP_OIDC_GROUPS_CLAIM")
-                    .unwrap_or_else(|| api::auth::oidc::DEFAULT_GROUPS_CLAIM.to_owned()),
-                post_logout_redirect_uri: optional_env("APP_OIDC_POST_LOGOUT_REDIRECT"),
-            }))
-        }
-        _ => bail!(
-            "APP_OIDC_ISSUER, APP_OIDC_CLIENT_ID and APP_OIDC_CLIENT_SECRET must be set together"
-        ),
-    }
 }
 
 impl RuntimeConfig {
     fn from_env() -> anyhow::Result<Self> {
-        let auth_mode = match std::env::var("APP_AUTH_MODE") {
-            Ok(value) if !value.trim().is_empty() => AuthMode::parse(&value)?,
-            _ => AuthMode::Oidc,
-        };
         Self::parse(
             required_env("APP_DATABASE_URL")?,
             required_env("APP_LISTEN_ADDR")?,
             required_env("APP_PUBLIC_BASE_URL")?,
-            auth_mode,
         )
     }
 
@@ -68,7 +27,6 @@ impl RuntimeConfig {
         database_url: String,
         listen_addr: String,
         public_base_url: String,
-        auth_mode: AuthMode,
     ) -> anyhow::Result<Self> {
         let database = database_url
             .parse()
@@ -92,7 +50,6 @@ impl RuntimeConfig {
             database,
             listen_addr,
             public_base_url,
-            auth_mode,
         })
     }
 }
@@ -179,24 +136,18 @@ async fn main() -> anyhow::Result<()> {
         "annual report scheduler started"
     );
 
-    if config.auth_mode == AuthMode::Dev {
-        tracing::warn!(
-            "APP_AUTH_MODE=dev: POST /api/auth/dev-login mints sessions without an identity \
-             provider. Development and e2e only - never a production deployment."
-        );
-    }
-    let oidc = oidc_from_env(&config.public_base_url)?;
-    if config.auth_mode == AuthMode::Oidc {
-        match &oidc {
-            Some(oidc) => tracing::info!(issuer = %oidc.issuer, "portal SSO configured"),
-            // Not a startup failure: a staging box may legitimately run with no
-            // identity provider while one is being registered (PLAN.md R3).
-            // `/api/auth/login` then answers 503 naming the missing variables.
-            None => tracing::warn!(
-                "APP_AUTH_MODE=oidc but no APP_OIDC_* configuration is present; \
-                 /api/auth/login will answer 503 until the client is registered"
-            ),
-        }
+    // A deployment with no accounts cannot be signed into, and nothing in the
+    // HTTP surface can create the first one (ADR-017 §3). Say so at startup
+    // rather than leaving an operator at a sign-in page that refuses every
+    // attempt. Not a startup failure: the binary that fixes it needs the
+    // migrations this process has just applied.
+    match db::users::list(&pool, 1, 0).await {
+        Ok(accounts) if accounts.is_empty() => tracing::warn!(
+            "no accounts exist; create the first administrator with \
+             `manage-users create-user --username <name> --role admin`"
+        ),
+        Ok(_) => {}
+        Err(error) => tracing::warn!(%error, "could not check for existing accounts"),
     }
 
     // `APP_INGEST_PEPPER` is parsed once here so the admin staff-unit editor
@@ -217,8 +168,6 @@ async fn main() -> anyhow::Result<()> {
     let state = AppState::new(
         pool,
         AppConfig {
-            auth_mode: config.auth_mode,
-            oidc,
             ingest_pepper,
             reports_dir,
             embed_frame_ancestors,
@@ -249,14 +198,13 @@ async fn main() -> anyhow::Result<()> {
 
 #[cfg(test)]
 mod tests {
-    use super::{AuthMode, RuntimeConfig};
+    use super::RuntimeConfig;
 
     fn parse(listen_addr: &str, public_base_url: &str) -> anyhow::Result<RuntimeConfig> {
         RuntimeConfig::parse(
             "postgres://user:secret@localhost/noplagiat".to_owned(),
             listen_addr.to_owned(),
             public_base_url.to_owned(),
-            AuthMode::Oidc,
         )
     }
 
@@ -270,7 +218,6 @@ mod tests {
             config.public_base_url.to_string(),
             "https://analytics.example.edu/"
         );
-        assert_eq!(config.auth_mode, AuthMode::Oidc);
     }
 
     #[test]
@@ -281,15 +228,5 @@ mod tests {
     #[test]
     fn rejects_invalid_listen_address() {
         assert!(parse("localhost:8080", "https://analytics.example.edu").is_err());
-    }
-
-    /// A misspelled `APP_AUTH_MODE` is a startup failure, never a silent
-    /// fallback: the two modes differ in whether `dev-login` exists.
-    #[test]
-    fn auth_mode_parsing_is_closed() {
-        assert_eq!(AuthMode::parse("dev"), Ok(AuthMode::Dev));
-        assert_eq!(AuthMode::parse(" oidc "), Ok(AuthMode::Oidc));
-        assert!(AuthMode::parse("development").is_err());
-        assert!(AuthMode::parse("").is_err());
     }
 }

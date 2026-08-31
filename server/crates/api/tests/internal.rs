@@ -21,7 +21,7 @@ use axum::http::StatusCode;
 use serde_json::{Value, json};
 use sqlx::PgPool;
 use support::{
-    Session, assert_visible_close, assert_visible_int, authenticated, dev_login, expected_json,
+    Session, assert_visible_close, assert_visible_int, authenticated, expected_json,
     scenario, send,
 };
 
@@ -32,18 +32,17 @@ const DEPARTMENT: &str = "DEP11";
 /// The fixture range every scenario covers.
 const RANGE: &str = "from=2023-09-01&to=2026-08-31";
 
-async fn warehouse(pool: PgPool) -> (axum::Router, db::Pool) {
+async fn warehouse(pool: PgPool) -> (support::Harness, db::Pool) {
     let pool = db::Pool::for_tests(pool);
     support::load_warehouse(&pool)
         .await
         .expect("the fixture warehouse loads");
-    (api::build_router(support::state_from(pool.clone())), pool)
+    (support::Harness::new(support::state_from(pool.clone())), pool)
 }
 
-async fn dean(router: &axum::Router) -> Session {
-    dev_login(
-        router,
-        json!({"sso_subject": "fac03-dean", "role": "dean", "scope_faculty_code": FACULTY}),
+async fn dean(router: &support::Harness) -> Session {
+    router.sign_in(
+        json!({"username": "fac03-dean", "role": "dean", "scope_faculty_code": FACULTY}),
     )
     .await
 }
@@ -51,19 +50,17 @@ async fn dean(router: &axum::Router) -> Session {
 /// The «Эскалации» section is reserved for the oversight roles (TZ §5,
 /// ADR-014 §7), so its numbers are read here by an ethics account scoped to the
 /// same faculty - the fixture scenario is unchanged, only the caller is.
-async fn faculty_ethics(router: &axum::Router) -> Session {
-    dev_login(
-        router,
-        json!({"sso_subject": "fac03-ethics", "role": "ethics", "scope_faculty_code": FACULTY}),
+async fn faculty_ethics(router: &support::Harness) -> Session {
+    router.sign_in(
+        json!({"username": "fac03-ethics", "role": "ethics", "scope_faculty_code": FACULTY}),
     )
     .await
 }
 
-async fn head(router: &axum::Router) -> Session {
-    dev_login(
-        router,
+async fn head(router: &support::Harness) -> Session {
+    router.sign_in(
         json!({
-            "sso_subject": "dep11-head", "role": "dept_head",
+            "username": "dep11-head", "role": "dept_head",
             "scope_department_code": DEPARTMENT,
         }),
     )
@@ -338,7 +335,7 @@ async fn escalations_report_the_total_and_screen_the_unit_breakdown(
         .await
         .expect("k is stored");
     // The k-policy cache has a 60 s TTL; a fresh router reads the new value.
-    let router = api::build_router(support::state_from(pool.clone()));
+    let router = support::Harness::new(support::state_from(pool.clone()));
     let session = faculty_ethics(&router).await;
 
     let body = get_json(
@@ -375,7 +372,7 @@ async fn the_escalation_register_is_closed_to_the_unit_roles(pool: PgPool) -> sq
     support::load_dictionaries(&pool)
         .await
         .expect("dictionaries load");
-    let router = api::build_router(support::state_from(pool.clone()));
+    let router = support::Harness::new(support::state_from(pool.clone()));
 
     for session in [dean(&router).await, head(&router).await] {
         let reply = send(
@@ -408,9 +405,8 @@ async fn the_escalation_register_is_closed_to_the_unit_roles(pool: PgPool) -> sq
     );
 
     // …and the oversight roles still reach it.
-    let ethics = dev_login(
-        &router,
-        json!({"sso_subject": "ethics-open", "role": "ethics"}),
+    let ethics = router.sign_in(
+        json!({"username": "ethics-open", "role": "ethics"}),
     )
     .await;
     let reply = send(
@@ -511,9 +507,8 @@ async fn a_head_of_department_sees_exactly_their_department(pool: PgPool) -> sql
 #[sqlx::test(migrations = "../../migrations")]
 async fn a_university_wide_role_reads_every_faculty_raw(pool: PgPool) -> sqlx::Result<()> {
     let (router, _pool) = warehouse(pool).await;
-    let session = dev_login(
-        &router,
-        json!({"sso_subject": "compliance-internal", "role": "compliance"}),
+    let session = router.sign_in(
+        json!({"username": "compliance-internal", "role": "compliance"}),
     )
     .await;
 
@@ -554,10 +549,9 @@ async fn malformed_internal_filters_are_422(pool: PgPool) -> sqlx::Result<()> {
     support::load_dictionaries(&pool)
         .await
         .expect("dictionaries load");
-    let router = api::build_router(support::state_from(pool));
-    let session = dev_login(
-        &router,
-        json!({"sso_subject": "compliance-filters", "role": "compliance"}),
+    let router = support::Harness::new(support::state_from(pool));
+    let session = router.sign_in(
+        json!({"username": "compliance-filters", "role": "compliance"}),
     )
     .await;
 
@@ -600,10 +594,9 @@ async fn every_internal_section_is_audited(pool: PgPool) -> sqlx::Result<()> {
     support::load_dictionaries(&pool)
         .await
         .expect("dictionaries load");
-    let router = api::build_router(support::state_from(pool.clone()));
-    let session = dev_login(
-        &router,
-        json!({"sso_subject": "compliance-audit", "role": "compliance"}),
+    let router = support::Harness::new(support::state_from(pool.clone()));
+    let session = router.sign_in(
+        json!({"username": "compliance-audit", "role": "compliance"}),
     )
     .await;
 

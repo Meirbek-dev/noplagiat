@@ -7,7 +7,7 @@ mod support;
 use axum::http::{StatusCode, header};
 use serde_json::json;
 use sqlx::PgPool;
-use support::{authenticated, dev_login, get, send};
+use support::{authenticated, get, send};
 
 /// Every metric name ARCHITECTURE.md §8 and ADR-014 §8 ask for - all eight, so
 /// a metric silently dropped from the exposition fails here.
@@ -28,7 +28,7 @@ async fn the_scrape_carries_every_declared_metric(pool: PgPool) -> sqlx::Result<
     support::load_warehouse(&pool)
         .await
         .expect("the fixture warehouse loads");
-    let router = api::build_router(support::state_from(pool));
+    let router = support::Harness::new(support::state_from(pool));
 
     // Traffic on three contours, so the label set is non-trivial.
     get(&router, "/api/public/summary?from=2023-09-01&to=2026-08-31").await;
@@ -83,7 +83,7 @@ async fn the_suppression_counter_tracks_withheld_cells(pool: PgPool) -> sqlx::Re
     db::settings::set(&pool, "k_threshold", &json!(10_000_000), Some("test"))
         .await
         .expect("k is stored");
-    let router = api::build_router(support::state_from(pool));
+    let router = support::Harness::new(support::state_from(pool));
 
     let before = screened_cells(&router).await;
     get(&router, "/api/public/summary?from=2023-09-01&to=2026-08-31").await;
@@ -145,7 +145,7 @@ async fn readiness_treats_an_empty_warehouse_as_fresh(pool: PgPool) -> sqlx::Res
 #[sqlx::test(migrations = "../../migrations")]
 async fn readiness_degrades_when_the_newest_batch_is_stale(pool: PgPool) -> sqlx::Result<()> {
     let pool = db::Pool::for_tests(pool);
-    let router = api::build_router(support::state_from(pool.clone()));
+    let router = support::Harness::new(support::state_from(pool.clone()));
 
     // A fresh batch keeps it ready.
     let id = db::batches::start(&pool, "fixture", db::batches::Mode::Csv)
@@ -228,7 +228,7 @@ async fn readiness_degrades_when_the_newest_batch_is_stale(pool: PgPool) -> sqlx
 #[sqlx::test(migrations = "../../migrations")]
 async fn the_operational_endpoints_stay_unlayered(pool: PgPool) -> sqlx::Result<()> {
     let pool = db::Pool::for_tests(pool);
-    let router = api::build_router(support::state_from(pool.clone()));
+    let router = support::Harness::new(support::state_from(pool.clone()));
 
     for path in ["/healthz", "/readyz", "/metrics"] {
         let reply = get(&router, path).await;
@@ -261,10 +261,9 @@ async fn authentication_never_surfaces_an_address(pool: PgPool) -> sqlx::Result<
     support::load_dictionaries(&pool)
         .await
         .expect("dictionaries load");
-    let router = api::build_router(support::state_from(pool.clone()));
-    let session = dev_login(
-        &router,
-        json!({"sso_subject": "compliance-logs", "role": "compliance"}),
+    let router = support::Harness::new(support::state_from(pool.clone()));
+    let session = router.sign_in(
+        json!({"username": "compliance-logs", "role": "compliance"}),
     )
     .await;
 
@@ -296,9 +295,14 @@ async fn authentication_never_surfaces_an_address(pool: PgPool) -> sqlx::Result<
 
     // The one place an address legitimately lives is the administrative roles
     // screen (TZ §6.1 exempts service accounts), and it is admin-only.
-    let admin = dev_login(&router, json!({"sso_subject": "root", "role": "admin"})).await;
+    let admin = router
+        .sign_in(json!({"username": "root", "role": "admin"}))
+        .await;
     let roles = send(&router, authenticated(&admin, "GET", "/api/admin/roles")).await;
     assert_eq!(roles.status, StatusCode::OK);
-    assert!(String::from_utf8_lossy(&roles.body).contains("@dev.invalid"));
+    assert!(
+        String::from_utf8_lossy(&roles.body).contains(&support::test_email("root")),
+        "the roles screen is the one place an address legitimately appears"
+    );
     Ok(())
 }

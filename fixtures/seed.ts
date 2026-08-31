@@ -10,7 +10,8 @@
  *   3. load `fixtures/staff-units.csv` into `staff_units`, HMACing each
  *      e-mail here so no plaintext address ever reaches the database
  *   4. run the CSV ingest CLI once per academic year
- *   5. print a summary
+ *   5. create the fixture accounts through the `manage-users` CLI (ADR-017)
+ *   6. print a summary
  *
  * Environment:
  *   APP_DATABASE_URL  default postgres://noplagiat:noplagiat@localhost:5432/noplagiat
@@ -24,6 +25,7 @@ import { existsSync, readFileSync, rmSync, writeFileSync } from "node:fs"
 import { tmpdir } from "node:os"
 import { join } from "node:path"
 
+import { FIXTURE_ACCOUNTS, FIXTURE_PASSWORD } from "./accounts"
 import { generate } from "./generate"
 import {
   SCALE_TARGETS,
@@ -194,14 +196,14 @@ function main(): void {
 
   // 1 - fixtures
   if (opts.force || !existsSync(join(ROOT, "out", "manifest.json"))) {
-    console.log("1/5 generating fixtures")
+    console.log("1/6 generating fixtures")
     generate({ scale: opts.scale, seed: opts.seed, root: ROOT })
   } else {
-    console.log("1/5 fixtures already present (pass --force to regenerate)")
+    console.log("1/6 fixtures already present (pass --force to regenerate)")
   }
 
   // 2 - dictionaries and rules
-  console.log("\n2/5 dictionaries and rules")
+  console.log("\n2/6 dictionaries and rules")
   const resetSql = join(ROOT, "reset.sql")
   if (opts.reset) {
     // reset.sql drops the whole `public` schema, so the migrations have to be
@@ -241,7 +243,7 @@ function main(): void {
   }
 
   // 3 - staff units (HMAC computed here; the DB never sees an address)
-  console.log("\n3/5 staff units")
+  console.log("\n3/6 staff units")
   const { sql, rows } = buildStaffUnitsSql(pepper)
   const tmp = join(tmpdir(), "noplagiat-staff-units.sql")
   writeFileSync(tmp, sql, "utf8")
@@ -251,7 +253,7 @@ function main(): void {
   else console.log(`  ${rows} reviewer mappings upserted`)
 
   // 4 - ingest
-  console.log("\n4/5 CSV ingest")
+  console.log("\n4/6 CSV ingest")
   const years = academicYearsFor(opts.scale)
   if (opts.skipIngest) {
     console.log("  skipped (--skip-ingest)")
@@ -283,8 +285,51 @@ function main(): void {
     }
   }
 
-  // 5 - summary
-  console.log("\n5/5 summary")
+  // 5 - accounts (ADR-017: nothing in the HTTP surface creates one)
+  console.log("\n5/6 accounts")
+  // The password travels in the environment, never in argv: the CLI refuses
+  // `--password` precisely so it cannot land in a shell history or `ps` output.
+  const manageUsers = (...args: string[]): { ok: boolean; message: string } =>
+    run(
+      "cargo",
+      [
+        "run",
+        "--quiet",
+        "--manifest-path",
+        "server/Cargo.toml",
+        "--bin",
+        "manage-users",
+        "--",
+        ...args,
+      ],
+      { APP_DATABASE_URL: db, APP_ADMIN_PASSWORD: FIXTURE_PASSWORD }
+    )
+
+  for (const account of Object.values(FIXTURE_ACCOUNTS)) {
+    const args = ["create-user", "--username", account.username]
+    if (account.role !== null) args.push("--role", account.role)
+    if ("faculty" in account) args.push("--faculty", account.faculty)
+    if ("department" in account) args.push("--department", account.department)
+
+    const created = manageUsers(...args)
+    // `create-user` refuses a name that already exists, which is what a
+    // repeated seed hits. Re-set the password instead, so a database that has
+    // been seeded before still signs in with the fixture credentials.
+    if (!created.ok) {
+      const reset = manageUsers("set-password", "--username", account.username)
+      if (!reset.ok) {
+        note(`account ${account.username}: ${created.message}`)
+        continue
+      }
+    }
+    console.log(`  ${account.username} (${account.role ?? "no role"})`)
+  }
+  console.log(
+    "  fixture accounts share a well-known password - never seed a real deployment this way"
+  )
+
+  // 6 - summary
+  console.log("\n6/6 summary")
   const targets = SCALE_TARGETS[opts.scale]
   const manifest = JSON.parse(
     readFileSync(join(ROOT, "out", "manifest.json"), "utf8")

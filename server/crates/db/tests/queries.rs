@@ -583,9 +583,9 @@ async fn audit_entries_are_appended_and_filterable(pool: PgPool) -> sqlx::Result
     let raw = pool.clone();
     let pool = Pool::for_tests(pool);
 
-    let user = db::users::upsert_by_sso_subject(&pool, "subject-1", "u@tou.edu.kz", "U")
+    let user = db::users::create(&pool, "subject-1", "u@tou.edu.kz", "U", None)
         .await
-        .expect("user upsert");
+        .expect("account creation");
     let filters = serde_json::json!({"from": "2025-09-01", "to": "2026-08-31"});
 
     db::audit::append(
@@ -666,14 +666,27 @@ async fn user_roles_are_granted_and_revoked_by_scope(pool: PgPool) -> sqlx::Resu
     support::load_dictionaries(&raw).await?;
     let faculty = support::faculty_id(&raw, "FAC03").await?;
 
-    let user = db::users::upsert_by_sso_subject(&pool, "subject-2", "d@tou.edu.kz", "Dean")
+    let user = db::users::create(&pool, "subject-2", "d@tou.edu.kz", "Dean", None)
         .await
-        .expect("user upsert");
-    let again = db::users::upsert_by_sso_subject(&pool, "subject-2", "new@tou.edu.kz", "Dean 2")
-        .await
-        .expect("user upsert");
-    assert_eq!(user.id, again.id, "SSO subject is the identity");
-    assert_eq!(again.email, "new@tou.edu.kz");
+        .expect("account creation");
+    // Creation is not an upsert: a repeat is an operator mistake, and silently
+    // rewriting the e-mail and password of a live account is the wrong recovery
+    // from it (ADR-017 §3). The same name in a different case is the same
+    // account, so it is refused too.
+    assert!(
+        matches!(
+            db::users::create(&pool, "subject-2", "new@tou.edu.kz", "Dean 2", None).await,
+            Err(db::DbError::UsernameTaken(_))
+        ),
+        "a duplicate login name must be a typed refusal"
+    );
+    assert!(
+        matches!(
+            db::users::create(&pool, "SUBJECT-2", "new@tou.edu.kz", "Dean 2", None).await,
+            Err(db::DbError::UsernameTaken(_))
+        ),
+        "login names are unique without regard to case"
+    );
 
     db::users::add_role(&pool, user.id, RoleKind::Dean, Some(faculty), None)
         .await
@@ -685,7 +698,7 @@ async fn user_roles_are_granted_and_revoked_by_scope(pool: PgPool) -> sqlx::Resu
         .await
         .expect("grant");
 
-    let loaded = db::users::by_sso_subject(&pool, "subject-2")
+    let loaded = db::users::by_username(&pool, "Subject-2")
         .await
         .expect("lookup")
         .expect("user exists");
@@ -721,7 +734,7 @@ async fn user_roles_are_granted_and_revoked_by_scope(pool: PgPool) -> sqlx::Resu
         1
     );
     assert!(
-        db::users::by_sso_subject(&pool, "nobody")
+        db::users::by_username(&pool, "nobody")
             .await
             .expect("lookup")
             .is_none()
