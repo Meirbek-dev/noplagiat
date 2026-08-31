@@ -1,0 +1,56 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT f.code AS \"faculty_code!\",\n                          sum(c.checks)::bigint AS \"checks!\",\n                          (sum(c.sum_originality) * 100)::bigint\n                              AS \"sum_originality_hundredths!\"\n                     FROM agg_cells($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15) c\n                     JOIN faculties f ON f.id = c.faculty_id\n                    GROUP BY 1\n                    ORDER BY 1",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "faculty_code!",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "faculties",
+            "name": "code"
+          }
+        }
+      },
+      {
+        "ordinal": 1,
+        "name": "checks!",
+        "type_info": "Int8",
+        "origin": "Expression"
+      },
+      {
+        "ordinal": 2,
+        "name": "sum_originality_hundredths!",
+        "type_info": "Int8",
+        "origin": "Expression"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Date",
+        "Date",
+        "Date",
+        "Date",
+        "Date",
+        "Date",
+        "Bool",
+        "Int8",
+        "Int8",
+        "Text",
+        "Text",
+        "Text",
+        "Text",
+        "Text",
+        "Text"
+      ]
+    },
+    "nullable": [
+      false,
+      null,
+      null
+    ]
+  },
+  "hash": "3223b1d1c2758d7c25ff25a188bd30e8c451211f97a92c4c8d97f5a79c87d349"
+}

@@ -1,0 +1,14 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "UPDATE checks SET attempt_no = -attempt_no WHERE id = ANY($1::bigint[])",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Int8Array"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "91fd30296d6904dbff2210e94a5d8d3e6b16dc494b77b9cdeb361f2b2e2c9678"
+}

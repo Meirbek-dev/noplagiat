@@ -1,0 +1,50 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT kind, source_label, target_id FROM dict_aliases",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "kind",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "dict_aliases",
+            "name": "kind"
+          }
+        }
+      },
+      {
+        "ordinal": 1,
+        "name": "source_label",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "dict_aliases",
+            "name": "source_label"
+          }
+        }
+      },
+      {
+        "ordinal": 2,
+        "name": "target_id",
+        "type_info": "Int8",
+        "origin": {
+          "Table": {
+            "table": "dict_aliases",
+            "name": "target_id"
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Left": []
+    },
+    "nullable": [
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "680f75eac2078dfbd8e0c88a4cf47bcbe68aebb3c4869de5b95efd485f9672c5"
+}

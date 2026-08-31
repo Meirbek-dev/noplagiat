@@ -1,0 +1,49 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT count(*) AS \"batches!\",\n                  coalesce(sum(rows_read), 0)::bigint AS \"rows_read!\",\n                  coalesce(sum(rows_upserted), 0)::bigint AS \"rows_upserted!\",\n                  coalesce(sum(rows_rejected), 0)::bigint AS \"rows_rejected!\",\n                  coalesce(sum(rows_skipped_deleted), 0)::bigint AS \"rows_skipped_deleted!\"\n             FROM ingest_batches",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "batches!",
+        "type_info": "Int8",
+        "origin": "Expression"
+      },
+      {
+        "ordinal": 1,
+        "name": "rows_read!",
+        "type_info": "Int8",
+        "origin": "Expression"
+      },
+      {
+        "ordinal": 2,
+        "name": "rows_upserted!",
+        "type_info": "Int8",
+        "origin": "Expression"
+      },
+      {
+        "ordinal": 3,
+        "name": "rows_rejected!",
+        "type_info": "Int8",
+        "origin": "Expression"
+      },
+      {
+        "ordinal": 4,
+        "name": "rows_skipped_deleted!",
+        "type_info": "Int8",
+        "origin": "Expression"
+      }
+    ],
+    "parameters": {
+      "Left": []
+    },
+    "nullable": [
+      null,
+      null,
+      null,
+      null,
+      null
+    ]
+  },
+  "hash": "b92757c97eba4b31ff3eb8a51ac46088b8a26a47b81e3b6b9e0cebeb86060c1f"
+}

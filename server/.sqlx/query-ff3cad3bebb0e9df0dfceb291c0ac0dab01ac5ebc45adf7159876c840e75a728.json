@@ -1,0 +1,74 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT r.id, r.pattern, w.code AS \"work_type_code!\", r.priority, r.active\n             FROM work_type_rules r\n             JOIN work_types w ON w.id = r.work_type_id\n            ORDER BY r.priority, r.id",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Int8",
+        "origin": {
+          "Table": {
+            "table": "work_type_rules",
+            "name": "id"
+          }
+        }
+      },
+      {
+        "ordinal": 1,
+        "name": "pattern",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "work_type_rules",
+            "name": "pattern"
+          }
+        }
+      },
+      {
+        "ordinal": 2,
+        "name": "work_type_code!",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "work_types",
+            "name": "code"
+          }
+        }
+      },
+      {
+        "ordinal": 3,
+        "name": "priority",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "work_type_rules",
+            "name": "priority"
+          }
+        }
+      },
+      {
+        "ordinal": 4,
+        "name": "active",
+        "type_info": "Bool",
+        "origin": {
+          "Table": {
+            "table": "work_type_rules",
+            "name": "active"
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Left": []
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "ff3cad3bebb0e9df0dfceb291c0ac0dab01ac5ebc45adf7159876c840e75a728"
+}

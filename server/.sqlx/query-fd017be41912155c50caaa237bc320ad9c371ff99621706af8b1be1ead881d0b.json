@@ -1,0 +1,77 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT id, academic_year, category, referred, reviewed_closed\n               FROM ethics_cases\n              WHERE academic_year >= $1 AND academic_year <= $2\n              ORDER BY academic_year, category",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Int8",
+        "origin": {
+          "Table": {
+            "table": "ethics_cases",
+            "name": "id"
+          }
+        }
+      },
+      {
+        "ordinal": 1,
+        "name": "academic_year",
+        "type_info": "Int2",
+        "origin": {
+          "Table": {
+            "table": "ethics_cases",
+            "name": "academic_year"
+          }
+        }
+      },
+      {
+        "ordinal": 2,
+        "name": "category",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "ethics_cases",
+            "name": "category"
+          }
+        }
+      },
+      {
+        "ordinal": 3,
+        "name": "referred",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "ethics_cases",
+            "name": "referred"
+          }
+        }
+      },
+      {
+        "ordinal": 4,
+        "name": "reviewed_closed",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "ethics_cases",
+            "name": "reviewed_closed"
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Int2",
+        "Int2"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "fd017be41912155c50caaa237bc320ad9c371ff99621706af8b1be1ead881d0b"
+}

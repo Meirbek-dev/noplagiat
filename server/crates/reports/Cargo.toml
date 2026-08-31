@@ -1,0 +1,58 @@
+[package]
+name = "reports"
+version = "0.1.0"
+edition.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[dependencies]
+compliance.workspace = true
+db.workspace = true
+domain.workspace = true
+jiff = "0.2.35"
+rust_xlsxwriter = "0.99.0"
+serde = { version = "1.0.229", features = ["derive"] }
+serde_json = "1.0.151"
+sha2 = "0.11.0"
+# ADR-015: the annual scheduler needs a database handle of its own for the
+# advisory lock and the "already generated?" probe (`db` exposes neither), a
+# timer, and the same log stream as the ingest scheduler.
+sqlx = { version = "0.9.0", default-features = false, features = [
+  "runtime-tokio",
+  "tls-rustls",
+  "postgres",
+  "macros",
+  "time",
+] }
+thiserror = "2.0.20"
+# The date type `db::snapshots::NewSnapshot` takes: `jiff` is the domain
+# calendar, `time` is what the PostgreSQL driver speaks.
+time = "0.3.55"
+tokio = { version = "1.53.1", features = ["rt", "time"] }
+tracing = "0.1.44"
+# ADR-004 / ADR-013: Typst as a library. `typst` is the compiler plus the
+# `World` trait, `typst-layout` names the `PagedDocument` it produces, and
+# `typst-pdf` is the exporter.
+typst = "0.15.1"
+typst-layout = "0.15.1"
+typst-pdf = "0.15.1"
+
+[dev-dependencies]
+calamine = "0.32.0"
+db = { workspace = true, features = ["test-support"] }
+lopdf = "0.38.0"
+regex = "1.13.1"
+sqlx = { version = "0.9.0", default-features = false, features = [
+  "runtime-tokio",
+  "tls-rustls",
+  "postgres",
+  "migrate",
+  "macros",
+  "time",
+] }
+tokio = { version = "1.53.1", features = ["macros", "rt-multi-thread"] }
+ttf-parser = "0.25.1"
+zip = "8.6.0"
+
+[lints]
+workspace = true

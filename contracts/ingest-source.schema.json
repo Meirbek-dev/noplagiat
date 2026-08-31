@@ -1,0 +1,194 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://tou.edu.kz/schemas/noplagiat/ingest-source-v1.json",
+  "title": "Antiplagiarism check page (ingest contract v1)",
+  "description": "One page of GET {base_url}/api/analytics/v1/checks. Normative wire format for the in-house noplagiat.tou.edu.kz pull endpoint; see docs/adr/010-source-ingest-contract.md. This file doubles as the fixture format for API-mode ingest tests.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["records", "next_cursor"],
+  "properties": {
+    "records": {
+      "description": "Checks ordered by (checked_at ASC, check_id ASC), strictly after the requested cursor.",
+      "type": "array",
+      "items": { "$ref": "#/$defs/record" }
+    },
+    "next_cursor": {
+      "description": "Cursor to pass to the next request, or null when the caller has caught up. Null is the only end-of-stream signal.",
+      "oneOf": [{ "$ref": "#/$defs/cursor" }, { "type": "null" }]
+    }
+  },
+  "$defs": {
+    "cursor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["checked_at", "check_id"],
+      "properties": {
+        "checked_at": { "$ref": "#/$defs/timestamp" },
+        "check_id": { "$ref": "#/$defs/check_id" }
+      }
+    },
+    "record": {
+      "description": "One check attempt. The property set is closed and contains no name, e-mail, title, author, document text or report link: anonymization is the source system's obligation, by contract (AGENTS.md invariant #1).",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "check_id",
+        "checked_at",
+        "attempt_no",
+        "work_type_code",
+        "faculty_code",
+        "department_code",
+        "originality_pct",
+        "status",
+        "escalated",
+        "initiator"
+      ],
+      "properties": {
+        "check_id": { "$ref": "#/$defs/check_id" },
+        "checked_at": { "$ref": "#/$defs/timestamp" },
+        "attempt_no": {
+          "description": "1-based ordinal of this attempt for the same work. Assigned by the source, which knows which submissions are the same work.",
+          "type": "integer",
+          "minimum": 1
+        },
+        "work_type_code": {
+          "description": "Dictionary code; `other` when the source cannot classify the work.",
+          "$ref": "#/$defs/dictionary_code"
+        },
+        "faculty_code": {
+          "description": "Dictionary code; `UNASSIGNED` when the source cannot attribute the check to a unit.",
+          "$ref": "#/$defs/dictionary_code"
+        },
+        "department_code": {
+          "description": "Dictionary code; `UNASSIGNED` when the source cannot attribute the check to a unit.",
+          "$ref": "#/$defs/dictionary_code"
+        },
+        "program_code": {
+          "description": "Educational-programme code, or null. Nullable because the ОП drill-down is conditional on registrar data (PLAN §2, D2).",
+          "oneOf": [{ "$ref": "#/$defs/dictionary_code" }, { "type": "null" }]
+        },
+        "originality_pct": { "$ref": "#/$defs/percentage" },
+        "self_citation_pct": { "$ref": "#/$defs/nullable_percentage" },
+        "citation_pct": { "$ref": "#/$defs/nullable_percentage" },
+        "match_pct": { "$ref": "#/$defs/nullable_percentage" },
+        "ai_content_pct": { "$ref": "#/$defs/nullable_percentage" },
+        "status": {
+          "description": "The source system's own verdict. Authoritative in API mode; `settings.status_rules` governs the CSV backfill (ADR-008 §4).",
+          "type": "string",
+          "enum": ["accepted", "needs_revision", "rejected", "recheck"]
+        },
+        "escalated": {
+          "description": "Referred to the Ethics Council. Independent of `status` - a recheck can be escalated (ADR-008 §4).",
+          "type": "boolean"
+        },
+        "suspicious": {
+          "description": "«Подозрительный документ». Retained for auditability of `escalated`.",
+          "type": "boolean",
+          "default": false
+        },
+        "suspicion_cleared": {
+          "description": "«Отметка о подозрительности снята». Retained for auditability of `escalated`.",
+          "type": "boolean",
+          "default": false
+        },
+        "initiator": {
+          "description": "Role that initiated the check.",
+          "type": "string",
+          "enum": ["student", "staff_self", "registrar", "other"]
+        },
+        "duration_seconds": {
+          "description": "Wall-clock duration of the check, or null. The only source for the average check time of TZ §4.2 §8.",
+          "type": ["integer", "null"],
+          "minimum": 0
+        },
+        "deleted": {
+          "description": "«Удален» in the source. Excluded from analytics facts when settings.exclude_deleted is true, and always counted in ingest_batches.rows_skipped_deleted.",
+          "type": "boolean",
+          "default": false
+        }
+      }
+    },
+    "check_id": {
+      "description": "Opaque, stable identifier issued by the source system. The only identifier the warehouse stores.",
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "pattern": "^[^\\u0000-\\u001f\\u007f]+$"
+    },
+    "timestamp": {
+      "description": "RFC 3339 date-time with an explicit UTC offset.",
+      "type": "string",
+      "format": "date-time",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?(Z|[+-]\\d{2}:\\d{2})$"
+    },
+    "dictionary_code": {
+      "description": "Stable dictionary code, resolved through `dict_aliases` on ingest. Never a human-readable label.",
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9._-]+$"
+    },
+    "percentage": {
+      "description": "Percentage with at most two decimals, 0.00 through 100.00.",
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100,
+      "multipleOf": 0.01
+    },
+    "nullable_percentage": {
+      "oneOf": [{ "$ref": "#/$defs/percentage" }, { "type": "null" }]
+    }
+  },
+  "examples": [
+    {
+      "records": [
+        {
+          "check_id": "c-2025-000841",
+          "checked_at": "2025-10-15T09:00:00+05:00",
+          "attempt_no": 1,
+          "work_type_code": "thesis",
+          "faculty_code": "ENG",
+          "department_code": "SE",
+          "program_code": "6B06103",
+          "originality_pct": 88.5,
+          "self_citation_pct": 1.25,
+          "citation_pct": 6.4,
+          "match_pct": 11.5,
+          "ai_content_pct": 3.0,
+          "status": "accepted",
+          "escalated": false,
+          "suspicious": false,
+          "suspicion_cleared": false,
+          "initiator": "student",
+          "duration_seconds": 42,
+          "deleted": false
+        },
+        {
+          "check_id": "c-2025-000842",
+          "checked_at": "2025-10-15T09:00:00+05:00",
+          "attempt_no": 2,
+          "work_type_code": "other",
+          "faculty_code": "UNASSIGNED",
+          "department_code": "UNASSIGNED",
+          "program_code": null,
+          "originality_pct": 61.0,
+          "self_citation_pct": null,
+          "citation_pct": null,
+          "match_pct": null,
+          "ai_content_pct": null,
+          "status": "recheck",
+          "escalated": true,
+          "suspicious": true,
+          "suspicion_cleared": false,
+          "initiator": "staff_self",
+          "duration_seconds": null,
+          "deleted": false
+        }
+      ],
+      "next_cursor": {
+        "checked_at": "2025-10-15T09:00:00+05:00",
+        "check_id": "c-2025-000842"
+      }
+    }
+  ]
+}

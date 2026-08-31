@@ -1,0 +1,128 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT a.month                                        AS \"month!\",\n                  min(a.academic_year)::smallint                 AS \"academic_year!\",\n                  f.code                                         AS \"faculty_code!\",\n                  w.code                                         AS \"work_type_code!\",\n                  sum(a.checks)::bigint                          AS \"checks!\",\n                  (sum(a.sum_originality) * 100)::bigint         AS \"sum_originality_hundredths!\",\n                  sum(a.b_lt50)::bigint                          AS \"b_lt50!\",\n                  sum(a.b_50_70)::bigint                         AS \"b_50_70!\",\n                  sum(a.b_70_85)::bigint                         AS \"b_70_85!\",\n                  sum(a.b_85_95)::bigint                         AS \"b_85_95!\",\n                  sum(a.b_ge95)::bigint                          AS \"b_ge95!\",\n                  sum(a.escalated)::bigint                       AS \"escalated!\",\n                  sum(a.rechecks)::bigint                        AS \"rechecks!\"\n             FROM agg_monthly a\n             JOIN faculties f ON f.id = a.faculty_id\n             JOIN work_types w ON w.id = a.work_type_id\n            WHERE $1::date IS NOT NULL\n              AND a.month >= $1 AND a.month <= $2\n              AND (NOT COALESCE($3, TRUE) OR NOT a.deleted)\n              -- Canonical RBAC scope predicate (compliance::Scope, invariant #3).\n              AND ($4::bigint IS NULL OR a.faculty_id = $4)\n              AND ($5::bigint IS NULL OR a.department_id = $5)\n              AND ($6::text IS NULL\n                   OR a.faculty_id = (SELECT id FROM faculties WHERE code = $6))\n              AND ($7::text IS NULL\n                   OR a.work_type_id = (SELECT id FROM work_types WHERE code = $7))\n            GROUP BY 1, 3, 4\n            ORDER BY 1, 3, 4",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "month!",
+        "type_info": "Date",
+        "origin": {
+          "Table": {
+            "table": "agg_monthly",
+            "name": "month"
+          }
+        }
+      },
+      {
+        "ordinal": 1,
+        "name": "academic_year!",
+        "type_info": "Int2",
+        "origin": "Expression"
+      },
+      {
+        "ordinal": 2,
+        "name": "faculty_code!",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "faculties",
+            "name": "code"
+          }
+        }
+      },
+      {
+        "ordinal": 3,
+        "name": "work_type_code!",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "work_types",
+            "name": "code"
+          }
+        }
+      },
+      {
+        "ordinal": 4,
+        "name": "checks!",
+        "type_info": "Int8",
+        "origin": "Expression"
+      },
+      {
+        "ordinal": 5,
+        "name": "sum_originality_hundredths!",
+        "type_info": "Int8",
+        "origin": "Expression"
+      },
+      {
+        "ordinal": 6,
+        "name": "b_lt50!",
+        "type_info": "Int8",
+        "origin": "Expression"
+      },
+      {
+        "ordinal": 7,
+        "name": "b_50_70!",
+        "type_info": "Int8",
+        "origin": "Expression"
+      },
+      {
+        "ordinal": 8,
+        "name": "b_70_85!",
+        "type_info": "Int8",
+        "origin": "Expression"
+      },
+      {
+        "ordinal": 9,
+        "name": "b_85_95!",
+        "type_info": "Int8",
+        "origin": "Expression"
+      },
+      {
+        "ordinal": 10,
+        "name": "b_ge95!",
+        "type_info": "Int8",
+        "origin": "Expression"
+      },
+      {
+        "ordinal": 11,
+        "name": "escalated!",
+        "type_info": "Int8",
+        "origin": "Expression"
+      },
+      {
+        "ordinal": 12,
+        "name": "rechecks!",
+        "type_info": "Int8",
+        "origin": "Expression"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Date",
+        "Date",
+        "Bool",
+        "Int8",
+        "Int8",
+        "Text",
+        "Text"
+      ]
+    },
+    "nullable": [
+      true,
+      null,
+      false,
+      false,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ]
+  },
+  "hash": "bf6cb6927f078666810cb4c657e2bfe5acf2d490c5b47838755739dd49d5eec9"
+}

@@ -1,0 +1,14 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "DELETE FROM usage_stats WHERE period_month = $1",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Date"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "4f4cf992f5f1c67f7b20df21312b26cedc9ab2a3816cbe6fd51bdd79b4c46e39"
+}

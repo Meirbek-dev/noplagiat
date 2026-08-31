@@ -1,0 +1,21 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT refresh_aggregates()",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "refresh_aggregates",
+        "type_info": "Int4",
+        "origin": "Expression"
+      }
+    ],
+    "parameters": {
+      "Left": []
+    },
+    "nullable": [
+      null
+    ]
+  },
+  "hash": "4e1067eb77df10ced24e9cc95eea26ab80e4a7dbdfae284b8e7f38c1bf72efaf"
+}

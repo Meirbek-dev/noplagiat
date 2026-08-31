@@ -1,0 +1,53 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT period_month, active_users, avg_check_seconds\n               FROM usage_stats\n              WHERE period_month >= $1 AND period_month <= $2\n              ORDER BY period_month",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "period_month",
+        "type_info": "Date",
+        "origin": {
+          "Table": {
+            "table": "usage_stats",
+            "name": "period_month"
+          }
+        }
+      },
+      {
+        "ordinal": 1,
+        "name": "active_users",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "usage_stats",
+            "name": "active_users"
+          }
+        }
+      },
+      {
+        "ordinal": 2,
+        "name": "avg_check_seconds",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "usage_stats",
+            "name": "avg_check_seconds"
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Date",
+        "Date"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      true
+    ]
+  },
+  "hash": "1031ae111d56041dde74dcb991a8fbf793ae4f94e1ef5dd0aa80b57e05aa0034"
+}

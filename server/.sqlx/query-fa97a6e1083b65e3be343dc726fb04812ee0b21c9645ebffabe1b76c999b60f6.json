@@ -1,0 +1,20 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "UPDATE ingest_batches\n            SET finished_at = now(),\n                rows_read = $2,\n                rows_upserted = $3,\n                rows_rejected = $4,\n                rows_skipped_deleted = $5,\n                errors = $6,\n                status = $7\n          WHERE id = $1",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Int8",
+        "Int4",
+        "Int4",
+        "Int4",
+        "Int4",
+        "Jsonb",
+        "Text"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "fa97a6e1083b65e3be343dc726fb04812ee0b21c9645ebffabe1b76c999b60f6"
+}

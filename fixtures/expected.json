@@ -1,0 +1,5987 @@
+{
+  "meta": {
+    "seed": 1,
+    "scale": "small",
+    "rows_generated": 61441,
+    "rows_deleted": 1423,
+    "rows_malformed": 18
+  },
+  "scenarios": [
+    {
+      "name": "all-time-no-filter",
+      "filters": {
+        "from": "2023-09-01",
+        "to": "2026-08-31",
+        "faculty": null,
+        "department": null,
+        "program": null,
+        "workType": null,
+        "status": null
+      },
+      "summary": {
+        "checks": 60000,
+        "avg_originality": 76.4445,
+        "below_threshold": 17660,
+        "below_threshold_share": 0.2943
+      },
+      "timeseries": [
+        {
+          "month": "2023-09-01",
+          "checks": 920,
+          "avg_originality": 76.4388
+        },
+        {
+          "month": "2023-10-01",
+          "checks": 1363,
+          "avg_originality": 77.3455
+        },
+        {
+          "month": "2023-11-01",
+          "checks": 1788,
+          "avg_originality": 76.5333
+        },
+        {
+          "month": "2023-12-01",
+          "checks": 2643,
+          "avg_originality": 76.9783
+        },
+        {
+          "month": "2024-01-01",
+          "checks": 2451,
+          "avg_originality": 75.9262
+        },
+        {
+          "month": "2024-02-01",
+          "checks": 1200,
+          "avg_originality": 75.6209
+        },
+        {
+          "month": "2024-03-01",
+          "checks": 1337,
+          "avg_originality": 75.9106
+        },
+        {
+          "month": "2024-04-01",
+          "checks": 1850,
+          "avg_originality": 76.3953
+        },
+        {
+          "month": "2024-05-01",
+          "checks": 2600,
+          "avg_originality": 76.3476
+        },
+        {
+          "month": "2024-06-01",
+          "checks": 1763,
+          "avg_originality": 77.1112
+        },
+        {
+          "month": "2024-07-01",
+          "checks": 879,
+          "avg_originality": 77.7692
+        },
+        {
+          "month": "2024-08-01",
+          "checks": 406,
+          "avg_originality": 77.8009
+        },
+        {
+          "month": "2024-09-01",
+          "checks": 922,
+          "avg_originality": 76.9168
+        },
+        {
+          "month": "2024-10-01",
+          "checks": 1352,
+          "avg_originality": 76.2719
+        },
+        {
+          "month": "2024-11-01",
+          "checks": 1757,
+          "avg_originality": 76.4025
+        },
+        {
+          "month": "2024-12-01",
+          "checks": 2694,
+          "avg_originality": 76.5478
+        },
+        {
+          "month": "2025-01-01",
+          "checks": 2544,
+          "avg_originality": 76.4902
+        },
+        {
+          "month": "2025-02-01",
+          "checks": 1328,
+          "avg_originality": 75.9278
+        },
+        {
+          "month": "2025-03-01",
+          "checks": 1419,
+          "avg_originality": 76.4541
+        },
+        {
+          "month": "2025-04-01",
+          "checks": 2016,
+          "avg_originality": 75.8177
+        },
+        {
+          "month": "2025-05-01",
+          "checks": 2757,
+          "avg_originality": 76.1194
+        },
+        {
+          "month": "2025-06-01",
+          "checks": 1912,
+          "avg_originality": 76.5662
+        },
+        {
+          "month": "2025-07-01",
+          "checks": 879,
+          "avg_originality": 75.6499
+        },
+        {
+          "month": "2025-08-01",
+          "checks": 420,
+          "avg_originality": 76.1026
+        },
+        {
+          "month": "2025-09-01",
+          "checks": 958,
+          "avg_originality": 76.7805
+        },
+        {
+          "month": "2025-10-01",
+          "checks": 1412,
+          "avg_originality": 76.0608
+        },
+        {
+          "month": "2025-11-01",
+          "checks": 1763,
+          "avg_originality": 76.3632
+        },
+        {
+          "month": "2025-12-01",
+          "checks": 2788,
+          "avg_originality": 76.2268
+        },
+        {
+          "month": "2026-01-01",
+          "checks": 2747,
+          "avg_originality": 76.7532
+        },
+        {
+          "month": "2026-02-01",
+          "checks": 1368,
+          "avg_originality": 77.0578
+        },
+        {
+          "month": "2026-03-01",
+          "checks": 1532,
+          "avg_originality": 77.01
+        },
+        {
+          "month": "2026-04-01",
+          "checks": 2062,
+          "avg_originality": 76.2132
+        },
+        {
+          "month": "2026-05-01",
+          "checks": 2830,
+          "avg_originality": 76.4077
+        },
+        {
+          "month": "2026-06-01",
+          "checks": 1948,
+          "avg_originality": 76.1797
+        },
+        {
+          "month": "2026-07-01",
+          "checks": 963,
+          "avg_originality": 76.303
+        },
+        {
+          "month": "2026-08-01",
+          "checks": 429,
+          "avg_originality": 76.9174
+        }
+      ],
+      "work_types": [
+        {
+          "code": "article",
+          "checks": 7247,
+          "avg_originality": 76.1853
+        },
+        {
+          "code": "course",
+          "checks": 20316,
+          "avg_originality": 76.3007
+        },
+        {
+          "code": "other",
+          "checks": 7251,
+          "avg_originality": 76.3997
+        },
+        {
+          "code": "research_report",
+          "checks": 4855,
+          "avg_originality": 76.6896
+        },
+        {
+          "code": "thesis_bachelor",
+          "checks": 13186,
+          "avg_originality": 76.6407
+        },
+        {
+          "code": "thesis_master",
+          "checks": 5339,
+          "avg_originality": 76.3087
+        },
+        {
+          "code": "thesis_phd",
+          "checks": 1806,
+          "avg_originality": 77.5929
+        }
+      ],
+      "units": [
+        {
+          "faculty": "FAC01",
+          "department": "DEP01",
+          "checks": 669,
+          "avg_originality": 77.7008
+        },
+        {
+          "faculty": "FAC01",
+          "department": "DEP02",
+          "checks": 683,
+          "avg_originality": 75.6159
+        },
+        {
+          "faculty": "FAC01",
+          "department": "DEP03",
+          "checks": 630,
+          "avg_originality": 76.3335
+        },
+        {
+          "faculty": "FAC01",
+          "department": "DEP04",
+          "checks": 166,
+          "avg_originality": 74.6282
+        },
+        {
+          "faculty": "FAC01",
+          "department": "DEP05",
+          "checks": 835,
+          "avg_originality": 76.7122
+        },
+        {
+          "faculty": "FAC02",
+          "department": "DEP06",
+          "checks": 1086,
+          "avg_originality": 76.0116
+        },
+        {
+          "faculty": "FAC02",
+          "department": "DEP07",
+          "checks": 218,
+          "avg_originality": 76.6303
+        },
+        {
+          "faculty": "FAC02",
+          "department": "DEP08",
+          "checks": 579,
+          "avg_originality": 75.9811
+        },
+        {
+          "faculty": "FAC02",
+          "department": "DEP09",
+          "checks": 278,
+          "avg_originality": 76.3069
+        },
+        {
+          "faculty": "FAC02",
+          "department": "DEP10",
+          "checks": 503,
+          "avg_originality": 76.5387
+        },
+        {
+          "faculty": "FAC03",
+          "department": "DEP11",
+          "checks": 333,
+          "avg_originality": 74.4686
+        },
+        {
+          "faculty": "FAC03",
+          "department": "DEP12",
+          "checks": 656,
+          "avg_originality": 76.3122
+        },
+        {
+          "faculty": "FAC03",
+          "department": "DEP13",
+          "checks": 503,
+          "avg_originality": 75.1042
+        },
+        {
+          "faculty": "FAC03",
+          "department": "DEP14",
+          "checks": 187,
+          "avg_originality": 76.4619
+        },
+        {
+          "faculty": "FAC03",
+          "department": "DEP15",
+          "checks": 873,
+          "avg_originality": 76.5442
+        },
+        {
+          "faculty": "FAC04",
+          "department": "DEP16",
+          "checks": 726,
+          "avg_originality": 76.9325
+        },
+        {
+          "faculty": "FAC04",
+          "department": "DEP17",
+          "checks": 474,
+          "avg_originality": 75.4945
+        },
+        {
+          "faculty": "FAC04",
+          "department": "DEP18",
+          "checks": 957,
+          "avg_originality": 76.7843
+        },
+        {
+          "faculty": "FAC04",
+          "department": "DEP19",
+          "checks": 854,
+          "avg_originality": 77.0247
+        },
+        {
+          "faculty": "FAC04",
+          "department": "DEP20",
+          "checks": 655,
+          "avg_originality": 75.874
+        },
+        {
+          "faculty": "FAC05",
+          "department": "DEP21",
+          "checks": 93,
+          "avg_originality": 79.3777
+        },
+        {
+          "faculty": "FAC05",
+          "department": "DEP22",
+          "checks": 168,
+          "avg_originality": 78.3511
+        },
+        {
+          "faculty": "FAC05",
+          "department": "DEP23",
+          "checks": 280,
+          "avg_originality": 77.1832
+        },
+        {
+          "faculty": "FAC05",
+          "department": "DEP24",
+          "checks": 469,
+          "avg_originality": 77.3104
+        },
+        {
+          "faculty": "FAC05",
+          "department": "DEP25",
+          "checks": 701,
+          "avg_originality": 78.1271
+        },
+        {
+          "faculty": "FAC06",
+          "department": "DEP26",
+          "checks": 333,
+          "avg_originality": 75.7401
+        },
+        {
+          "faculty": "FAC06",
+          "department": "DEP27",
+          "checks": 251,
+          "avg_originality": 77.8419
+        },
+        {
+          "faculty": "FAC06",
+          "department": "DEP28",
+          "checks": 1002,
+          "avg_originality": 76.156
+        },
+        {
+          "faculty": "FAC06",
+          "department": "DEP29",
+          "checks": 143,
+          "avg_originality": 72.3714
+        },
+        {
+          "faculty": "FAC06",
+          "department": "DEP30",
+          "checks": 867,
+          "avg_originality": 77.8044
+        },
+        {
+          "faculty": "FAC07",
+          "department": "DEP31",
+          "checks": 116,
+          "avg_originality": 76.3048
+        },
+        {
+          "faculty": "FAC07",
+          "department": "DEP32",
+          "checks": 422,
+          "avg_originality": 76.4337
+        },
+        {
+          "faculty": "FAC07",
+          "department": "DEP33",
+          "checks": 584,
+          "avg_originality": 76.0265
+        },
+        {
+          "faculty": "FAC07",
+          "department": "DEP34",
+          "checks": 891,
+          "avg_originality": 75.9351
+        },
+        {
+          "faculty": "FAC07",
+          "department": "DEP35",
+          "checks": 461,
+          "avg_originality": 76.363
+        },
+        {
+          "faculty": "FAC08",
+          "department": "DEP36",
+          "checks": 7,
+          "avg_originality": 71.8086
+        },
+        {
+          "faculty": "FAC08",
+          "department": "DEP37",
+          "checks": 2,
+          "avg_originality": 74.945
+        },
+        {
+          "faculty": "FAC08",
+          "department": "DEP38",
+          "checks": 3,
+          "avg_originality": 72.22
+        },
+        {
+          "faculty": "FAC08",
+          "department": "DEP39",
+          "checks": 4,
+          "avg_originality": 80.7075
+        },
+        {
+          "faculty": "FAC08",
+          "department": "DEP40",
+          "checks": 5,
+          "avg_originality": 85.21
+        },
+        {
+          "faculty": "UNASSIGNED",
+          "department": "UNASSIGNED",
+          "checks": 41333,
+          "avg_originality": 76.4318
+        }
+      ],
+      "histogram": {
+        "lt50": 4651,
+        "b50_70": 13009,
+        "b70_85": 17751,
+        "b85_95": 16534,
+        "ge95": 8055
+      },
+      "yoy": [
+        {
+          "academic_year": 2023,
+          "checks": 19200,
+          "avg_originality": 76.5678
+        },
+        {
+          "academic_year": 2024,
+          "checks": 20000,
+          "avg_originality": 76.2986
+        },
+        {
+          "academic_year": 2025,
+          "checks": 20800,
+          "avg_originality": 76.4711
+        }
+      ],
+      "rechecks": {
+        "works_total": 52064,
+        "works_rechecked": 6083,
+        "improved": 4784
+      },
+      "escalations": {
+        "checks_escalated": 9591
+      },
+      "usage": [
+        {
+          "month": "2023-09-01",
+          "active_reviewers": 20
+        },
+        {
+          "month": "2023-10-01",
+          "active_reviewers": 20
+        },
+        {
+          "month": "2023-11-01",
+          "active_reviewers": 20
+        },
+        {
+          "month": "2023-12-01",
+          "active_reviewers": 20
+        },
+        {
+          "month": "2024-01-01",
+          "active_reviewers": 20
+        },
+        {
+          "month": "2024-02-01",
+          "active_reviewers": 20
+        },
+        {
+          "month": "2024-03-01",
+          "active_reviewers": 20
+        },
+        {
+          "month": "2024-04-01",
+          "active_reviewers": 20
+        },
+        {
+          "month": "2024-05-01",
+          "active_reviewers": 20
+        },
+        {
+          "month": "2024-06-01",
+          "active_reviewers": 20
+        },
+        {
+          "month": "2024-07-01",
+          "active_reviewers": 20
+        },
+        {
+          "month": "2024-08-01",
+          "active_reviewers": 20
+        },
+        {
+          "month": "2024-09-01",
+          "active_reviewers": 17
+        },
+        {
+          "month": "2024-10-01",
+          "active_reviewers": 17
+        },
+        {
+          "month": "2024-11-01",
+          "active_reviewers": 17
+        },
+        {
+          "month": "2024-12-01",
+          "active_reviewers": 17
+        },
+        {
+          "month": "2025-01-01",
+          "active_reviewers": 17
+        },
+        {
+          "month": "2025-02-01",
+          "active_reviewers": 17
+        },
+        {
+          "month": "2025-03-01",
+          "active_reviewers": 17
+        },
+        {
+          "month": "2025-04-01",
+          "active_reviewers": 17
+        },
+        {
+          "month": "2025-05-01",
+          "active_reviewers": 17
+        },
+        {
+          "month": "2025-06-01",
+          "active_reviewers": 17
+        },
+        {
+          "month": "2025-07-01",
+          "active_reviewers": 17
+        },
+        {
+          "month": "2025-08-01",
+          "active_reviewers": 17
+        },
+        {
+          "month": "2025-09-01",
+          "active_reviewers": 127
+        },
+        {
+          "month": "2025-10-01",
+          "active_reviewers": 134
+        },
+        {
+          "month": "2025-11-01",
+          "active_reviewers": 149
+        },
+        {
+          "month": "2025-12-01",
+          "active_reviewers": 151
+        },
+        {
+          "month": "2026-01-01",
+          "active_reviewers": 156
+        },
+        {
+          "month": "2026-02-01",
+          "active_reviewers": 143
+        },
+        {
+          "month": "2026-03-01",
+          "active_reviewers": 140
+        },
+        {
+          "month": "2026-04-01",
+          "active_reviewers": 143
+        },
+        {
+          "month": "2026-05-01",
+          "active_reviewers": 151
+        },
+        {
+          "month": "2026-06-01",
+          "active_reviewers": 148
+        },
+        {
+          "month": "2026-07-01",
+          "active_reviewers": 130
+        },
+        {
+          "month": "2026-08-01",
+          "active_reviewers": 113
+        }
+      ],
+      "public_filters": {
+        "from": "2023-09-01",
+        "to": "2026-08-31",
+        "faculty": null,
+        "work_type": null
+      },
+      "public_summary": {
+        "checks": 59771,
+        "avg_originality": 76.4343,
+        "below_threshold": 17606,
+        "below_threshold_share": 0.2946,
+        "escalated": 9556,
+        "suppressed_groups": 92
+      },
+      "public_timeseries": [
+        {
+          "month": "2023-09-01",
+          "checks": 915,
+          "avg_originality": 76.3794
+        },
+        {
+          "month": "2023-10-01",
+          "checks": 1351,
+          "avg_originality": 77.321
+        },
+        {
+          "month": "2023-11-01",
+          "checks": 1778,
+          "avg_originality": 76.4936
+        },
+        {
+          "month": "2023-12-01",
+          "checks": 2632,
+          "avg_originality": 76.9369
+        },
+        {
+          "month": "2024-01-01",
+          "checks": 2448,
+          "avg_originality": 75.9367
+        },
+        {
+          "month": "2024-02-01",
+          "checks": 1191,
+          "avg_originality": 75.5716
+        },
+        {
+          "month": "2024-03-01",
+          "checks": 1328,
+          "avg_originality": 75.8859
+        },
+        {
+          "month": "2024-04-01",
+          "checks": 1848,
+          "avg_originality": 76.38
+        },
+        {
+          "month": "2024-05-01",
+          "checks": 2591,
+          "avg_originality": 76.3054
+        },
+        {
+          "month": "2024-06-01",
+          "checks": 1752,
+          "avg_originality": 77.0946
+        },
+        {
+          "month": "2024-07-01",
+          "checks": 867,
+          "avg_originality": 77.6953
+        },
+        {
+          "month": "2024-08-01",
+          "checks": 401,
+          "avg_originality": 77.7878
+        },
+        {
+          "month": "2024-09-01",
+          "checks": 922,
+          "avg_originality": 76.9168
+        },
+        {
+          "month": "2024-10-01",
+          "checks": 1352,
+          "avg_originality": 76.2719
+        },
+        {
+          "month": "2024-11-01",
+          "checks": 1757,
+          "avg_originality": 76.4025
+        },
+        {
+          "month": "2024-12-01",
+          "checks": 2694,
+          "avg_originality": 76.5478
+        },
+        {
+          "month": "2025-01-01",
+          "checks": 2544,
+          "avg_originality": 76.4902
+        },
+        {
+          "month": "2025-02-01",
+          "checks": 1328,
+          "avg_originality": 75.9278
+        },
+        {
+          "month": "2025-03-01",
+          "checks": 1419,
+          "avg_originality": 76.4541
+        },
+        {
+          "month": "2025-04-01",
+          "checks": 2016,
+          "avg_originality": 75.8177
+        },
+        {
+          "month": "2025-05-01",
+          "checks": 2757,
+          "avg_originality": 76.1194
+        },
+        {
+          "month": "2025-06-01",
+          "checks": 1912,
+          "avg_originality": 76.5662
+        },
+        {
+          "month": "2025-07-01",
+          "checks": 879,
+          "avg_originality": 75.6499
+        },
+        {
+          "month": "2025-08-01",
+          "checks": 420,
+          "avg_originality": 76.1026
+        },
+        {
+          "month": "2025-09-01",
+          "checks": 930,
+          "avg_originality": 76.7907
+        },
+        {
+          "month": "2025-10-01",
+          "checks": 1406,
+          "avg_originality": 76.0398
+        },
+        {
+          "month": "2025-11-01",
+          "checks": 1756,
+          "avg_originality": 76.3726
+        },
+        {
+          "month": "2025-12-01",
+          "checks": 2782,
+          "avg_originality": 76.2328
+        },
+        {
+          "month": "2026-01-01",
+          "checks": 2747,
+          "avg_originality": 76.7532
+        },
+        {
+          "month": "2026-02-01",
+          "checks": 1363,
+          "avg_originality": 77.0915
+        },
+        {
+          "month": "2026-03-01",
+          "checks": 1524,
+          "avg_originality": 77.0242
+        },
+        {
+          "month": "2026-04-01",
+          "checks": 2058,
+          "avg_originality": 76.2057
+        },
+        {
+          "month": "2026-05-01",
+          "checks": 2826,
+          "avg_originality": 76.4026
+        },
+        {
+          "month": "2026-06-01",
+          "checks": 1938,
+          "avg_originality": 76.1448
+        },
+        {
+          "month": "2026-07-01",
+          "checks": 949,
+          "avg_originality": 76.4211
+        },
+        {
+          "month": "2026-08-01",
+          "checks": 390,
+          "avg_originality": 76.7171
+        }
+      ],
+      "public_work_types": [
+        {
+          "code": "article",
+          "checks": 7222,
+          "avg_originality": 76.1851
+        },
+        {
+          "code": "course",
+          "checks": 20309,
+          "avg_originality": 76.2981
+        },
+        {
+          "code": "other",
+          "checks": 7222,
+          "avg_originality": 76.4122
+        },
+        {
+          "code": "research_report",
+          "checks": 4831,
+          "avg_originality": 76.6537
+        },
+        {
+          "code": "thesis_bachelor",
+          "checks": 13176,
+          "avg_originality": 76.635
+        },
+        {
+          "code": "thesis_master",
+          "checks": 5313,
+          "avg_originality": 76.3002
+        },
+        {
+          "code": "thesis_phd",
+          "checks": 1698,
+          "avg_originality": 77.4564
+        }
+      ],
+      "public_faculties": [
+        {
+          "code": "FAC01",
+          "checks": 2978,
+          "avg_originality": 76.503
+        },
+        {
+          "code": "FAC02",
+          "checks": 2656,
+          "avg_originality": 76.1885
+        },
+        {
+          "code": "FAC03",
+          "checks": 2549,
+          "avg_originality": 75.9137
+        },
+        {
+          "code": "FAC04",
+          "checks": 3657,
+          "avg_originality": 76.5498
+        },
+        {
+          "code": "FAC05",
+          "checks": 1676,
+          "avg_originality": 77.8921
+        },
+        {
+          "code": "FAC06",
+          "checks": 2478,
+          "avg_originality": 76.3486
+        },
+        {
+          "code": "FAC07",
+          "checks": 2456,
+          "avg_originality": 76.1024
+        },
+        {
+          "code": "FAC08",
+          "checks": 11,
+          "avg_originality": 77.1082
+        },
+        {
+          "code": "UNASSIGNED",
+          "checks": 41310,
+          "avg_originality": 76.4326
+        }
+      ],
+      "public_histogram": {
+        "lt50": 4642,
+        "b50_70": 12964,
+        "b70_85": 17682,
+        "b85_95": 16462,
+        "ge95": 8021,
+        "total": 59771
+      },
+      "public_yoy": [
+        {
+          "academic_year": 2023,
+          "checks": 19102,
+          "avg_originality": 76.5369
+        },
+        {
+          "academic_year": 2024,
+          "checks": 20000,
+          "avg_originality": 76.2986
+        },
+        {
+          "academic_year": 2025,
+          "checks": 20669,
+          "avg_originality": 76.4708
+        }
+      ]
+    },
+    {
+      "name": "academic-year-2025-2026",
+      "filters": {
+        "from": "2025-09-01",
+        "to": "2026-08-31",
+        "faculty": null,
+        "department": null,
+        "program": null,
+        "workType": null,
+        "status": null
+      },
+      "summary": {
+        "checks": 20800,
+        "avg_originality": 76.4711,
+        "below_threshold": 6107,
+        "below_threshold_share": 0.2936
+      },
+      "timeseries": [
+        {
+          "month": "2025-09-01",
+          "checks": 958,
+          "avg_originality": 76.7805
+        },
+        {
+          "month": "2025-10-01",
+          "checks": 1412,
+          "avg_originality": 76.0608
+        },
+        {
+          "month": "2025-11-01",
+          "checks": 1763,
+          "avg_originality": 76.3632
+        },
+        {
+          "month": "2025-12-01",
+          "checks": 2788,
+          "avg_originality": 76.2268
+        },
+        {
+          "month": "2026-01-01",
+          "checks": 2747,
+          "avg_originality": 76.7532
+        },
+        {
+          "month": "2026-02-01",
+          "checks": 1368,
+          "avg_originality": 77.0578
+        },
+        {
+          "month": "2026-03-01",
+          "checks": 1532,
+          "avg_originality": 77.01
+        },
+        {
+          "month": "2026-04-01",
+          "checks": 2062,
+          "avg_originality": 76.2132
+        },
+        {
+          "month": "2026-05-01",
+          "checks": 2830,
+          "avg_originality": 76.4077
+        },
+        {
+          "month": "2026-06-01",
+          "checks": 1948,
+          "avg_originality": 76.1797
+        },
+        {
+          "month": "2026-07-01",
+          "checks": 963,
+          "avg_originality": 76.303
+        },
+        {
+          "month": "2026-08-01",
+          "checks": 429,
+          "avg_originality": 76.9174
+        }
+      ],
+      "work_types": [
+        {
+          "code": "article",
+          "checks": 2451,
+          "avg_originality": 75.9902
+        },
+        {
+          "code": "course",
+          "checks": 7120,
+          "avg_originality": 76.194
+        },
+        {
+          "code": "other",
+          "checks": 2601,
+          "avg_originality": 76.9299
+        },
+        {
+          "code": "research_report",
+          "checks": 1669,
+          "avg_originality": 77.1068
+        },
+        {
+          "code": "thesis_bachelor",
+          "checks": 4521,
+          "avg_originality": 76.5194
+        },
+        {
+          "code": "thesis_master",
+          "checks": 1809,
+          "avg_originality": 76.4348
+        },
+        {
+          "code": "thesis_phd",
+          "checks": 629,
+          "avg_originality": 77.654
+        }
+      ],
+      "units": [
+        {
+          "faculty": "FAC01",
+          "department": "DEP01",
+          "checks": 669,
+          "avg_originality": 77.7008
+        },
+        {
+          "faculty": "FAC01",
+          "department": "DEP02",
+          "checks": 683,
+          "avg_originality": 75.6159
+        },
+        {
+          "faculty": "FAC01",
+          "department": "DEP03",
+          "checks": 630,
+          "avg_originality": 76.3335
+        },
+        {
+          "faculty": "FAC01",
+          "department": "DEP04",
+          "checks": 166,
+          "avg_originality": 74.6282
+        },
+        {
+          "faculty": "FAC01",
+          "department": "DEP05",
+          "checks": 835,
+          "avg_originality": 76.7122
+        },
+        {
+          "faculty": "FAC02",
+          "department": "DEP06",
+          "checks": 1086,
+          "avg_originality": 76.0116
+        },
+        {
+          "faculty": "FAC02",
+          "department": "DEP07",
+          "checks": 218,
+          "avg_originality": 76.6303
+        },
+        {
+          "faculty": "FAC02",
+          "department": "DEP08",
+          "checks": 579,
+          "avg_originality": 75.9811
+        },
+        {
+          "faculty": "FAC02",
+          "department": "DEP09",
+          "checks": 278,
+          "avg_originality": 76.3069
+        },
+        {
+          "faculty": "FAC02",
+          "department": "DEP10",
+          "checks": 503,
+          "avg_originality": 76.5387
+        },
+        {
+          "faculty": "FAC03",
+          "department": "DEP11",
+          "checks": 333,
+          "avg_originality": 74.4686
+        },
+        {
+          "faculty": "FAC03",
+          "department": "DEP12",
+          "checks": 656,
+          "avg_originality": 76.3122
+        },
+        {
+          "faculty": "FAC03",
+          "department": "DEP13",
+          "checks": 503,
+          "avg_originality": 75.1042
+        },
+        {
+          "faculty": "FAC03",
+          "department": "DEP14",
+          "checks": 187,
+          "avg_originality": 76.4619
+        },
+        {
+          "faculty": "FAC03",
+          "department": "DEP15",
+          "checks": 873,
+          "avg_originality": 76.5442
+        },
+        {
+          "faculty": "FAC04",
+          "department": "DEP16",
+          "checks": 726,
+          "avg_originality": 76.9325
+        },
+        {
+          "faculty": "FAC04",
+          "department": "DEP17",
+          "checks": 474,
+          "avg_originality": 75.4945
+        },
+        {
+          "faculty": "FAC04",
+          "department": "DEP18",
+          "checks": 957,
+          "avg_originality": 76.7843
+        },
+        {
+          "faculty": "FAC04",
+          "department": "DEP19",
+          "checks": 854,
+          "avg_originality": 77.0247
+        },
+        {
+          "faculty": "FAC04",
+          "department": "DEP20",
+          "checks": 655,
+          "avg_originality": 75.874
+        },
+        {
+          "faculty": "FAC05",
+          "department": "DEP21",
+          "checks": 93,
+          "avg_originality": 79.3777
+        },
+        {
+          "faculty": "FAC05",
+          "department": "DEP22",
+          "checks": 168,
+          "avg_originality": 78.3511
+        },
+        {
+          "faculty": "FAC05",
+          "department": "DEP23",
+          "checks": 280,
+          "avg_originality": 77.1832
+        },
+        {
+          "faculty": "FAC05",
+          "department": "DEP24",
+          "checks": 469,
+          "avg_originality": 77.3104
+        },
+        {
+          "faculty": "FAC05",
+          "department": "DEP25",
+          "checks": 701,
+          "avg_originality": 78.1271
+        },
+        {
+          "faculty": "FAC06",
+          "department": "DEP26",
+          "checks": 333,
+          "avg_originality": 75.7401
+        },
+        {
+          "faculty": "FAC06",
+          "department": "DEP27",
+          "checks": 251,
+          "avg_originality": 77.8419
+        },
+        {
+          "faculty": "FAC06",
+          "department": "DEP28",
+          "checks": 1002,
+          "avg_originality": 76.156
+        },
+        {
+          "faculty": "FAC06",
+          "department": "DEP29",
+          "checks": 143,
+          "avg_originality": 72.3714
+        },
+        {
+          "faculty": "FAC06",
+          "department": "DEP30",
+          "checks": 550,
+          "avg_originality": 77.5795
+        },
+        {
+          "faculty": "FAC07",
+          "department": "DEP31",
+          "checks": 116,
+          "avg_originality": 76.3048
+        },
+        {
+          "faculty": "FAC07",
+          "department": "DEP32",
+          "checks": 422,
+          "avg_originality": 76.4337
+        },
+        {
+          "faculty": "FAC07",
+          "department": "DEP33",
+          "checks": 584,
+          "avg_originality": 76.0265
+        },
+        {
+          "faculty": "FAC07",
+          "department": "DEP34",
+          "checks": 891,
+          "avg_originality": 75.9351
+        },
+        {
+          "faculty": "FAC07",
+          "department": "DEP35",
+          "checks": 461,
+          "avg_originality": 76.363
+        },
+        {
+          "faculty": "FAC08",
+          "department": "DEP36",
+          "checks": 7,
+          "avg_originality": 71.8086
+        },
+        {
+          "faculty": "FAC08",
+          "department": "DEP37",
+          "checks": 2,
+          "avg_originality": 74.945
+        },
+        {
+          "faculty": "FAC08",
+          "department": "DEP38",
+          "checks": 3,
+          "avg_originality": 72.22
+        },
+        {
+          "faculty": "FAC08",
+          "department": "DEP39",
+          "checks": 4,
+          "avg_originality": 80.7075
+        },
+        {
+          "faculty": "FAC08",
+          "department": "DEP40",
+          "checks": 5,
+          "avg_originality": 85.21
+        },
+        {
+          "faculty": "UNASSIGNED",
+          "department": "UNASSIGNED",
+          "checks": 2450,
+          "avg_originality": 76.6821
+        }
+      ],
+      "histogram": {
+        "lt50": 1626,
+        "b50_70": 4481,
+        "b70_85": 6077,
+        "b85_95": 5808,
+        "ge95": 2808
+      },
+      "yoy": [
+        {
+          "academic_year": 2025,
+          "checks": 20800,
+          "avg_originality": 76.4711
+        }
+      ],
+      "rechecks": {
+        "works_total": 18007,
+        "works_rechecked": 2154,
+        "improved": 1687
+      },
+      "escalations": {
+        "checks_escalated": 6902
+      },
+      "usage": [
+        {
+          "month": "2025-09-01",
+          "active_reviewers": 127
+        },
+        {
+          "month": "2025-10-01",
+          "active_reviewers": 134
+        },
+        {
+          "month": "2025-11-01",
+          "active_reviewers": 149
+        },
+        {
+          "month": "2025-12-01",
+          "active_reviewers": 151
+        },
+        {
+          "month": "2026-01-01",
+          "active_reviewers": 156
+        },
+        {
+          "month": "2026-02-01",
+          "active_reviewers": 143
+        },
+        {
+          "month": "2026-03-01",
+          "active_reviewers": 140
+        },
+        {
+          "month": "2026-04-01",
+          "active_reviewers": 143
+        },
+        {
+          "month": "2026-05-01",
+          "active_reviewers": 151
+        },
+        {
+          "month": "2026-06-01",
+          "active_reviewers": 148
+        },
+        {
+          "month": "2026-07-01",
+          "active_reviewers": 130
+        },
+        {
+          "month": "2026-08-01",
+          "active_reviewers": 113
+        }
+      ],
+      "public_filters": {
+        "from": "2025-09-01",
+        "to": "2026-08-31",
+        "faculty": null,
+        "work_type": null
+      },
+      "public_summary": {
+        "checks": 20669,
+        "avg_originality": 76.4708,
+        "below_threshold": 6068,
+        "below_threshold_share": 0.2936,
+        "escalated": 6869,
+        "suppressed_groups": 47
+      },
+      "public_timeseries": [
+        {
+          "month": "2025-09-01",
+          "checks": 930,
+          "avg_originality": 76.7907
+        },
+        {
+          "month": "2025-10-01",
+          "checks": 1406,
+          "avg_originality": 76.0398
+        },
+        {
+          "month": "2025-11-01",
+          "checks": 1756,
+          "avg_originality": 76.3726
+        },
+        {
+          "month": "2025-12-01",
+          "checks": 2782,
+          "avg_originality": 76.2328
+        },
+        {
+          "month": "2026-01-01",
+          "checks": 2747,
+          "avg_originality": 76.7532
+        },
+        {
+          "month": "2026-02-01",
+          "checks": 1363,
+          "avg_originality": 77.0915
+        },
+        {
+          "month": "2026-03-01",
+          "checks": 1524,
+          "avg_originality": 77.0242
+        },
+        {
+          "month": "2026-04-01",
+          "checks": 2058,
+          "avg_originality": 76.2057
+        },
+        {
+          "month": "2026-05-01",
+          "checks": 2826,
+          "avg_originality": 76.4026
+        },
+        {
+          "month": "2026-06-01",
+          "checks": 1938,
+          "avg_originality": 76.1448
+        },
+        {
+          "month": "2026-07-01",
+          "checks": 949,
+          "avg_originality": 76.4211
+        },
+        {
+          "month": "2026-08-01",
+          "checks": 390,
+          "avg_originality": 76.7171
+        }
+      ],
+      "public_work_types": [
+        {
+          "code": "article",
+          "checks": 2445,
+          "avg_originality": 76.017
+        },
+        {
+          "code": "course",
+          "checks": 7119,
+          "avg_originality": 76.1934
+        },
+        {
+          "code": "other",
+          "checks": 2590,
+          "avg_originality": 76.9625
+        },
+        {
+          "code": "research_report",
+          "checks": 1657,
+          "avg_originality": 77.0616
+        },
+        {
+          "code": "thesis_bachelor",
+          "checks": 4519,
+          "avg_originality": 76.5201
+        },
+        {
+          "code": "thesis_master",
+          "checks": 1795,
+          "avg_originality": 76.4513
+        },
+        {
+          "code": "thesis_phd",
+          "checks": 544,
+          "avg_originality": 77.6562
+        }
+      ],
+      "public_faculties": [
+        {
+          "code": "FAC01",
+          "checks": 2978,
+          "avg_originality": 76.503
+        },
+        {
+          "code": "FAC02",
+          "checks": 2656,
+          "avg_originality": 76.1885
+        },
+        {
+          "code": "FAC03",
+          "checks": 2549,
+          "avg_originality": 75.9137
+        },
+        {
+          "code": "FAC04",
+          "checks": 3657,
+          "avg_originality": 76.5498
+        },
+        {
+          "code": "FAC05",
+          "checks": 1676,
+          "avg_originality": 77.8921
+        },
+        {
+          "code": "FAC06",
+          "checks": 2259,
+          "avg_originality": 76.3601
+        },
+        {
+          "code": "FAC07",
+          "checks": 2456,
+          "avg_originality": 76.1024
+        },
+        {
+          "code": "FAC08",
+          "checks": 11,
+          "avg_originality": 77.1082
+        },
+        {
+          "code": "UNASSIGNED",
+          "checks": 2427,
+          "avg_originality": 76.698
+        }
+      ],
+      "public_histogram": {
+        "lt50": 1619,
+        "b50_70": 4449,
+        "b70_85": 6036,
+        "b85_95": 5770,
+        "ge95": 2795,
+        "total": 20669
+      },
+      "public_yoy": [
+        {
+          "academic_year": 2025,
+          "checks": 20669,
+          "avg_originality": 76.4708
+        }
+      ]
+    },
+    {
+      "name": "month-2025-11",
+      "filters": {
+        "from": "2025-11-01",
+        "to": "2025-11-30",
+        "faculty": null,
+        "department": null,
+        "program": null,
+        "workType": null,
+        "status": null
+      },
+      "summary": {
+        "checks": 1763,
+        "avg_originality": 76.3632,
+        "below_threshold": 513,
+        "below_threshold_share": 0.291
+      },
+      "timeseries": [
+        {
+          "month": "2025-11-01",
+          "checks": 1763,
+          "avg_originality": 76.3632
+        }
+      ],
+      "work_types": [
+        {
+          "code": "article",
+          "checks": 192,
+          "avg_originality": 74.2597
+        },
+        {
+          "code": "course",
+          "checks": 630,
+          "avg_originality": 75.7653
+        },
+        {
+          "code": "other",
+          "checks": 225,
+          "avg_originality": 78.2476
+        },
+        {
+          "code": "research_report",
+          "checks": 123,
+          "avg_originality": 77.9351
+        },
+        {
+          "code": "thesis_bachelor",
+          "checks": 370,
+          "avg_originality": 76.1899
+        },
+        {
+          "code": "thesis_master",
+          "checks": 168,
+          "avg_originality": 76.0839
+        },
+        {
+          "code": "thesis_phd",
+          "checks": 55,
+          "avg_originality": 81.3502
+        }
+      ],
+      "units": [
+        {
+          "faculty": "FAC01",
+          "department": "DEP01",
+          "checks": 54,
+          "avg_originality": 78.8731
+        },
+        {
+          "faculty": "FAC01",
+          "department": "DEP02",
+          "checks": 57,
+          "avg_originality": 71.5053
+        },
+        {
+          "faculty": "FAC01",
+          "department": "DEP03",
+          "checks": 57,
+          "avg_originality": 78.1963
+        },
+        {
+          "faculty": "FAC01",
+          "department": "DEP04",
+          "checks": 12,
+          "avg_originality": 77.265
+        },
+        {
+          "faculty": "FAC01",
+          "department": "DEP05",
+          "checks": 68,
+          "avg_originality": 78.0843
+        },
+        {
+          "faculty": "FAC02",
+          "department": "DEP06",
+          "checks": 74,
+          "avg_originality": 75.0428
+        },
+        {
+          "faculty": "FAC02",
+          "department": "DEP07",
+          "checks": 23,
+          "avg_originality": 78.933
+        },
+        {
+          "faculty": "FAC02",
+          "department": "DEP08",
+          "checks": 50,
+          "avg_originality": 77.1962
+        },
+        {
+          "faculty": "FAC02",
+          "department": "DEP09",
+          "checks": 22,
+          "avg_originality": 74.4009
+        },
+        {
+          "faculty": "FAC02",
+          "department": "DEP10",
+          "checks": 35,
+          "avg_originality": 71.9671
+        },
+        {
+          "faculty": "FAC03",
+          "department": "DEP11",
+          "checks": 31,
+          "avg_originality": 72.6719
+        },
+        {
+          "faculty": "FAC03",
+          "department": "DEP12",
+          "checks": 70,
+          "avg_originality": 78.9937
+        },
+        {
+          "faculty": "FAC03",
+          "department": "DEP13",
+          "checks": 45,
+          "avg_originality": 75.5742
+        },
+        {
+          "faculty": "FAC03",
+          "department": "DEP14",
+          "checks": 13,
+          "avg_originality": 81.3054
+        },
+        {
+          "faculty": "FAC03",
+          "department": "DEP15",
+          "checks": 71,
+          "avg_originality": 78.5773
+        },
+        {
+          "faculty": "FAC04",
+          "department": "DEP16",
+          "checks": 73,
+          "avg_originality": 76.3582
+        },
+        {
+          "faculty": "FAC04",
+          "department": "DEP17",
+          "checks": 33,
+          "avg_originality": 78.3967
+        },
+        {
+          "faculty": "FAC04",
+          "department": "DEP18",
+          "checks": 90,
+          "avg_originality": 74.3333
+        },
+        {
+          "faculty": "FAC04",
+          "department": "DEP19",
+          "checks": 64,
+          "avg_originality": 77.8142
+        },
+        {
+          "faculty": "FAC04",
+          "department": "DEP20",
+          "checks": 46,
+          "avg_originality": 73.608
+        },
+        {
+          "faculty": "FAC05",
+          "department": "DEP21",
+          "checks": 5,
+          "avg_originality": 82.062
+        },
+        {
+          "faculty": "FAC05",
+          "department": "DEP22",
+          "checks": 18,
+          "avg_originality": 71.4478
+        },
+        {
+          "faculty": "FAC05",
+          "department": "DEP23",
+          "checks": 28,
+          "avg_originality": 75.7889
+        },
+        {
+          "faculty": "FAC05",
+          "department": "DEP24",
+          "checks": 44,
+          "avg_originality": 78.5807
+        },
+        {
+          "faculty": "FAC05",
+          "department": "DEP25",
+          "checks": 65,
+          "avg_originality": 76.3589
+        },
+        {
+          "faculty": "FAC06",
+          "department": "DEP26",
+          "checks": 31,
+          "avg_originality": 75.5277
+        },
+        {
+          "faculty": "FAC06",
+          "department": "DEP27",
+          "checks": 22,
+          "avg_originality": 80.34
+        },
+        {
+          "faculty": "FAC06",
+          "department": "DEP28",
+          "checks": 74,
+          "avg_originality": 74.2886
+        },
+        {
+          "faculty": "FAC06",
+          "department": "DEP29",
+          "checks": 16,
+          "avg_originality": 79.9075
+        },
+        {
+          "faculty": "FAC06",
+          "department": "DEP30",
+          "checks": 60,
+          "avg_originality": 75.068
+        },
+        {
+          "faculty": "FAC07",
+          "department": "DEP31",
+          "checks": 5,
+          "avg_originality": 74.402
+        },
+        {
+          "faculty": "FAC07",
+          "department": "DEP32",
+          "checks": 39,
+          "avg_originality": 73.5533
+        },
+        {
+          "faculty": "FAC07",
+          "department": "DEP33",
+          "checks": 48,
+          "avg_originality": 70.89
+        },
+        {
+          "faculty": "FAC07",
+          "department": "DEP34",
+          "checks": 57,
+          "avg_originality": 79.053
+        },
+        {
+          "faculty": "FAC07",
+          "department": "DEP35",
+          "checks": 45,
+          "avg_originality": 77.9131
+        },
+        {
+          "faculty": "FAC08",
+          "department": "DEP38",
+          "checks": 3,
+          "avg_originality": 72.22
+        },
+        {
+          "faculty": "UNASSIGNED",
+          "department": "UNASSIGNED",
+          "checks": 215,
+          "avg_originality": 77.5745
+        }
+      ],
+      "histogram": {
+        "lt50": 128,
+        "b50_70": 385,
+        "b70_85": 544,
+        "b85_95": 477,
+        "ge95": 229
+      },
+      "yoy": [
+        {
+          "academic_year": 2025,
+          "checks": 1763,
+          "avg_originality": 76.3632
+        }
+      ],
+      "rechecks": {
+        "works_total": 1649,
+        "works_rechecked": 105,
+        "improved": 80
+      },
+      "escalations": {
+        "checks_escalated": 584
+      },
+      "usage": [
+        {
+          "month": "2025-11-01",
+          "active_reviewers": 149
+        }
+      ],
+      "public_filters": {
+        "from": "2025-11-01",
+        "to": "2025-11-30",
+        "faculty": null,
+        "work_type": null
+      },
+      "public_summary": {
+        "checks": 1756,
+        "avg_originality": 76.3726,
+        "below_threshold": 511,
+        "below_threshold_share": 0.291,
+        "escalated": 584,
+        "suppressed_groups": 2
+      },
+      "public_timeseries": [
+        {
+          "month": "2025-11-01",
+          "checks": 1756,
+          "avg_originality": 76.3726
+        }
+      ],
+      "public_work_types": [
+        {
+          "code": "article",
+          "checks": 192,
+          "avg_originality": 74.2597
+        },
+        {
+          "code": "course",
+          "checks": 630,
+          "avg_originality": 75.7653
+        },
+        {
+          "code": "other",
+          "checks": 225,
+          "avg_originality": 78.2476
+        },
+        {
+          "code": "research_report",
+          "checks": 123,
+          "avg_originality": 77.9351
+        },
+        {
+          "code": "thesis_bachelor",
+          "checks": 370,
+          "avg_originality": 76.1899
+        },
+        {
+          "code": "thesis_master",
+          "checks": 165,
+          "avg_originality": 76.1542
+        },
+        {
+          "code": "thesis_phd",
+          "checks": 51,
+          "avg_originality": 81.8208
+        }
+      ],
+      "public_faculties": [
+        {
+          "code": "FAC01",
+          "checks": 248,
+          "avg_originality": 76.73
+        },
+        {
+          "code": "FAC02",
+          "checks": 204,
+          "avg_originality": 75.4123
+        },
+        {
+          "code": "FAC03",
+          "checks": 230,
+          "avg_originality": 77.4747
+        },
+        {
+          "code": "FAC04",
+          "checks": 306,
+          "avg_originality": 75.8736
+        },
+        {
+          "code": "FAC05",
+          "checks": 156,
+          "avg_originality": 76.5253
+        },
+        {
+          "code": "FAC06",
+          "checks": 203,
+          "avg_originality": 75.8069
+        },
+        {
+          "code": "FAC07",
+          "checks": 194,
+          "avg_originality": 75.5434
+        },
+        {
+          "code": "FAC08",
+          "checks": 0,
+          "avg_originality": 0
+        },
+        {
+          "code": "UNASSIGNED",
+          "checks": 215,
+          "avg_originality": 77.5745
+        }
+      ],
+      "public_histogram": {
+        "lt50": 128,
+        "b50_70": 383,
+        "b70_85": 541,
+        "b85_95": 476,
+        "ge95": 228,
+        "total": 1756
+      },
+      "public_yoy": [
+        {
+          "academic_year": 2025,
+          "checks": 1756,
+          "avg_originality": 76.3726
+        }
+      ]
+    },
+    {
+      "name": "semester-autumn-2025",
+      "filters": {
+        "from": "2025-09-01",
+        "to": "2026-01-31",
+        "faculty": null,
+        "department": null,
+        "program": null,
+        "workType": null,
+        "status": null
+      },
+      "summary": {
+        "checks": 9668,
+        "avg_originality": 76.4318,
+        "below_threshold": 2847,
+        "below_threshold_share": 0.2945
+      },
+      "timeseries": [
+        {
+          "month": "2025-09-01",
+          "checks": 958,
+          "avg_originality": 76.7805
+        },
+        {
+          "month": "2025-10-01",
+          "checks": 1412,
+          "avg_originality": 76.0608
+        },
+        {
+          "month": "2025-11-01",
+          "checks": 1763,
+          "avg_originality": 76.3632
+        },
+        {
+          "month": "2025-12-01",
+          "checks": 2788,
+          "avg_originality": 76.2268
+        },
+        {
+          "month": "2026-01-01",
+          "checks": 2747,
+          "avg_originality": 76.7532
+        }
+      ],
+      "work_types": [
+        {
+          "code": "article",
+          "checks": 1078,
+          "avg_originality": 75.6563
+        },
+        {
+          "code": "course",
+          "checks": 3399,
+          "avg_originality": 76.1561
+        },
+        {
+          "code": "other",
+          "checks": 1209,
+          "avg_originality": 77.0924
+        },
+        {
+          "code": "research_report",
+          "checks": 781,
+          "avg_originality": 76.0609
+        },
+        {
+          "code": "thesis_bachelor",
+          "checks": 2073,
+          "avg_originality": 76.6052
+        },
+        {
+          "code": "thesis_master",
+          "checks": 846,
+          "avg_originality": 77.1996
+        },
+        {
+          "code": "thesis_phd",
+          "checks": 282,
+          "avg_originality": 77.3381
+        }
+      ],
+      "units": [
+        {
+          "faculty": "FAC01",
+          "department": "DEP01",
+          "checks": 293,
+          "avg_originality": 77.932
+        },
+        {
+          "faculty": "FAC01",
+          "department": "DEP02",
+          "checks": 311,
+          "avg_originality": 77.317
+        },
+        {
+          "faculty": "FAC01",
+          "department": "DEP03",
+          "checks": 306,
+          "avg_originality": 76.759
+        },
+        {
+          "faculty": "FAC01",
+          "department": "DEP04",
+          "checks": 67,
+          "avg_originality": 78.5728
+        },
+        {
+          "faculty": "FAC01",
+          "department": "DEP05",
+          "checks": 378,
+          "avg_originality": 76.0846
+        },
+        {
+          "faculty": "FAC02",
+          "department": "DEP06",
+          "checks": 500,
+          "avg_originality": 75.1084
+        },
+        {
+          "faculty": "FAC02",
+          "department": "DEP07",
+          "checks": 99,
+          "avg_originality": 76.977
+        },
+        {
+          "faculty": "FAC02",
+          "department": "DEP08",
+          "checks": 258,
+          "avg_originality": 75.8328
+        },
+        {
+          "faculty": "FAC02",
+          "department": "DEP09",
+          "checks": 117,
+          "avg_originality": 78.9852
+        },
+        {
+          "faculty": "FAC02",
+          "department": "DEP10",
+          "checks": 250,
+          "avg_originality": 75.2511
+        },
+        {
+          "faculty": "FAC03",
+          "department": "DEP11",
+          "checks": 158,
+          "avg_originality": 76.0204
+        },
+        {
+          "faculty": "FAC03",
+          "department": "DEP12",
+          "checks": 319,
+          "avg_originality": 76.8377
+        },
+        {
+          "faculty": "FAC03",
+          "department": "DEP13",
+          "checks": 251,
+          "avg_originality": 75.3567
+        },
+        {
+          "faculty": "FAC03",
+          "department": "DEP14",
+          "checks": 88,
+          "avg_originality": 77.7013
+        },
+        {
+          "faculty": "FAC03",
+          "department": "DEP15",
+          "checks": 394,
+          "avg_originality": 77.315
+        },
+        {
+          "faculty": "FAC04",
+          "department": "DEP16",
+          "checks": 358,
+          "avg_originality": 76.57
+        },
+        {
+          "faculty": "FAC04",
+          "department": "DEP17",
+          "checks": 218,
+          "avg_originality": 75.6885
+        },
+        {
+          "faculty": "FAC04",
+          "department": "DEP18",
+          "checks": 441,
+          "avg_originality": 76.2923
+        },
+        {
+          "faculty": "FAC04",
+          "department": "DEP19",
+          "checks": 409,
+          "avg_originality": 77.118
+        },
+        {
+          "faculty": "FAC04",
+          "department": "DEP20",
+          "checks": 297,
+          "avg_originality": 74.5046
+        },
+        {
+          "faculty": "FAC05",
+          "department": "DEP21",
+          "checks": 33,
+          "avg_originality": 77.587
+        },
+        {
+          "faculty": "FAC05",
+          "department": "DEP22",
+          "checks": 74,
+          "avg_originality": 78.4874
+        },
+        {
+          "faculty": "FAC05",
+          "department": "DEP23",
+          "checks": 147,
+          "avg_originality": 77.3886
+        },
+        {
+          "faculty": "FAC05",
+          "department": "DEP24",
+          "checks": 225,
+          "avg_originality": 78.4444
+        },
+        {
+          "faculty": "FAC05",
+          "department": "DEP25",
+          "checks": 320,
+          "avg_originality": 77.4688
+        },
+        {
+          "faculty": "FAC06",
+          "department": "DEP26",
+          "checks": 160,
+          "avg_originality": 75.5704
+        },
+        {
+          "faculty": "FAC06",
+          "department": "DEP27",
+          "checks": 117,
+          "avg_originality": 78.1284
+        },
+        {
+          "faculty": "FAC06",
+          "department": "DEP28",
+          "checks": 468,
+          "avg_originality": 75.7358
+        },
+        {
+          "faculty": "FAC06",
+          "department": "DEP29",
+          "checks": 70,
+          "avg_originality": 72.5057
+        },
+        {
+          "faculty": "FAC06",
+          "department": "DEP30",
+          "checks": 269,
+          "avg_originality": 77.7493
+        },
+        {
+          "faculty": "FAC07",
+          "department": "DEP31",
+          "checks": 46,
+          "avg_originality": 75.0791
+        },
+        {
+          "faculty": "FAC07",
+          "department": "DEP32",
+          "checks": 192,
+          "avg_originality": 76.1332
+        },
+        {
+          "faculty": "FAC07",
+          "department": "DEP33",
+          "checks": 280,
+          "avg_originality": 76.2773
+        },
+        {
+          "faculty": "FAC07",
+          "department": "DEP34",
+          "checks": 381,
+          "avg_originality": 75.1315
+        },
+        {
+          "faculty": "FAC07",
+          "department": "DEP35",
+          "checks": 203,
+          "avg_originality": 75.3083
+        },
+        {
+          "faculty": "FAC08",
+          "department": "DEP36",
+          "checks": 1,
+          "avg_originality": 80.52
+        },
+        {
+          "faculty": "FAC08",
+          "department": "DEP37",
+          "checks": 2,
+          "avg_originality": 74.945
+        },
+        {
+          "faculty": "FAC08",
+          "department": "DEP38",
+          "checks": 3,
+          "avg_originality": 72.22
+        },
+        {
+          "faculty": "FAC08",
+          "department": "DEP39",
+          "checks": 4,
+          "avg_originality": 80.7075
+        },
+        {
+          "faculty": "FAC08",
+          "department": "DEP40",
+          "checks": 5,
+          "avg_originality": 85.21
+        },
+        {
+          "faculty": "UNASSIGNED",
+          "department": "UNASSIGNED",
+          "checks": 1156,
+          "avg_originality": 76.4752
+        }
+      ],
+      "histogram": {
+        "lt50": 735,
+        "b50_70": 2112,
+        "b70_85": 2860,
+        "b85_95": 2704,
+        "ge95": 1257
+      },
+      "yoy": [
+        {
+          "academic_year": 2025,
+          "checks": 9668,
+          "avg_originality": 76.4318
+        }
+      ],
+      "rechecks": {
+        "works_total": 8539,
+        "works_rechecked": 902,
+        "improved": 686
+      },
+      "escalations": {
+        "checks_escalated": 3194
+      },
+      "usage": [
+        {
+          "month": "2025-09-01",
+          "active_reviewers": 127
+        },
+        {
+          "month": "2025-10-01",
+          "active_reviewers": 134
+        },
+        {
+          "month": "2025-11-01",
+          "active_reviewers": 149
+        },
+        {
+          "month": "2025-12-01",
+          "active_reviewers": 151
+        },
+        {
+          "month": "2026-01-01",
+          "active_reviewers": 156
+        }
+      ],
+      "public_filters": {
+        "from": "2025-09-01",
+        "to": "2026-01-31",
+        "faculty": null,
+        "work_type": null
+      },
+      "public_summary": {
+        "checks": 9621,
+        "avg_originality": 76.4326,
+        "below_threshold": 2835,
+        "below_threshold_share": 0.2947,
+        "escalated": 3185,
+        "suppressed_groups": 15
+      },
+      "public_timeseries": [
+        {
+          "month": "2025-09-01",
+          "checks": 930,
+          "avg_originality": 76.7907
+        },
+        {
+          "month": "2025-10-01",
+          "checks": 1406,
+          "avg_originality": 76.0398
+        },
+        {
+          "month": "2025-11-01",
+          "checks": 1756,
+          "avg_originality": 76.3726
+        },
+        {
+          "month": "2025-12-01",
+          "checks": 2782,
+          "avg_originality": 76.2328
+        },
+        {
+          "month": "2026-01-01",
+          "checks": 2747,
+          "avg_originality": 76.7532
+        }
+      ],
+      "public_work_types": [
+        {
+          "code": "article",
+          "checks": 1074,
+          "avg_originality": 75.658
+        },
+        {
+          "code": "course",
+          "checks": 3398,
+          "avg_originality": 76.1548
+        },
+        {
+          "code": "other",
+          "checks": 1209,
+          "avg_originality": 77.0924
+        },
+        {
+          "code": "research_report",
+          "checks": 781,
+          "avg_originality": 76.0609
+        },
+        {
+          "code": "thesis_bachelor",
+          "checks": 2071,
+          "avg_originality": 76.6069
+        },
+        {
+          "code": "thesis_master",
+          "checks": 839,
+          "avg_originality": 77.2455
+        },
+        {
+          "code": "thesis_phd",
+          "checks": 249,
+          "avg_originality": 77.3396
+        }
+      ],
+      "public_faculties": [
+        {
+          "code": "FAC01",
+          "checks": 1352,
+          "avg_originality": 77.0828
+        },
+        {
+          "code": "FAC02",
+          "checks": 1220,
+          "avg_originality": 75.8267
+        },
+        {
+          "code": "FAC03",
+          "checks": 1208,
+          "avg_originality": 76.6347
+        },
+        {
+          "code": "FAC04",
+          "checks": 1721,
+          "avg_originality": 76.1545
+        },
+        {
+          "code": "FAC05",
+          "checks": 791,
+          "avg_originality": 77.8539
+        },
+        {
+          "code": "FAC06",
+          "checks": 1076,
+          "avg_originality": 76.2078
+        },
+        {
+          "code": "FAC07",
+          "checks": 1096,
+          "avg_originality": 75.6499
+        },
+        {
+          "code": "FAC08",
+          "checks": 5,
+          "avg_originality": 85.21
+        },
+        {
+          "code": "UNASSIGNED",
+          "checks": 1152,
+          "avg_originality": 76.4554
+        }
+      ],
+      "public_histogram": {
+        "lt50": 733,
+        "b50_70": 2102,
+        "b70_85": 2840,
+        "b85_95": 2694,
+        "ge95": 1252,
+        "total": 9621
+      },
+      "public_yoy": [
+        {
+          "academic_year": 2025,
+          "checks": 9621,
+          "avg_originality": 76.4326
+        }
+      ]
+    },
+    {
+      "name": "faculty-fac03",
+      "filters": {
+        "from": "2023-09-01",
+        "to": "2026-08-31",
+        "faculty": "FAC03",
+        "department": null,
+        "program": null,
+        "workType": null,
+        "status": null
+      },
+      "summary": {
+        "checks": 2552,
+        "avg_originality": 75.9239,
+        "below_threshold": 783,
+        "below_threshold_share": 0.3068
+      },
+      "timeseries": [
+        {
+          "month": "2025-09-01",
+          "checks": 99,
+          "avg_originality": 74.9592
+        },
+        {
+          "month": "2025-10-01",
+          "checks": 179,
+          "avg_originality": 79.6021
+        },
+        {
+          "month": "2025-11-01",
+          "checks": 230,
+          "avg_originality": 77.4747
+        },
+        {
+          "month": "2025-12-01",
+          "checks": 347,
+          "avg_originality": 76.1388
+        },
+        {
+          "month": "2026-01-01",
+          "checks": 355,
+          "avg_originality": 75.571
+        },
+        {
+          "month": "2026-02-01",
+          "checks": 160,
+          "avg_originality": 74.7474
+        },
+        {
+          "month": "2026-03-01",
+          "checks": 196,
+          "avg_originality": 77.5406
+        },
+        {
+          "month": "2026-04-01",
+          "checks": 221,
+          "avg_originality": 77.1888
+        },
+        {
+          "month": "2026-05-01",
+          "checks": 338,
+          "avg_originality": 74.2204
+        },
+        {
+          "month": "2026-06-01",
+          "checks": 237,
+          "avg_originality": 74.6216
+        },
+        {
+          "month": "2026-07-01",
+          "checks": 127,
+          "avg_originality": 72.9903
+        },
+        {
+          "month": "2026-08-01",
+          "checks": 63,
+          "avg_originality": 75.6037
+        }
+      ],
+      "work_types": [
+        {
+          "code": "article",
+          "checks": 295,
+          "avg_originality": 77.5409
+        },
+        {
+          "code": "course",
+          "checks": 844,
+          "avg_originality": 74.9052
+        },
+        {
+          "code": "other",
+          "checks": 328,
+          "avg_originality": 75.5967
+        },
+        {
+          "code": "research_report",
+          "checks": 226,
+          "avg_originality": 77.7806
+        },
+        {
+          "code": "thesis_bachelor",
+          "checks": 570,
+          "avg_originality": 76.1946
+        },
+        {
+          "code": "thesis_master",
+          "checks": 205,
+          "avg_originality": 76.101
+        },
+        {
+          "code": "thesis_phd",
+          "checks": 84,
+          "avg_originality": 74.4927
+        }
+      ],
+      "units": [
+        {
+          "faculty": "FAC03",
+          "department": "DEP11",
+          "checks": 333,
+          "avg_originality": 74.4686
+        },
+        {
+          "faculty": "FAC03",
+          "department": "DEP12",
+          "checks": 656,
+          "avg_originality": 76.3122
+        },
+        {
+          "faculty": "FAC03",
+          "department": "DEP13",
+          "checks": 503,
+          "avg_originality": 75.1042
+        },
+        {
+          "faculty": "FAC03",
+          "department": "DEP14",
+          "checks": 187,
+          "avg_originality": 76.4619
+        },
+        {
+          "faculty": "FAC03",
+          "department": "DEP15",
+          "checks": 873,
+          "avg_originality": 76.5442
+        }
+      ],
+      "histogram": {
+        "lt50": 193,
+        "b50_70": 590,
+        "b70_85": 771,
+        "b85_95": 677,
+        "ge95": 321
+      },
+      "yoy": [
+        {
+          "academic_year": 2025,
+          "checks": 2552,
+          "avg_originality": 75.9239
+        }
+      ],
+      "rechecks": {
+        "works_total": 2190,
+        "works_rechecked": 274,
+        "improved": 221
+      },
+      "escalations": {
+        "checks_escalated": 872
+      },
+      "usage": [
+        {
+          "month": "2025-09-01",
+          "active_reviewers": 17
+        },
+        {
+          "month": "2025-10-01",
+          "active_reviewers": 18
+        },
+        {
+          "month": "2025-11-01",
+          "active_reviewers": 19
+        },
+        {
+          "month": "2025-12-01",
+          "active_reviewers": 20
+        },
+        {
+          "month": "2026-01-01",
+          "active_reviewers": 19
+        },
+        {
+          "month": "2026-02-01",
+          "active_reviewers": 19
+        },
+        {
+          "month": "2026-03-01",
+          "active_reviewers": 18
+        },
+        {
+          "month": "2026-04-01",
+          "active_reviewers": 19
+        },
+        {
+          "month": "2026-05-01",
+          "active_reviewers": 19
+        },
+        {
+          "month": "2026-06-01",
+          "active_reviewers": 18
+        },
+        {
+          "month": "2026-07-01",
+          "active_reviewers": 19
+        },
+        {
+          "month": "2026-08-01",
+          "active_reviewers": 15
+        }
+      ],
+      "public_filters": {
+        "from": "2023-09-01",
+        "to": "2026-08-31",
+        "faculty": "FAC03",
+        "work_type": null
+      },
+      "public_summary": {
+        "checks": 2549,
+        "avg_originality": 75.9137,
+        "below_threshold": 783,
+        "below_threshold_share": 0.3072,
+        "escalated": 871,
+        "suppressed_groups": 2
+      },
+      "public_timeseries": [
+        {
+          "month": "2025-09-01",
+          "checks": 97,
+          "avg_originality": 74.8339
+        },
+        {
+          "month": "2025-10-01",
+          "checks": 179,
+          "avg_originality": 79.6021
+        },
+        {
+          "month": "2025-11-01",
+          "checks": 230,
+          "avg_originality": 77.4747
+        },
+        {
+          "month": "2025-12-01",
+          "checks": 347,
+          "avg_originality": 76.1388
+        },
+        {
+          "month": "2026-01-01",
+          "checks": 355,
+          "avg_originality": 75.571
+        },
+        {
+          "month": "2026-02-01",
+          "checks": 160,
+          "avg_originality": 74.7474
+        },
+        {
+          "month": "2026-03-01",
+          "checks": 196,
+          "avg_originality": 77.5406
+        },
+        {
+          "month": "2026-04-01",
+          "checks": 221,
+          "avg_originality": 77.1888
+        },
+        {
+          "month": "2026-05-01",
+          "checks": 338,
+          "avg_originality": 74.2204
+        },
+        {
+          "month": "2026-06-01",
+          "checks": 237,
+          "avg_originality": 74.6216
+        },
+        {
+          "month": "2026-07-01",
+          "checks": 127,
+          "avg_originality": 72.9903
+        },
+        {
+          "month": "2026-08-01",
+          "checks": 62,
+          "avg_originality": 75.3442
+        }
+      ],
+      "public_work_types": [
+        {
+          "code": "article",
+          "checks": 295,
+          "avg_originality": 77.5409
+        },
+        {
+          "code": "course",
+          "checks": 844,
+          "avg_originality": 74.9052
+        },
+        {
+          "code": "other",
+          "checks": 328,
+          "avg_originality": 75.5967
+        },
+        {
+          "code": "research_report",
+          "checks": 226,
+          "avg_originality": 77.7806
+        },
+        {
+          "code": "thesis_bachelor",
+          "checks": 570,
+          "avg_originality": 76.1946
+        },
+        {
+          "code": "thesis_master",
+          "checks": 205,
+          "avg_originality": 76.101
+        },
+        {
+          "code": "thesis_phd",
+          "checks": 81,
+          "avg_originality": 74.1189
+        }
+      ],
+      "public_faculties": [
+        {
+          "code": "FAC03",
+          "checks": 2549,
+          "avg_originality": 75.9137
+        }
+      ],
+      "public_histogram": {
+        "lt50": 193,
+        "b50_70": 590,
+        "b70_85": 769,
+        "b85_95": 676,
+        "ge95": 321,
+        "total": 2549
+      },
+      "public_yoy": [
+        {
+          "academic_year": 2025,
+          "checks": 2549,
+          "avg_originality": 75.9137
+        }
+      ]
+    },
+    {
+      "name": "faculty-fac03-worktype-course",
+      "filters": {
+        "from": "2023-09-01",
+        "to": "2026-08-31",
+        "faculty": "FAC03",
+        "department": null,
+        "program": null,
+        "workType": "course",
+        "status": null
+      },
+      "summary": {
+        "checks": 844,
+        "avg_originality": 74.9052,
+        "below_threshold": 276,
+        "below_threshold_share": 0.327
+      },
+      "timeseries": [
+        {
+          "month": "2025-09-01",
+          "checks": 37,
+          "avg_originality": 73.5886
+        },
+        {
+          "month": "2025-10-01",
+          "checks": 58,
+          "avg_originality": 80.6948
+        },
+        {
+          "month": "2025-11-01",
+          "checks": 83,
+          "avg_originality": 73.603
+        },
+        {
+          "month": "2025-12-01",
+          "checks": 130,
+          "avg_originality": 76.9355
+        },
+        {
+          "month": "2026-01-01",
+          "checks": 122,
+          "avg_originality": 74.7286
+        },
+        {
+          "month": "2026-02-01",
+          "checks": 51,
+          "avg_originality": 73.9388
+        },
+        {
+          "month": "2026-03-01",
+          "checks": 66,
+          "avg_originality": 77.5361
+        },
+        {
+          "month": "2026-04-01",
+          "checks": 78,
+          "avg_originality": 75.0971
+        },
+        {
+          "month": "2026-05-01",
+          "checks": 98,
+          "avg_originality": 72.6949
+        },
+        {
+          "month": "2026-06-01",
+          "checks": 68,
+          "avg_originality": 70.9335
+        },
+        {
+          "month": "2026-07-01",
+          "checks": 41,
+          "avg_originality": 70.1202
+        },
+        {
+          "month": "2026-08-01",
+          "checks": 12,
+          "avg_originality": 85.085
+        }
+      ],
+      "work_types": [
+        {
+          "code": "course",
+          "checks": 844,
+          "avg_originality": 74.9052
+        }
+      ],
+      "units": [
+        {
+          "faculty": "FAC03",
+          "department": "DEP11",
+          "checks": 99,
+          "avg_originality": 72.7377
+        },
+        {
+          "faculty": "FAC03",
+          "department": "DEP12",
+          "checks": 232,
+          "avg_originality": 76.4196
+        },
+        {
+          "faculty": "FAC03",
+          "department": "DEP13",
+          "checks": 164,
+          "avg_originality": 71.9274
+        },
+        {
+          "faculty": "FAC03",
+          "department": "DEP14",
+          "checks": 65,
+          "avg_originality": 78.4568
+        },
+        {
+          "faculty": "FAC03",
+          "department": "DEP15",
+          "checks": 284,
+          "avg_originality": 75.3304
+        }
+      ],
+      "histogram": {
+        "lt50": 73,
+        "b50_70": 203,
+        "b70_85": 246,
+        "b85_95": 216,
+        "ge95": 106
+      },
+      "yoy": [
+        {
+          "academic_year": 2025,
+          "checks": 844,
+          "avg_originality": 74.9052
+        }
+      ],
+      "rechecks": {
+        "works_total": 732,
+        "works_rechecked": 84,
+        "improved": 70
+      },
+      "escalations": {
+        "checks_escalated": 295
+      },
+      "usage": [
+        {
+          "month": "2025-09-01",
+          "active_reviewers": 14
+        },
+        {
+          "month": "2025-10-01",
+          "active_reviewers": 16
+        },
+        {
+          "month": "2025-11-01",
+          "active_reviewers": 18
+        },
+        {
+          "month": "2025-12-01",
+          "active_reviewers": 17
+        },
+        {
+          "month": "2026-01-01",
+          "active_reviewers": 16
+        },
+        {
+          "month": "2026-02-01",
+          "active_reviewers": 15
+        },
+        {
+          "month": "2026-03-01",
+          "active_reviewers": 15
+        },
+        {
+          "month": "2026-04-01",
+          "active_reviewers": 18
+        },
+        {
+          "month": "2026-05-01",
+          "active_reviewers": 17
+        },
+        {
+          "month": "2026-06-01",
+          "active_reviewers": 16
+        },
+        {
+          "month": "2026-07-01",
+          "active_reviewers": 14
+        },
+        {
+          "month": "2026-08-01",
+          "active_reviewers": 8
+        }
+      ],
+      "public_filters": {
+        "from": "2023-09-01",
+        "to": "2026-08-31",
+        "faculty": "FAC03",
+        "work_type": "course"
+      },
+      "public_summary": {
+        "checks": 844,
+        "avg_originality": 74.9052,
+        "below_threshold": 276,
+        "below_threshold_share": 0.327,
+        "escalated": 295,
+        "suppressed_groups": 0
+      },
+      "public_timeseries": [
+        {
+          "month": "2025-09-01",
+          "checks": 37,
+          "avg_originality": 73.5886
+        },
+        {
+          "month": "2025-10-01",
+          "checks": 58,
+          "avg_originality": 80.6948
+        },
+        {
+          "month": "2025-11-01",
+          "checks": 83,
+          "avg_originality": 73.603
+        },
+        {
+          "month": "2025-12-01",
+          "checks": 130,
+          "avg_originality": 76.9355
+        },
+        {
+          "month": "2026-01-01",
+          "checks": 122,
+          "avg_originality": 74.7286
+        },
+        {
+          "month": "2026-02-01",
+          "checks": 51,
+          "avg_originality": 73.9388
+        },
+        {
+          "month": "2026-03-01",
+          "checks": 66,
+          "avg_originality": 77.5361
+        },
+        {
+          "month": "2026-04-01",
+          "checks": 78,
+          "avg_originality": 75.0971
+        },
+        {
+          "month": "2026-05-01",
+          "checks": 98,
+          "avg_originality": 72.6949
+        },
+        {
+          "month": "2026-06-01",
+          "checks": 68,
+          "avg_originality": 70.9335
+        },
+        {
+          "month": "2026-07-01",
+          "checks": 41,
+          "avg_originality": 70.1202
+        },
+        {
+          "month": "2026-08-01",
+          "checks": 12,
+          "avg_originality": 85.085
+        }
+      ],
+      "public_work_types": [
+        {
+          "code": "course",
+          "checks": 844,
+          "avg_originality": 74.9052
+        }
+      ],
+      "public_faculties": [
+        {
+          "code": "FAC03",
+          "checks": 844,
+          "avg_originality": 74.9052
+        }
+      ],
+      "public_histogram": {
+        "lt50": 73,
+        "b50_70": 203,
+        "b70_85": 246,
+        "b85_95": 216,
+        "ge95": 106,
+        "total": 844
+      },
+      "public_yoy": [
+        {
+          "academic_year": 2025,
+          "checks": 844,
+          "avg_originality": 74.9052
+        }
+      ]
+    },
+    {
+      "name": "status-needs-revision",
+      "filters": {
+        "from": "2023-09-01",
+        "to": "2026-08-31",
+        "faculty": null,
+        "department": null,
+        "program": null,
+        "workType": null,
+        "status": "needs_revision"
+      },
+      "summary": {
+        "checks": 13110,
+        "avg_originality": 52.7954,
+        "below_threshold": 13110,
+        "below_threshold_share": 1
+      },
+      "timeseries": [
+        {
+          "month": "2023-09-01",
+          "checks": 246,
+          "avg_originality": 51.9026
+        },
+        {
+          "month": "2023-10-01",
+          "checks": 340,
+          "avg_originality": 53.937
+        },
+        {
+          "month": "2023-11-01",
+          "checks": 438,
+          "avg_originality": 52.4343
+        },
+        {
+          "month": "2023-12-01",
+          "checks": 674,
+          "avg_originality": 53.0491
+        },
+        {
+          "month": "2024-01-01",
+          "checks": 646,
+          "avg_originality": 52.8088
+        },
+        {
+          "month": "2024-02-01",
+          "checks": 296,
+          "avg_originality": 53.0802
+        },
+        {
+          "month": "2024-03-01",
+          "checks": 353,
+          "avg_originality": 52.207
+        },
+        {
+          "month": "2024-04-01",
+          "checks": 493,
+          "avg_originality": 53.285
+        },
+        {
+          "month": "2024-05-01",
+          "checks": 677,
+          "avg_originality": 53.0057
+        },
+        {
+          "month": "2024-06-01",
+          "checks": 434,
+          "avg_originality": 53.4995
+        },
+        {
+          "month": "2024-07-01",
+          "checks": 173,
+          "avg_originality": 53.3162
+        },
+        {
+          "month": "2024-08-01",
+          "checks": 97,
+          "avg_originality": 54.9558
+        },
+        {
+          "month": "2024-09-01",
+          "checks": 222,
+          "avg_originality": 52.1537
+        },
+        {
+          "month": "2024-10-01",
+          "checks": 333,
+          "avg_originality": 53.0033
+        },
+        {
+          "month": "2024-11-01",
+          "checks": 393,
+          "avg_originality": 52.1939
+        },
+        {
+          "month": "2024-12-01",
+          "checks": 632,
+          "avg_originality": 52.476
+        },
+        {
+          "month": "2025-01-01",
+          "checks": 576,
+          "avg_originality": 52.5906
+        },
+        {
+          "month": "2025-02-01",
+          "checks": 292,
+          "avg_originality": 53.0187
+        },
+        {
+          "month": "2025-03-01",
+          "checks": 327,
+          "avg_originality": 53.7675
+        },
+        {
+          "month": "2025-04-01",
+          "checks": 487,
+          "avg_originality": 52.0805
+        },
+        {
+          "month": "2025-05-01",
+          "checks": 651,
+          "avg_originality": 52.6713
+        },
+        {
+          "month": "2025-06-01",
+          "checks": 418,
+          "avg_originality": 53.2408
+        },
+        {
+          "month": "2025-07-01",
+          "checks": 210,
+          "avg_originality": 52.599
+        },
+        {
+          "month": "2025-08-01",
+          "checks": 97,
+          "avg_originality": 50.7391
+        },
+        {
+          "month": "2025-09-01",
+          "checks": 181,
+          "avg_originality": 53.8204
+        },
+        {
+          "month": "2025-10-01",
+          "checks": 274,
+          "avg_originality": 53.5485
+        },
+        {
+          "month": "2025-11-01",
+          "checks": 311,
+          "avg_originality": 52.9786
+        },
+        {
+          "month": "2025-12-01",
+          "checks": 497,
+          "avg_originality": 52.9296
+        },
+        {
+          "month": "2026-01-01",
+          "checks": 467,
+          "avg_originality": 52.3909
+        },
+        {
+          "month": "2026-02-01",
+          "checks": 218,
+          "avg_originality": 51.7662
+        },
+        {
+          "month": "2026-03-01",
+          "checks": 248,
+          "avg_originality": 53.7811
+        },
+        {
+          "month": "2026-04-01",
+          "checks": 368,
+          "avg_originality": 52.9124
+        },
+        {
+          "month": "2026-05-01",
+          "checks": 499,
+          "avg_originality": 52.1801
+        },
+        {
+          "month": "2026-06-01",
+          "checks": 339,
+          "avg_originality": 51.8122
+        },
+        {
+          "month": "2026-07-01",
+          "checks": 134,
+          "avg_originality": 51.8919
+        },
+        {
+          "month": "2026-08-01",
+          "checks": 69,
+          "avg_originality": 53.4684
+        }
+      ],
+      "work_types": [
+        {
+          "code": "article",
+          "checks": 1608,
+          "avg_originality": 52.8609
+        },
+        {
+          "code": "course",
+          "checks": 4451,
+          "avg_originality": 52.4942
+        },
+        {
+          "code": "other",
+          "checks": 1624,
+          "avg_originality": 53.008
+        },
+        {
+          "code": "research_report",
+          "checks": 1076,
+          "avg_originality": 53.6561
+        },
+        {
+          "code": "thesis_bachelor",
+          "checks": 2832,
+          "avg_originality": 52.7808
+        },
+        {
+          "code": "thesis_master",
+          "checks": 1163,
+          "avg_originality": 52.9346
+        },
+        {
+          "code": "thesis_phd",
+          "checks": 356,
+          "avg_originality": 52.3566
+        }
+      ],
+      "units": [
+        {
+          "faculty": "FAC01",
+          "department": "DEP01",
+          "checks": 104,
+          "avg_originality": 53.9182
+        },
+        {
+          "faculty": "FAC01",
+          "department": "DEP02",
+          "checks": 117,
+          "avg_originality": 50.5585
+        },
+        {
+          "faculty": "FAC01",
+          "department": "DEP03",
+          "checks": 109,
+          "avg_originality": 50.7139
+        },
+        {
+          "faculty": "FAC01",
+          "department": "DEP04",
+          "checks": 35,
+          "avg_originality": 52.5049
+        },
+        {
+          "faculty": "FAC01",
+          "department": "DEP05",
+          "checks": 152,
+          "avg_originality": 52.6017
+        },
+        {
+          "faculty": "FAC02",
+          "department": "DEP06",
+          "checks": 191,
+          "avg_originality": 51.656
+        },
+        {
+          "faculty": "FAC02",
+          "department": "DEP07",
+          "checks": 33,
+          "avg_originality": 52.8442
+        },
+        {
+          "faculty": "FAC02",
+          "department": "DEP08",
+          "checks": 103,
+          "avg_originality": 52.968
+        },
+        {
+          "faculty": "FAC02",
+          "department": "DEP09",
+          "checks": 46,
+          "avg_originality": 52.0626
+        },
+        {
+          "faculty": "FAC02",
+          "department": "DEP10",
+          "checks": 84,
+          "avg_originality": 50.8735
+        },
+        {
+          "faculty": "FAC03",
+          "department": "DEP11",
+          "checks": 62,
+          "avg_originality": 54.0419
+        },
+        {
+          "faculty": "FAC03",
+          "department": "DEP12",
+          "checks": 114,
+          "avg_originality": 53.1084
+        },
+        {
+          "faculty": "FAC03",
+          "department": "DEP13",
+          "checks": 89,
+          "avg_originality": 52.5653
+        },
+        {
+          "faculty": "FAC03",
+          "department": "DEP14",
+          "checks": 31,
+          "avg_originality": 52.2219
+        },
+        {
+          "faculty": "FAC03",
+          "department": "DEP15",
+          "checks": 169,
+          "avg_originality": 54.3399
+        },
+        {
+          "faculty": "FAC04",
+          "department": "DEP16",
+          "checks": 121,
+          "avg_originality": 53.1704
+        },
+        {
+          "faculty": "FAC04",
+          "department": "DEP17",
+          "checks": 83,
+          "avg_originality": 51.5054
+        },
+        {
+          "faculty": "FAC04",
+          "department": "DEP18",
+          "checks": 165,
+          "avg_originality": 52.7528
+        },
+        {
+          "faculty": "FAC04",
+          "department": "DEP19",
+          "checks": 155,
+          "avg_originality": 53.1637
+        },
+        {
+          "faculty": "FAC04",
+          "department": "DEP20",
+          "checks": 123,
+          "avg_originality": 50.6983
+        },
+        {
+          "faculty": "FAC05",
+          "department": "DEP21",
+          "checks": 17,
+          "avg_originality": 58.1706
+        },
+        {
+          "faculty": "FAC05",
+          "department": "DEP22",
+          "checks": 27,
+          "avg_originality": 51.8333
+        },
+        {
+          "faculty": "FAC05",
+          "department": "DEP23",
+          "checks": 48,
+          "avg_originality": 54.3263
+        },
+        {
+          "faculty": "FAC05",
+          "department": "DEP24",
+          "checks": 73,
+          "avg_originality": 54.4074
+        },
+        {
+          "faculty": "FAC05",
+          "department": "DEP25",
+          "checks": 114,
+          "avg_originality": 55.3398
+        },
+        {
+          "faculty": "FAC06",
+          "department": "DEP26",
+          "checks": 59,
+          "avg_originality": 50.7566
+        },
+        {
+          "faculty": "FAC06",
+          "department": "DEP27",
+          "checks": 30,
+          "avg_originality": 51.0077
+        },
+        {
+          "faculty": "FAC06",
+          "department": "DEP28",
+          "checks": 177,
+          "avg_originality": 52.9179
+        },
+        {
+          "faculty": "FAC06",
+          "department": "DEP29",
+          "checks": 32,
+          "avg_originality": 51.2625
+        },
+        {
+          "faculty": "FAC06",
+          "department": "DEP30",
+          "checks": 168,
+          "avg_originality": 52.6071
+        },
+        {
+          "faculty": "FAC07",
+          "department": "DEP31",
+          "checks": 18,
+          "avg_originality": 48.5311
+        },
+        {
+          "faculty": "FAC07",
+          "department": "DEP32",
+          "checks": 80,
+          "avg_originality": 54.9213
+        },
+        {
+          "faculty": "FAC07",
+          "department": "DEP33",
+          "checks": 111,
+          "avg_originality": 52.8312
+        },
+        {
+          "faculty": "FAC07",
+          "department": "DEP34",
+          "checks": 163,
+          "avg_originality": 53.2735
+        },
+        {
+          "faculty": "FAC07",
+          "department": "DEP35",
+          "checks": 75,
+          "avg_originality": 52.8417
+        },
+        {
+          "faculty": "FAC08",
+          "department": "DEP36",
+          "checks": 2,
+          "avg_originality": 54.32
+        },
+        {
+          "faculty": "FAC08",
+          "department": "DEP38",
+          "checks": 1,
+          "avg_originality": 54.44
+        },
+        {
+          "faculty": "FAC08",
+          "department": "DEP39",
+          "checks": 1,
+          "avg_originality": 51.06
+        },
+        {
+          "faculty": "FAC08",
+          "department": "DEP40",
+          "checks": 1,
+          "avg_originality": 60.95
+        },
+        {
+          "faculty": "UNASSIGNED",
+          "department": "UNASSIGNED",
+          "checks": 9827,
+          "avg_originality": 52.8194
+        }
+      ],
+      "histogram": {
+        "lt50": 3393,
+        "b50_70": 9717,
+        "b70_85": 0,
+        "b85_95": 0,
+        "ge95": 0
+      },
+      "yoy": [
+        {
+          "academic_year": 2023,
+          "checks": 4867,
+          "avg_originality": 53.0123
+        },
+        {
+          "academic_year": 2024,
+          "checks": 4638,
+          "avg_originality": 52.638
+        },
+        {
+          "academic_year": 2025,
+          "checks": 3605,
+          "avg_originality": 52.7052
+        }
+      ],
+      "rechecks": {
+        "works_total": 13110,
+        "works_rechecked": 0,
+        "improved": 0
+      },
+      "escalations": {
+        "checks_escalated": 0
+      },
+      "usage": [
+        {
+          "month": "2023-09-01",
+          "active_reviewers": 20
+        },
+        {
+          "month": "2023-10-01",
+          "active_reviewers": 20
+        },
+        {
+          "month": "2023-11-01",
+          "active_reviewers": 20
+        },
+        {
+          "month": "2023-12-01",
+          "active_reviewers": 20
+        },
+        {
+          "month": "2024-01-01",
+          "active_reviewers": 20
+        },
+        {
+          "month": "2024-02-01",
+          "active_reviewers": 20
+        },
+        {
+          "month": "2024-03-01",
+          "active_reviewers": 20
+        },
+        {
+          "month": "2024-04-01",
+          "active_reviewers": 20
+        },
+        {
+          "month": "2024-05-01",
+          "active_reviewers": 20
+        },
+        {
+          "month": "2024-06-01",
+          "active_reviewers": 20
+        },
+        {
+          "month": "2024-07-01",
+          "active_reviewers": 19
+        },
+        {
+          "month": "2024-08-01",
+          "active_reviewers": 19
+        },
+        {
+          "month": "2024-09-01",
+          "active_reviewers": 17
+        },
+        {
+          "month": "2024-10-01",
+          "active_reviewers": 17
+        },
+        {
+          "month": "2024-11-01",
+          "active_reviewers": 17
+        },
+        {
+          "month": "2024-12-01",
+          "active_reviewers": 17
+        },
+        {
+          "month": "2025-01-01",
+          "active_reviewers": 17
+        },
+        {
+          "month": "2025-02-01",
+          "active_reviewers": 17
+        },
+        {
+          "month": "2025-03-01",
+          "active_reviewers": 17
+        },
+        {
+          "month": "2025-04-01",
+          "active_reviewers": 17
+        },
+        {
+          "month": "2025-05-01",
+          "active_reviewers": 17
+        },
+        {
+          "month": "2025-06-01",
+          "active_reviewers": 17
+        },
+        {
+          "month": "2025-07-01",
+          "active_reviewers": 17
+        },
+        {
+          "month": "2025-08-01",
+          "active_reviewers": 14
+        },
+        {
+          "month": "2025-09-01",
+          "active_reviewers": 79
+        },
+        {
+          "month": "2025-10-01",
+          "active_reviewers": 88
+        },
+        {
+          "month": "2025-11-01",
+          "active_reviewers": 93
+        },
+        {
+          "month": "2025-12-01",
+          "active_reviewers": 111
+        },
+        {
+          "month": "2026-01-01",
+          "active_reviewers": 113
+        },
+        {
+          "month": "2026-02-01",
+          "active_reviewers": 87
+        },
+        {
+          "month": "2026-03-01",
+          "active_reviewers": 91
+        },
+        {
+          "month": "2026-04-01",
+          "active_reviewers": 97
+        },
+        {
+          "month": "2026-05-01",
+          "active_reviewers": 114
+        },
+        {
+          "month": "2026-06-01",
+          "active_reviewers": 102
+        },
+        {
+          "month": "2026-07-01",
+          "active_reviewers": 69
+        },
+        {
+          "month": "2026-08-01",
+          "active_reviewers": 57
+        }
+      ],
+      "public_filters": {
+        "from": "2023-09-01",
+        "to": "2026-08-31",
+        "faculty": null,
+        "work_type": null
+      },
+      "public_summary": {
+        "checks": 59771,
+        "avg_originality": 76.4343,
+        "below_threshold": 17606,
+        "below_threshold_share": 0.2946,
+        "escalated": 9556,
+        "suppressed_groups": 92
+      },
+      "public_timeseries": [
+        {
+          "month": "2023-09-01",
+          "checks": 915,
+          "avg_originality": 76.3794
+        },
+        {
+          "month": "2023-10-01",
+          "checks": 1351,
+          "avg_originality": 77.321
+        },
+        {
+          "month": "2023-11-01",
+          "checks": 1778,
+          "avg_originality": 76.4936
+        },
+        {
+          "month": "2023-12-01",
+          "checks": 2632,
+          "avg_originality": 76.9369
+        },
+        {
+          "month": "2024-01-01",
+          "checks": 2448,
+          "avg_originality": 75.9367
+        },
+        {
+          "month": "2024-02-01",
+          "checks": 1191,
+          "avg_originality": 75.5716
+        },
+        {
+          "month": "2024-03-01",
+          "checks": 1328,
+          "avg_originality": 75.8859
+        },
+        {
+          "month": "2024-04-01",
+          "checks": 1848,
+          "avg_originality": 76.38
+        },
+        {
+          "month": "2024-05-01",
+          "checks": 2591,
+          "avg_originality": 76.3054
+        },
+        {
+          "month": "2024-06-01",
+          "checks": 1752,
+          "avg_originality": 77.0946
+        },
+        {
+          "month": "2024-07-01",
+          "checks": 867,
+          "avg_originality": 77.6953
+        },
+        {
+          "month": "2024-08-01",
+          "checks": 401,
+          "avg_originality": 77.7878
+        },
+        {
+          "month": "2024-09-01",
+          "checks": 922,
+          "avg_originality": 76.9168
+        },
+        {
+          "month": "2024-10-01",
+          "checks": 1352,
+          "avg_originality": 76.2719
+        },
+        {
+          "month": "2024-11-01",
+          "checks": 1757,
+          "avg_originality": 76.4025
+        },
+        {
+          "month": "2024-12-01",
+          "checks": 2694,
+          "avg_originality": 76.5478
+        },
+        {
+          "month": "2025-01-01",
+          "checks": 2544,
+          "avg_originality": 76.4902
+        },
+        {
+          "month": "2025-02-01",
+          "checks": 1328,
+          "avg_originality": 75.9278
+        },
+        {
+          "month": "2025-03-01",
+          "checks": 1419,
+          "avg_originality": 76.4541
+        },
+        {
+          "month": "2025-04-01",
+          "checks": 2016,
+          "avg_originality": 75.8177
+        },
+        {
+          "month": "2025-05-01",
+          "checks": 2757,
+          "avg_originality": 76.1194
+        },
+        {
+          "month": "2025-06-01",
+          "checks": 1912,
+          "avg_originality": 76.5662
+        },
+        {
+          "month": "2025-07-01",
+          "checks": 879,
+          "avg_originality": 75.6499
+        },
+        {
+          "month": "2025-08-01",
+          "checks": 420,
+          "avg_originality": 76.1026
+        },
+        {
+          "month": "2025-09-01",
+          "checks": 930,
+          "avg_originality": 76.7907
+        },
+        {
+          "month": "2025-10-01",
+          "checks": 1406,
+          "avg_originality": 76.0398
+        },
+        {
+          "month": "2025-11-01",
+          "checks": 1756,
+          "avg_originality": 76.3726
+        },
+        {
+          "month": "2025-12-01",
+          "checks": 2782,
+          "avg_originality": 76.2328
+        },
+        {
+          "month": "2026-01-01",
+          "checks": 2747,
+          "avg_originality": 76.7532
+        },
+        {
+          "month": "2026-02-01",
+          "checks": 1363,
+          "avg_originality": 77.0915
+        },
+        {
+          "month": "2026-03-01",
+          "checks": 1524,
+          "avg_originality": 77.0242
+        },
+        {
+          "month": "2026-04-01",
+          "checks": 2058,
+          "avg_originality": 76.2057
+        },
+        {
+          "month": "2026-05-01",
+          "checks": 2826,
+          "avg_originality": 76.4026
+        },
+        {
+          "month": "2026-06-01",
+          "checks": 1938,
+          "avg_originality": 76.1448
+        },
+        {
+          "month": "2026-07-01",
+          "checks": 949,
+          "avg_originality": 76.4211
+        },
+        {
+          "month": "2026-08-01",
+          "checks": 390,
+          "avg_originality": 76.7171
+        }
+      ],
+      "public_work_types": [
+        {
+          "code": "article",
+          "checks": 7222,
+          "avg_originality": 76.1851
+        },
+        {
+          "code": "course",
+          "checks": 20309,
+          "avg_originality": 76.2981
+        },
+        {
+          "code": "other",
+          "checks": 7222,
+          "avg_originality": 76.4122
+        },
+        {
+          "code": "research_report",
+          "checks": 4831,
+          "avg_originality": 76.6537
+        },
+        {
+          "code": "thesis_bachelor",
+          "checks": 13176,
+          "avg_originality": 76.635
+        },
+        {
+          "code": "thesis_master",
+          "checks": 5313,
+          "avg_originality": 76.3002
+        },
+        {
+          "code": "thesis_phd",
+          "checks": 1698,
+          "avg_originality": 77.4564
+        }
+      ],
+      "public_faculties": [
+        {
+          "code": "FAC01",
+          "checks": 2978,
+          "avg_originality": 76.503
+        },
+        {
+          "code": "FAC02",
+          "checks": 2656,
+          "avg_originality": 76.1885
+        },
+        {
+          "code": "FAC03",
+          "checks": 2549,
+          "avg_originality": 75.9137
+        },
+        {
+          "code": "FAC04",
+          "checks": 3657,
+          "avg_originality": 76.5498
+        },
+        {
+          "code": "FAC05",
+          "checks": 1676,
+          "avg_originality": 77.8921
+        },
+        {
+          "code": "FAC06",
+          "checks": 2478,
+          "avg_originality": 76.3486
+        },
+        {
+          "code": "FAC07",
+          "checks": 2456,
+          "avg_originality": 76.1024
+        },
+        {
+          "code": "FAC08",
+          "checks": 11,
+          "avg_originality": 77.1082
+        },
+        {
+          "code": "UNASSIGNED",
+          "checks": 41310,
+          "avg_originality": 76.4326
+        }
+      ],
+      "public_histogram": {
+        "lt50": 4642,
+        "b50_70": 12964,
+        "b70_85": 17682,
+        "b85_95": 16462,
+        "ge95": 8021,
+        "total": 59771
+      },
+      "public_yoy": [
+        {
+          "academic_year": 2023,
+          "checks": 19102,
+          "avg_originality": 76.5369
+        },
+        {
+          "academic_year": 2024,
+          "checks": 20000,
+          "avg_originality": 76.2986
+        },
+        {
+          "academic_year": 2025,
+          "checks": 20669,
+          "avg_originality": 76.4708
+        }
+      ]
+    },
+    {
+      "name": "worktype-thesis-bachelor",
+      "filters": {
+        "from": "2023-09-01",
+        "to": "2026-08-31",
+        "faculty": null,
+        "department": null,
+        "program": null,
+        "workType": "thesis_bachelor",
+        "status": null
+      },
+      "summary": {
+        "checks": 13186,
+        "avg_originality": 76.6407,
+        "below_threshold": 3827,
+        "below_threshold_share": 0.2902
+      },
+      "timeseries": [
+        {
+          "month": "2023-09-01",
+          "checks": 200,
+          "avg_originality": 77.1052
+        },
+        {
+          "month": "2023-10-01",
+          "checks": 334,
+          "avg_originality": 76.5116
+        },
+        {
+          "month": "2023-11-01",
+          "checks": 383,
+          "avg_originality": 76.9555
+        },
+        {
+          "month": "2023-12-01",
+          "checks": 576,
+          "avg_originality": 76.6446
+        },
+        {
+          "month": "2024-01-01",
+          "checks": 528,
+          "avg_originality": 77.9499
+        },
+        {
+          "month": "2024-02-01",
+          "checks": 262,
+          "avg_originality": 74.9995
+        },
+        {
+          "month": "2024-03-01",
+          "checks": 286,
+          "avg_originality": 77.4728
+        },
+        {
+          "month": "2024-04-01",
+          "checks": 389,
+          "avg_originality": 76.3159
+        },
+        {
+          "month": "2024-05-01",
+          "checks": 614,
+          "avg_originality": 76.0434
+        },
+        {
+          "month": "2024-06-01",
+          "checks": 444,
+          "avg_originality": 78.3284
+        },
+        {
+          "month": "2024-07-01",
+          "checks": 199,
+          "avg_originality": 78.6171
+        },
+        {
+          "month": "2024-08-01",
+          "checks": 101,
+          "avg_originality": 77.3179
+        },
+        {
+          "month": "2024-09-01",
+          "checks": 186,
+          "avg_originality": 78.5182
+        },
+        {
+          "month": "2024-10-01",
+          "checks": 279,
+          "avg_originality": 75.3688
+        },
+        {
+          "month": "2024-11-01",
+          "checks": 391,
+          "avg_originality": 77.1187
+        },
+        {
+          "month": "2024-12-01",
+          "checks": 620,
+          "avg_originality": 75.7782
+        },
+        {
+          "month": "2025-01-01",
+          "checks": 555,
+          "avg_originality": 76.5039
+        },
+        {
+          "month": "2025-02-01",
+          "checks": 302,
+          "avg_originality": 76.1658
+        },
+        {
+          "month": "2025-03-01",
+          "checks": 296,
+          "avg_originality": 75.9925
+        },
+        {
+          "month": "2025-04-01",
+          "checks": 434,
+          "avg_originality": 75.5629
+        },
+        {
+          "month": "2025-05-01",
+          "checks": 596,
+          "avg_originality": 77.3512
+        },
+        {
+          "month": "2025-06-01",
+          "checks": 407,
+          "avg_originality": 76.9523
+        },
+        {
+          "month": "2025-07-01",
+          "checks": 191,
+          "avg_originality": 75.398
+        },
+        {
+          "month": "2025-08-01",
+          "checks": 92,
+          "avg_originality": 77.486
+        },
+        {
+          "month": "2025-09-01",
+          "checks": 206,
+          "avg_originality": 78.0914
+        },
+        {
+          "month": "2025-10-01",
+          "checks": 307,
+          "avg_originality": 77.2149
+        },
+        {
+          "month": "2025-11-01",
+          "checks": 370,
+          "avg_originality": 76.1899
+        },
+        {
+          "month": "2025-12-01",
+          "checks": 597,
+          "avg_originality": 76.4962
+        },
+        {
+          "month": "2026-01-01",
+          "checks": 593,
+          "avg_originality": 76.1422
+        },
+        {
+          "month": "2026-02-01",
+          "checks": 337,
+          "avg_originality": 77.1927
+        },
+        {
+          "month": "2026-03-01",
+          "checks": 324,
+          "avg_originality": 77.8383
+        },
+        {
+          "month": "2026-04-01",
+          "checks": 474,
+          "avg_originality": 77.3803
+        },
+        {
+          "month": "2026-05-01",
+          "checks": 594,
+          "avg_originality": 75.2418
+        },
+        {
+          "month": "2026-06-01",
+          "checks": 435,
+          "avg_originality": 75.7438
+        },
+        {
+          "month": "2026-07-01",
+          "checks": 193,
+          "avg_originality": 75.6805
+        },
+        {
+          "month": "2026-08-01",
+          "checks": 91,
+          "avg_originality": 76.7157
+        }
+      ],
+      "work_types": [
+        {
+          "code": "thesis_bachelor",
+          "checks": 13186,
+          "avg_originality": 76.6407
+        }
+      ],
+      "units": [
+        {
+          "faculty": "FAC01",
+          "department": "DEP01",
+          "checks": 149,
+          "avg_originality": 78.567
+        },
+        {
+          "faculty": "FAC01",
+          "department": "DEP02",
+          "checks": 155,
+          "avg_originality": 75.2061
+        },
+        {
+          "faculty": "FAC01",
+          "department": "DEP03",
+          "checks": 121,
+          "avg_originality": 73.985
+        },
+        {
+          "faculty": "FAC01",
+          "department": "DEP04",
+          "checks": 48,
+          "avg_originality": 74.9821
+        },
+        {
+          "faculty": "FAC01",
+          "department": "DEP05",
+          "checks": 197,
+          "avg_originality": 76.9158
+        },
+        {
+          "faculty": "FAC02",
+          "department": "DEP06",
+          "checks": 237,
+          "avg_originality": 75.8636
+        },
+        {
+          "faculty": "FAC02",
+          "department": "DEP07",
+          "checks": 60,
+          "avg_originality": 76.171
+        },
+        {
+          "faculty": "FAC02",
+          "department": "DEP08",
+          "checks": 124,
+          "avg_originality": 76.4135
+        },
+        {
+          "faculty": "FAC02",
+          "department": "DEP09",
+          "checks": 67,
+          "avg_originality": 75.9639
+        },
+        {
+          "faculty": "FAC02",
+          "department": "DEP10",
+          "checks": 94,
+          "avg_originality": 75.9345
+        },
+        {
+          "faculty": "FAC03",
+          "department": "DEP11",
+          "checks": 76,
+          "avg_originality": 75.6659
+        },
+        {
+          "faculty": "FAC03",
+          "department": "DEP12",
+          "checks": 143,
+          "avg_originality": 76.716
+        },
+        {
+          "faculty": "FAC03",
+          "department": "DEP13",
+          "checks": 104,
+          "avg_originality": 77.2234
+        },
+        {
+          "faculty": "FAC03",
+          "department": "DEP14",
+          "checks": 39,
+          "avg_originality": 73.7026
+        },
+        {
+          "faculty": "FAC03",
+          "department": "DEP15",
+          "checks": 208,
+          "avg_originality": 75.9821
+        },
+        {
+          "faculty": "FAC04",
+          "department": "DEP16",
+          "checks": 169,
+          "avg_originality": 76.9685
+        },
+        {
+          "faculty": "FAC04",
+          "department": "DEP17",
+          "checks": 102,
+          "avg_originality": 74.3652
+        },
+        {
+          "faculty": "FAC04",
+          "department": "DEP18",
+          "checks": 201,
+          "avg_originality": 78.8407
+        },
+        {
+          "faculty": "FAC04",
+          "department": "DEP19",
+          "checks": 212,
+          "avg_originality": 77.7817
+        },
+        {
+          "faculty": "FAC04",
+          "department": "DEP20",
+          "checks": 113,
+          "avg_originality": 79.6673
+        },
+        {
+          "faculty": "FAC05",
+          "department": "DEP21",
+          "checks": 20,
+          "avg_originality": 81.497
+        },
+        {
+          "faculty": "FAC05",
+          "department": "DEP22",
+          "checks": 29,
+          "avg_originality": 77.0434
+        },
+        {
+          "faculty": "FAC05",
+          "department": "DEP23",
+          "checks": 64,
+          "avg_originality": 73.4342
+        },
+        {
+          "faculty": "FAC05",
+          "department": "DEP24",
+          "checks": 97,
+          "avg_originality": 79.8389
+        },
+        {
+          "faculty": "FAC05",
+          "department": "DEP25",
+          "checks": 145,
+          "avg_originality": 76.5046
+        },
+        {
+          "faculty": "FAC06",
+          "department": "DEP26",
+          "checks": 76,
+          "avg_originality": 71.3634
+        },
+        {
+          "faculty": "FAC06",
+          "department": "DEP27",
+          "checks": 61,
+          "avg_originality": 79.3039
+        },
+        {
+          "faculty": "FAC06",
+          "department": "DEP28",
+          "checks": 218,
+          "avg_originality": 76.4986
+        },
+        {
+          "faculty": "FAC06",
+          "department": "DEP29",
+          "checks": 27,
+          "avg_originality": 66.1233
+        },
+        {
+          "faculty": "FAC06",
+          "department": "DEP30",
+          "checks": 174,
+          "avg_originality": 78.4336
+        },
+        {
+          "faculty": "FAC07",
+          "department": "DEP31",
+          "checks": 35,
+          "avg_originality": 72.9963
+        },
+        {
+          "faculty": "FAC07",
+          "department": "DEP32",
+          "checks": 112,
+          "avg_originality": 78.3704
+        },
+        {
+          "faculty": "FAC07",
+          "department": "DEP33",
+          "checks": 114,
+          "avg_originality": 74.9635
+        },
+        {
+          "faculty": "FAC07",
+          "department": "DEP34",
+          "checks": 178,
+          "avg_originality": 74.8025
+        },
+        {
+          "faculty": "FAC07",
+          "department": "DEP35",
+          "checks": 115,
+          "avg_originality": 73.4403
+        },
+        {
+          "faculty": "FAC08",
+          "department": "DEP37",
+          "checks": 2,
+          "avg_originality": 74.945
+        },
+        {
+          "faculty": "UNASSIGNED",
+          "department": "UNASSIGNED",
+          "checks": 9100,
+          "avg_originality": 76.7407
+        }
+      ],
+      "histogram": {
+        "lt50": 991,
+        "b50_70": 2836,
+        "b70_85": 3913,
+        "b85_95": 3635,
+        "ge95": 1811
+      },
+      "yoy": [
+        {
+          "academic_year": 2023,
+          "checks": 4316,
+          "avg_originality": 76.9627
+        },
+        {
+          "academic_year": 2024,
+          "checks": 4349,
+          "avg_originality": 76.4472
+        },
+        {
+          "academic_year": 2025,
+          "checks": 4521,
+          "avg_originality": 76.5194
+        }
+      ],
+      "rechecks": {
+        "works_total": 11390,
+        "works_rechecked": 1384,
+        "improved": 1094
+      },
+      "escalations": {
+        "checks_escalated": 2103
+      },
+      "usage": [
+        {
+          "month": "2023-09-01",
+          "active_reviewers": 20
+        },
+        {
+          "month": "2023-10-01",
+          "active_reviewers": 20
+        },
+        {
+          "month": "2023-11-01",
+          "active_reviewers": 20
+        },
+        {
+          "month": "2023-12-01",
+          "active_reviewers": 20
+        },
+        {
+          "month": "2024-01-01",
+          "active_reviewers": 20
+        },
+        {
+          "month": "2024-02-01",
+          "active_reviewers": 19
+        },
+        {
+          "month": "2024-03-01",
+          "active_reviewers": 20
+        },
+        {
+          "month": "2024-04-01",
+          "active_reviewers": 20
+        },
+        {
+          "month": "2024-05-01",
+          "active_reviewers": 20
+        },
+        {
+          "month": "2024-06-01",
+          "active_reviewers": 20
+        },
+        {
+          "month": "2024-07-01",
+          "active_reviewers": 20
+        },
+        {
+          "month": "2024-08-01",
+          "active_reviewers": 14
+        },
+        {
+          "month": "2024-09-01",
+          "active_reviewers": 17
+        },
+        {
+          "month": "2024-10-01",
+          "active_reviewers": 17
+        },
+        {
+          "month": "2024-11-01",
+          "active_reviewers": 17
+        },
+        {
+          "month": "2024-12-01",
+          "active_reviewers": 17
+        },
+        {
+          "month": "2025-01-01",
+          "active_reviewers": 17
+        },
+        {
+          "month": "2025-02-01",
+          "active_reviewers": 17
+        },
+        {
+          "month": "2025-03-01",
+          "active_reviewers": 16
+        },
+        {
+          "month": "2025-04-01",
+          "active_reviewers": 17
+        },
+        {
+          "month": "2025-05-01",
+          "active_reviewers": 17
+        },
+        {
+          "month": "2025-06-01",
+          "active_reviewers": 17
+        },
+        {
+          "month": "2025-07-01",
+          "active_reviewers": 17
+        },
+        {
+          "month": "2025-08-01",
+          "active_reviewers": 14
+        },
+        {
+          "month": "2025-09-01",
+          "active_reviewers": 91
+        },
+        {
+          "month": "2025-10-01",
+          "active_reviewers": 90
+        },
+        {
+          "month": "2025-11-01",
+          "active_reviewers": 96
+        },
+        {
+          "month": "2025-12-01",
+          "active_reviewers": 117
+        },
+        {
+          "month": "2026-01-01",
+          "active_reviewers": 117
+        },
+        {
+          "month": "2026-02-01",
+          "active_reviewers": 98
+        },
+        {
+          "month": "2026-03-01",
+          "active_reviewers": 105
+        },
+        {
+          "month": "2026-04-01",
+          "active_reviewers": 107
+        },
+        {
+          "month": "2026-05-01",
+          "active_reviewers": 115
+        },
+        {
+          "month": "2026-06-01",
+          "active_reviewers": 104
+        },
+        {
+          "month": "2026-07-01",
+          "active_reviewers": 83
+        },
+        {
+          "month": "2026-08-01",
+          "active_reviewers": 55
+        }
+      ],
+      "public_filters": {
+        "from": "2023-09-01",
+        "to": "2026-08-31",
+        "faculty": null,
+        "work_type": "thesis_bachelor"
+      },
+      "public_summary": {
+        "checks": 13176,
+        "avg_originality": 76.635,
+        "below_threshold": 3826,
+        "below_threshold_share": 0.2904,
+        "escalated": 2103,
+        "suppressed_groups": 4
+      },
+      "public_timeseries": [
+        {
+          "month": "2023-09-01",
+          "checks": 196,
+          "avg_originality": 76.8953
+        },
+        {
+          "month": "2023-10-01",
+          "checks": 333,
+          "avg_originality": 76.452
+        },
+        {
+          "month": "2023-11-01",
+          "checks": 383,
+          "avg_originality": 76.9555
+        },
+        {
+          "month": "2023-12-01",
+          "checks": 576,
+          "avg_originality": 76.6446
+        },
+        {
+          "month": "2024-01-01",
+          "checks": 528,
+          "avg_originality": 77.9499
+        },
+        {
+          "month": "2024-02-01",
+          "checks": 262,
+          "avg_originality": 74.9995
+        },
+        {
+          "month": "2024-03-01",
+          "checks": 286,
+          "avg_originality": 77.4728
+        },
+        {
+          "month": "2024-04-01",
+          "checks": 389,
+          "avg_originality": 76.3159
+        },
+        {
+          "month": "2024-05-01",
+          "checks": 614,
+          "avg_originality": 76.0434
+        },
+        {
+          "month": "2024-06-01",
+          "checks": 444,
+          "avg_originality": 78.3284
+        },
+        {
+          "month": "2024-07-01",
+          "checks": 196,
+          "avg_originality": 78.5666
+        },
+        {
+          "month": "2024-08-01",
+          "checks": 101,
+          "avg_originality": 77.3179
+        },
+        {
+          "month": "2024-09-01",
+          "checks": 186,
+          "avg_originality": 78.5182
+        },
+        {
+          "month": "2024-10-01",
+          "checks": 279,
+          "avg_originality": 75.3688
+        },
+        {
+          "month": "2024-11-01",
+          "checks": 391,
+          "avg_originality": 77.1187
+        },
+        {
+          "month": "2024-12-01",
+          "checks": 620,
+          "avg_originality": 75.7782
+        },
+        {
+          "month": "2025-01-01",
+          "checks": 555,
+          "avg_originality": 76.5039
+        },
+        {
+          "month": "2025-02-01",
+          "checks": 302,
+          "avg_originality": 76.1658
+        },
+        {
+          "month": "2025-03-01",
+          "checks": 296,
+          "avg_originality": 75.9925
+        },
+        {
+          "month": "2025-04-01",
+          "checks": 434,
+          "avg_originality": 75.5629
+        },
+        {
+          "month": "2025-05-01",
+          "checks": 596,
+          "avg_originality": 77.3512
+        },
+        {
+          "month": "2025-06-01",
+          "checks": 407,
+          "avg_originality": 76.9523
+        },
+        {
+          "month": "2025-07-01",
+          "checks": 191,
+          "avg_originality": 75.398
+        },
+        {
+          "month": "2025-08-01",
+          "checks": 92,
+          "avg_originality": 77.486
+        },
+        {
+          "month": "2025-09-01",
+          "checks": 206,
+          "avg_originality": 78.0914
+        },
+        {
+          "month": "2025-10-01",
+          "checks": 305,
+          "avg_originality": 77.2298
+        },
+        {
+          "month": "2025-11-01",
+          "checks": 370,
+          "avg_originality": 76.1899
+        },
+        {
+          "month": "2025-12-01",
+          "checks": 597,
+          "avg_originality": 76.4962
+        },
+        {
+          "month": "2026-01-01",
+          "checks": 593,
+          "avg_originality": 76.1422
+        },
+        {
+          "month": "2026-02-01",
+          "checks": 337,
+          "avg_originality": 77.1927
+        },
+        {
+          "month": "2026-03-01",
+          "checks": 324,
+          "avg_originality": 77.8383
+        },
+        {
+          "month": "2026-04-01",
+          "checks": 474,
+          "avg_originality": 77.3803
+        },
+        {
+          "month": "2026-05-01",
+          "checks": 594,
+          "avg_originality": 75.2418
+        },
+        {
+          "month": "2026-06-01",
+          "checks": 435,
+          "avg_originality": 75.7438
+        },
+        {
+          "month": "2026-07-01",
+          "checks": 193,
+          "avg_originality": 75.6805
+        },
+        {
+          "month": "2026-08-01",
+          "checks": 91,
+          "avg_originality": 76.7157
+        }
+      ],
+      "public_work_types": [
+        {
+          "code": "thesis_bachelor",
+          "checks": 13176,
+          "avg_originality": 76.635
+        }
+      ],
+      "public_faculties": [
+        {
+          "code": "FAC01",
+          "checks": 670,
+          "avg_originality": 76.2196
+        },
+        {
+          "code": "FAC02",
+          "checks": 582,
+          "avg_originality": 76.0354
+        },
+        {
+          "code": "FAC03",
+          "checks": 570,
+          "avg_originality": 76.1946
+        },
+        {
+          "code": "FAC04",
+          "checks": 797,
+          "avg_originality": 77.7064
+        },
+        {
+          "code": "FAC05",
+          "checks": 355,
+          "avg_originality": 77.1874
+        },
+        {
+          "code": "FAC06",
+          "checks": 548,
+          "avg_originality": 76.0565
+        },
+        {
+          "code": "FAC07",
+          "checks": 554,
+          "avg_originality": 75.16
+        },
+        {
+          "code": "FAC08",
+          "checks": 0,
+          "avg_originality": 0
+        },
+        {
+          "code": "UNASSIGNED",
+          "checks": 9100,
+          "avg_originality": 76.7407
+        }
+      ],
+      "public_histogram": {
+        "lt50": 991,
+        "b50_70": 2835,
+        "b70_85": 3909,
+        "b85_95": 3632,
+        "ge95": 1809,
+        "total": 13176
+      },
+      "public_yoy": [
+        {
+          "academic_year": 2023,
+          "checks": 4308,
+          "avg_originality": 76.9451
+        },
+        {
+          "academic_year": 2024,
+          "checks": 4349,
+          "avg_originality": 76.4472
+        },
+        {
+          "academic_year": 2025,
+          "checks": 4519,
+          "avg_originality": 76.5201
+        }
+      ]
+    },
+    {
+      "name": "custom-range-crossing-month",
+      "filters": {
+        "from": "2025-10-15",
+        "to": "2025-11-14",
+        "faculty": null,
+        "department": null,
+        "program": null,
+        "workType": null,
+        "status": null
+      },
+      "summary": {
+        "checks": 1577,
+        "avg_originality": 76.0424,
+        "below_threshold": 474,
+        "below_threshold_share": 0.3006
+      },
+      "timeseries": [
+        {
+          "month": "2025-10-01",
+          "checks": 752,
+          "avg_originality": 75.925
+        },
+        {
+          "month": "2025-11-01",
+          "checks": 825,
+          "avg_originality": 76.1494
+        }
+      ],
+      "work_types": [
+        {
+          "code": "article",
+          "checks": 187,
+          "avg_originality": 74.6035
+        },
+        {
+          "code": "course",
+          "checks": 533,
+          "avg_originality": 76.6089
+        },
+        {
+          "code": "other",
+          "checks": 182,
+          "avg_originality": 79.4374
+        },
+        {
+          "code": "research_report",
+          "checks": 131,
+          "avg_originality": 72.8937
+        },
+        {
+          "code": "thesis_bachelor",
+          "checks": 342,
+          "avg_originality": 75.6398
+        },
+        {
+          "code": "thesis_master",
+          "checks": 140,
+          "avg_originality": 74.7018
+        },
+        {
+          "code": "thesis_phd",
+          "checks": 62,
+          "avg_originality": 77.4466
+        }
+      ],
+      "units": [
+        {
+          "faculty": "FAC01",
+          "department": "DEP01",
+          "checks": 51,
+          "avg_originality": 79.5137
+        },
+        {
+          "faculty": "FAC01",
+          "department": "DEP02",
+          "checks": 54,
+          "avg_originality": 69.7748
+        },
+        {
+          "faculty": "FAC01",
+          "department": "DEP03",
+          "checks": 49,
+          "avg_originality": 77.4569
+        },
+        {
+          "faculty": "FAC01",
+          "department": "DEP04",
+          "checks": 8,
+          "avg_originality": 78.895
+        },
+        {
+          "faculty": "FAC01",
+          "department": "DEP05",
+          "checks": 71,
+          "avg_originality": 77.388
+        },
+        {
+          "faculty": "FAC02",
+          "department": "DEP06",
+          "checks": 78,
+          "avg_originality": 71.1438
+        },
+        {
+          "faculty": "FAC02",
+          "department": "DEP07",
+          "checks": 15,
+          "avg_originality": 82.8193
+        },
+        {
+          "faculty": "FAC02",
+          "department": "DEP08",
+          "checks": 39,
+          "avg_originality": 74.2359
+        },
+        {
+          "faculty": "FAC02",
+          "department": "DEP09",
+          "checks": 20,
+          "avg_originality": 76.475
+        },
+        {
+          "faculty": "FAC02",
+          "department": "DEP10",
+          "checks": 39,
+          "avg_originality": 73.2954
+        },
+        {
+          "faculty": "FAC03",
+          "department": "DEP11",
+          "checks": 24,
+          "avg_originality": 68.5575
+        },
+        {
+          "faculty": "FAC03",
+          "department": "DEP12",
+          "checks": 60,
+          "avg_originality": 76.4267
+        },
+        {
+          "faculty": "FAC03",
+          "department": "DEP13",
+          "checks": 42,
+          "avg_originality": 78.4633
+        },
+        {
+          "faculty": "FAC03",
+          "department": "DEP14",
+          "checks": 13,
+          "avg_originality": 81.5485
+        },
+        {
+          "faculty": "FAC03",
+          "department": "DEP15",
+          "checks": 68,
+          "avg_originality": 78.4854
+        },
+        {
+          "faculty": "FAC04",
+          "department": "DEP16",
+          "checks": 53,
+          "avg_originality": 79.1217
+        },
+        {
+          "faculty": "FAC04",
+          "department": "DEP17",
+          "checks": 32,
+          "avg_originality": 74.0291
+        },
+        {
+          "faculty": "FAC04",
+          "department": "DEP18",
+          "checks": 83,
+          "avg_originality": 72.2483
+        },
+        {
+          "faculty": "FAC04",
+          "department": "DEP19",
+          "checks": 60,
+          "avg_originality": 75.751
+        },
+        {
+          "faculty": "FAC04",
+          "department": "DEP20",
+          "checks": 40,
+          "avg_originality": 76.023
+        },
+        {
+          "faculty": "FAC05",
+          "department": "DEP21",
+          "checks": 6,
+          "avg_originality": 78.0833
+        },
+        {
+          "faculty": "FAC05",
+          "department": "DEP22",
+          "checks": 12,
+          "avg_originality": 69.3275
+        },
+        {
+          "faculty": "FAC05",
+          "department": "DEP23",
+          "checks": 27,
+          "avg_originality": 79.1074
+        },
+        {
+          "faculty": "FAC05",
+          "department": "DEP24",
+          "checks": 36,
+          "avg_originality": 80.0481
+        },
+        {
+          "faculty": "FAC05",
+          "department": "DEP25",
+          "checks": 61,
+          "avg_originality": 79.3846
+        },
+        {
+          "faculty": "FAC06",
+          "department": "DEP26",
+          "checks": 21,
+          "avg_originality": 70.4043
+        },
+        {
+          "faculty": "FAC06",
+          "department": "DEP27",
+          "checks": 31,
+          "avg_originality": 78.4652
+        },
+        {
+          "faculty": "FAC06",
+          "department": "DEP28",
+          "checks": 59,
+          "avg_originality": 77.321
+        },
+        {
+          "faculty": "FAC06",
+          "department": "DEP29",
+          "checks": 11,
+          "avg_originality": 77.3964
+        },
+        {
+          "faculty": "FAC06",
+          "department": "DEP30",
+          "checks": 53,
+          "avg_originality": 77.4217
+        },
+        {
+          "faculty": "FAC07",
+          "department": "DEP31",
+          "checks": 6,
+          "avg_originality": 75.0767
+        },
+        {
+          "faculty": "FAC07",
+          "department": "DEP32",
+          "checks": 37,
+          "avg_originality": 76.2435
+        },
+        {
+          "faculty": "FAC07",
+          "department": "DEP33",
+          "checks": 41,
+          "avg_originality": 74.8895
+        },
+        {
+          "faculty": "FAC07",
+          "department": "DEP34",
+          "checks": 57,
+          "avg_originality": 74.3421
+        },
+        {
+          "faculty": "FAC07",
+          "department": "DEP35",
+          "checks": 31,
+          "avg_originality": 75.8284
+        },
+        {
+          "faculty": "FAC08",
+          "department": "DEP38",
+          "checks": 3,
+          "avg_originality": 72.22
+        },
+        {
+          "faculty": "UNASSIGNED",
+          "department": "UNASSIGNED",
+          "checks": 186,
+          "avg_originality": 76.8633
+        }
+      ],
+      "histogram": {
+        "lt50": 132,
+        "b50_70": 342,
+        "b70_85": 470,
+        "b85_95": 421,
+        "ge95": 212
+      },
+      "yoy": [
+        {
+          "academic_year": 2025,
+          "checks": 1577,
+          "avg_originality": 76.0424
+        }
+      ],
+      "rechecks": {
+        "works_total": 1474,
+        "works_rechecked": 96,
+        "improved": 65
+      },
+      "escalations": {
+        "checks_escalated": 508
+      },
+      "usage": [
+        {
+          "month": "2025-10-01",
+          "active_reviewers": 123
+        },
+        {
+          "month": "2025-11-01",
+          "active_reviewers": 126
+        }
+      ],
+      "public_filters": {
+        "from": "2025-10-01",
+        "to": "2025-11-30",
+        "faculty": null,
+        "work_type": null
+      },
+      "public_summary": {
+        "checks": 3162,
+        "avg_originality": 76.2246,
+        "below_threshold": 941,
+        "below_threshold_share": 0.2976,
+        "escalated": 1045,
+        "suppressed_groups": 4
+      },
+      "public_timeseries": [
+        {
+          "month": "2025-10-01",
+          "checks": 1406,
+          "avg_originality": 76.0398
+        },
+        {
+          "month": "2025-11-01",
+          "checks": 1756,
+          "avg_originality": 76.3726
+        }
+      ],
+      "public_work_types": [
+        {
+          "code": "article",
+          "checks": 349,
+          "avg_originality": 74.7414
+        },
+        {
+          "code": "course",
+          "checks": 1113,
+          "avg_originality": 75.7998
+        },
+        {
+          "code": "other",
+          "checks": 383,
+          "avg_originality": 77.5846
+        },
+        {
+          "code": "research_report",
+          "checks": 245,
+          "avg_originality": 75.7075
+        },
+        {
+          "code": "thesis_bachelor",
+          "checks": 675,
+          "avg_originality": 76.6598
+        },
+        {
+          "code": "thesis_master",
+          "checks": 298,
+          "avg_originality": 76.4764
+        },
+        {
+          "code": "thesis_phd",
+          "checks": 99,
+          "avg_originality": 78.5235
+        }
+      ],
+      "public_faculties": [
+        {
+          "code": "FAC01",
+          "checks": 465,
+          "avg_originality": 76.5445
+        },
+        {
+          "code": "FAC02",
+          "checks": 377,
+          "avg_originality": 75.2154
+        },
+        {
+          "code": "FAC03",
+          "checks": 409,
+          "avg_originality": 78.4058
+        },
+        {
+          "code": "FAC04",
+          "checks": 541,
+          "avg_originality": 75.5869
+        },
+        {
+          "code": "FAC05",
+          "checks": 290,
+          "avg_originality": 76.7122
+        },
+        {
+          "code": "FAC06",
+          "checks": 339,
+          "avg_originality": 75.9797
+        },
+        {
+          "code": "FAC07",
+          "checks": 346,
+          "avg_originality": 74.2264
+        },
+        {
+          "code": "FAC08",
+          "checks": 0,
+          "avg_originality": 0
+        },
+        {
+          "code": "UNASSIGNED",
+          "checks": 395,
+          "avg_originality": 77.0289
+        }
+      ],
+      "public_histogram": {
+        "lt50": 234,
+        "b50_70": 707,
+        "b70_85": 951,
+        "b85_95": 869,
+        "ge95": 401,
+        "total": 3162
+      },
+      "public_yoy": [
+        {
+          "academic_year": 2025,
+          "checks": 3162,
+          "avg_originality": 76.2246
+        }
+      ]
+    },
+    {
+      "name": "department-dep11",
+      "filters": {
+        "from": "2023-09-01",
+        "to": "2026-08-31",
+        "faculty": null,
+        "department": "DEP11",
+        "program": null,
+        "workType": null,
+        "status": null
+      },
+      "summary": {
+        "checks": 333,
+        "avg_originality": 74.4686,
+        "below_threshold": 112,
+        "below_threshold_share": 0.3363
+      },
+      "timeseries": [
+        {
+          "month": "2025-09-01",
+          "checks": 9,
+          "avg_originality": 76.6689
+        },
+        {
+          "month": "2025-10-01",
+          "checks": 23,
+          "avg_originality": 81.0048
+        },
+        {
+          "month": "2025-11-01",
+          "checks": 31,
+          "avg_originality": 72.6719
+        },
+        {
+          "month": "2025-12-01",
+          "checks": 40,
+          "avg_originality": 74.3963
+        },
+        {
+          "month": "2026-01-01",
+          "checks": 55,
+          "avg_originality": 76.8984
+        },
+        {
+          "month": "2026-02-01",
+          "checks": 25,
+          "avg_originality": 70.4708
+        },
+        {
+          "month": "2026-03-01",
+          "checks": 18,
+          "avg_originality": 77.8489
+        },
+        {
+          "month": "2026-04-01",
+          "checks": 31,
+          "avg_originality": 77.9029
+        },
+        {
+          "month": "2026-05-01",
+          "checks": 48,
+          "avg_originality": 70.7873
+        },
+        {
+          "month": "2026-06-01",
+          "checks": 21,
+          "avg_originality": 72.6619
+        },
+        {
+          "month": "2026-07-01",
+          "checks": 19,
+          "avg_originality": 70.4395
+        },
+        {
+          "month": "2026-08-01",
+          "checks": 13,
+          "avg_originality": 72.8254
+        }
+      ],
+      "work_types": [
+        {
+          "code": "article",
+          "checks": 39,
+          "avg_originality": 78.3195
+        },
+        {
+          "code": "course",
+          "checks": 99,
+          "avg_originality": 72.7377
+        },
+        {
+          "code": "other",
+          "checks": 42,
+          "avg_originality": 73.2226
+        },
+        {
+          "code": "research_report",
+          "checks": 36,
+          "avg_originality": 74.2181
+        },
+        {
+          "code": "thesis_bachelor",
+          "checks": 76,
+          "avg_originality": 75.6659
+        },
+        {
+          "code": "thesis_master",
+          "checks": 28,
+          "avg_originality": 75.1771
+        },
+        {
+          "code": "thesis_phd",
+          "checks": 13,
+          "avg_originality": 72.29
+        }
+      ],
+      "units": [
+        {
+          "faculty": "FAC03",
+          "department": "DEP11",
+          "checks": 333,
+          "avg_originality": 74.4686
+        }
+      ],
+      "histogram": {
+        "lt50": 26,
+        "b50_70": 86,
+        "b70_85": 111,
+        "b85_95": 71,
+        "ge95": 39
+      },
+      "yoy": [
+        {
+          "academic_year": 2025,
+          "checks": 333,
+          "avg_originality": 74.4686
+        }
+      ],
+      "rechecks": {
+        "works_total": 301,
+        "works_rechecked": 25,
+        "improved": 18
+      },
+      "escalations": {
+        "checks_escalated": 121
+      },
+      "usage": [
+        {
+          "month": "2025-09-01",
+          "active_reviewers": 3
+        },
+        {
+          "month": "2025-10-01",
+          "active_reviewers": 3
+        },
+        {
+          "month": "2025-11-01",
+          "active_reviewers": 4
+        },
+        {
+          "month": "2025-12-01",
+          "active_reviewers": 4
+        },
+        {
+          "month": "2026-01-01",
+          "active_reviewers": 4
+        },
+        {
+          "month": "2026-02-01",
+          "active_reviewers": 3
+        },
+        {
+          "month": "2026-03-01",
+          "active_reviewers": 2
+        },
+        {
+          "month": "2026-04-01",
+          "active_reviewers": 3
+        },
+        {
+          "month": "2026-05-01",
+          "active_reviewers": 4
+        },
+        {
+          "month": "2026-06-01",
+          "active_reviewers": 3
+        },
+        {
+          "month": "2026-07-01",
+          "active_reviewers": 4
+        },
+        {
+          "month": "2026-08-01",
+          "active_reviewers": 3
+        }
+      ],
+      "public_filters": {
+        "from": "2023-09-01",
+        "to": "2026-08-31",
+        "faculty": null,
+        "work_type": null
+      },
+      "public_summary": {
+        "checks": 59771,
+        "avg_originality": 76.4343,
+        "below_threshold": 17606,
+        "below_threshold_share": 0.2946,
+        "escalated": 9556,
+        "suppressed_groups": 92
+      },
+      "public_timeseries": [
+        {
+          "month": "2023-09-01",
+          "checks": 915,
+          "avg_originality": 76.3794
+        },
+        {
+          "month": "2023-10-01",
+          "checks": 1351,
+          "avg_originality": 77.321
+        },
+        {
+          "month": "2023-11-01",
+          "checks": 1778,
+          "avg_originality": 76.4936
+        },
+        {
+          "month": "2023-12-01",
+          "checks": 2632,
+          "avg_originality": 76.9369
+        },
+        {
+          "month": "2024-01-01",
+          "checks": 2448,
+          "avg_originality": 75.9367
+        },
+        {
+          "month": "2024-02-01",
+          "checks": 1191,
+          "avg_originality": 75.5716
+        },
+        {
+          "month": "2024-03-01",
+          "checks": 1328,
+          "avg_originality": 75.8859
+        },
+        {
+          "month": "2024-04-01",
+          "checks": 1848,
+          "avg_originality": 76.38
+        },
+        {
+          "month": "2024-05-01",
+          "checks": 2591,
+          "avg_originality": 76.3054
+        },
+        {
+          "month": "2024-06-01",
+          "checks": 1752,
+          "avg_originality": 77.0946
+        },
+        {
+          "month": "2024-07-01",
+          "checks": 867,
+          "avg_originality": 77.6953
+        },
+        {
+          "month": "2024-08-01",
+          "checks": 401,
+          "avg_originality": 77.7878
+        },
+        {
+          "month": "2024-09-01",
+          "checks": 922,
+          "avg_originality": 76.9168
+        },
+        {
+          "month": "2024-10-01",
+          "checks": 1352,
+          "avg_originality": 76.2719
+        },
+        {
+          "month": "2024-11-01",
+          "checks": 1757,
+          "avg_originality": 76.4025
+        },
+        {
+          "month": "2024-12-01",
+          "checks": 2694,
+          "avg_originality": 76.5478
+        },
+        {
+          "month": "2025-01-01",
+          "checks": 2544,
+          "avg_originality": 76.4902
+        },
+        {
+          "month": "2025-02-01",
+          "checks": 1328,
+          "avg_originality": 75.9278
+        },
+        {
+          "month": "2025-03-01",
+          "checks": 1419,
+          "avg_originality": 76.4541
+        },
+        {
+          "month": "2025-04-01",
+          "checks": 2016,
+          "avg_originality": 75.8177
+        },
+        {
+          "month": "2025-05-01",
+          "checks": 2757,
+          "avg_originality": 76.1194
+        },
+        {
+          "month": "2025-06-01",
+          "checks": 1912,
+          "avg_originality": 76.5662
+        },
+        {
+          "month": "2025-07-01",
+          "checks": 879,
+          "avg_originality": 75.6499
+        },
+        {
+          "month": "2025-08-01",
+          "checks": 420,
+          "avg_originality": 76.1026
+        },
+        {
+          "month": "2025-09-01",
+          "checks": 930,
+          "avg_originality": 76.7907
+        },
+        {
+          "month": "2025-10-01",
+          "checks": 1406,
+          "avg_originality": 76.0398
+        },
+        {
+          "month": "2025-11-01",
+          "checks": 1756,
+          "avg_originality": 76.3726
+        },
+        {
+          "month": "2025-12-01",
+          "checks": 2782,
+          "avg_originality": 76.2328
+        },
+        {
+          "month": "2026-01-01",
+          "checks": 2747,
+          "avg_originality": 76.7532
+        },
+        {
+          "month": "2026-02-01",
+          "checks": 1363,
+          "avg_originality": 77.0915
+        },
+        {
+          "month": "2026-03-01",
+          "checks": 1524,
+          "avg_originality": 77.0242
+        },
+        {
+          "month": "2026-04-01",
+          "checks": 2058,
+          "avg_originality": 76.2057
+        },
+        {
+          "month": "2026-05-01",
+          "checks": 2826,
+          "avg_originality": 76.4026
+        },
+        {
+          "month": "2026-06-01",
+          "checks": 1938,
+          "avg_originality": 76.1448
+        },
+        {
+          "month": "2026-07-01",
+          "checks": 949,
+          "avg_originality": 76.4211
+        },
+        {
+          "month": "2026-08-01",
+          "checks": 390,
+          "avg_originality": 76.7171
+        }
+      ],
+      "public_work_types": [
+        {
+          "code": "article",
+          "checks": 7222,
+          "avg_originality": 76.1851
+        },
+        {
+          "code": "course",
+          "checks": 20309,
+          "avg_originality": 76.2981
+        },
+        {
+          "code": "other",
+          "checks": 7222,
+          "avg_originality": 76.4122
+        },
+        {
+          "code": "research_report",
+          "checks": 4831,
+          "avg_originality": 76.6537
+        },
+        {
+          "code": "thesis_bachelor",
+          "checks": 13176,
+          "avg_originality": 76.635
+        },
+        {
+          "code": "thesis_master",
+          "checks": 5313,
+          "avg_originality": 76.3002
+        },
+        {
+          "code": "thesis_phd",
+          "checks": 1698,
+          "avg_originality": 77.4564
+        }
+      ],
+      "public_faculties": [
+        {
+          "code": "FAC01",
+          "checks": 2978,
+          "avg_originality": 76.503
+        },
+        {
+          "code": "FAC02",
+          "checks": 2656,
+          "avg_originality": 76.1885
+        },
+        {
+          "code": "FAC03",
+          "checks": 2549,
+          "avg_originality": 75.9137
+        },
+        {
+          "code": "FAC04",
+          "checks": 3657,
+          "avg_originality": 76.5498
+        },
+        {
+          "code": "FAC05",
+          "checks": 1676,
+          "avg_originality": 77.8921
+        },
+        {
+          "code": "FAC06",
+          "checks": 2478,
+          "avg_originality": 76.3486
+        },
+        {
+          "code": "FAC07",
+          "checks": 2456,
+          "avg_originality": 76.1024
+        },
+        {
+          "code": "FAC08",
+          "checks": 11,
+          "avg_originality": 77.1082
+        },
+        {
+          "code": "UNASSIGNED",
+          "checks": 41310,
+          "avg_originality": 76.4326
+        }
+      ],
+      "public_histogram": {
+        "lt50": 4642,
+        "b50_70": 12964,
+        "b70_85": 17682,
+        "b85_95": 16462,
+        "ge95": 8021,
+        "total": 59771
+      },
+      "public_yoy": [
+        {
+          "academic_year": 2023,
+          "checks": 19102,
+          "avg_originality": 76.5369
+        },
+        {
+          "academic_year": 2024,
+          "checks": 20000,
+          "avg_originality": 76.2986
+        },
+        {
+          "academic_year": 2025,
+          "checks": 20669,
+          "avg_originality": 76.4708
+        }
+      ]
+    }
+  ]
+}

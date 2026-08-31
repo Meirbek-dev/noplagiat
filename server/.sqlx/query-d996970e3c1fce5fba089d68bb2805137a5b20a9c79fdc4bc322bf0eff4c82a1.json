@@ -1,0 +1,37 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT count(*) AS \"below!\"\n             FROM fact_cells($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) f\n             JOIN faculties fa ON fa.id = f.faculty_id\n             JOIN work_types wt ON wt.id = f.work_type_id\n             JOIN unnest($12::date[], $13::text[], $14::text[])\n                    AS released(month, faculty_code, work_type_code)\n                    ON released.month = f.month\n                   AND released.faculty_code = fa.code\n                   AND released.work_type_code = wt.code\n            WHERE f.originality_pct < $15::text::numeric",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "below!",
+        "type_info": "Int8",
+        "origin": "Expression"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Date",
+        "Date",
+        "Bool",
+        "Int8",
+        "Int8",
+        "Text",
+        "Text",
+        "Text",
+        "Text",
+        "Text",
+        "Text",
+        "DateArray",
+        "TextArray",
+        "TextArray",
+        "Text"
+      ]
+    },
+    "nullable": [
+      null
+    ]
+  },
+  "hash": "d996970e3c1fce5fba089d68bb2805137a5b20a9c79fdc4bc322bf0eff4c82a1"
+}

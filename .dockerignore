@@ -1,0 +1,48 @@
+# Repository-root build context, shared by deploy/Dockerfile.server and
+# deploy/Dockerfile.web. Both are un-excluded below on purpose.
+#
+# The `<dockerfile>.dockerignore` convention that `deploy/Dockerfile.web`
+# relies on is a BuildKit frontend feature. Podman ships no BuildKit, so
+# compose falls back to its classic builder - it stamps the image with
+# `com.docker.compose.image.builder=classic` - and the classic builder tars the
+# context using THIS file and only this file. Anything either Dockerfile copies
+# must therefore be reachable here, or the build dies at the COPY with
+# `copier: stat: "/package.json": no such file or directory`.
+#
+# deploy/Dockerfile.web.dockerignore is still read under BuildKit and narrows
+# the web context further there; this file has to stay a superset of it.
+**
+
+# deploy/Dockerfile.server
+!server/
+!server/**
+!contracts/
+!contracts/**
+
+# deploy/Dockerfile.web. `!deploy/` un-excludes only the directory entry, so
+# the single file named below is the only thing that enters from deploy/ -
+# deploy/.env, which holds the database password and the non-rotatable ingest
+# pepper, stays outside the context (and is re-excluded explicitly at the end).
+!package.json
+!bun.lock
+!apps/
+!apps/web/
+!apps/web/**
+!deploy/
+!deploy/web-server.mjs
+
+# Local build output and environment files must not enter the image context.
+# These come last: the final matching pattern wins. Each directory is listed
+# twice, bare and with `/**`, because the bare form alone only re-excludes the
+# directory entry - the `!apps/web/**` above still matches every file inside it.
+server/target/
+server/.env
+server/.env.*
+apps/web/node_modules/
+apps/web/node_modules/**
+apps/web/dist/
+apps/web/dist/**
+apps/web/.env
+apps/web/.env.*
+deploy/.env
+deploy/.env.*

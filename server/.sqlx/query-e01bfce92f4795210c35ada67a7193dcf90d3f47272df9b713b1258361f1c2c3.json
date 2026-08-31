@@ -1,0 +1,68 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT f.code AS \"faculty_code!\",\n                          d.code AS \"department_code!\",\n                          sum(c.checks)::bigint AS \"checks!\",\n                          (sum(c.sum_originality) * 100)::bigint\n                              AS \"sum_originality_hundredths!\"\n                     FROM agg_cells($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15) c\n                     JOIN faculties f ON f.id = c.faculty_id\n                     JOIN departments d ON d.id = c.department_id\n                    GROUP BY 1, 2\n                    ORDER BY 1, 2",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "faculty_code!",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "faculties",
+            "name": "code"
+          }
+        }
+      },
+      {
+        "ordinal": 1,
+        "name": "department_code!",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "departments",
+            "name": "code"
+          }
+        }
+      },
+      {
+        "ordinal": 2,
+        "name": "checks!",
+        "type_info": "Int8",
+        "origin": "Expression"
+      },
+      {
+        "ordinal": 3,
+        "name": "sum_originality_hundredths!",
+        "type_info": "Int8",
+        "origin": "Expression"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Date",
+        "Date",
+        "Date",
+        "Date",
+        "Date",
+        "Date",
+        "Bool",
+        "Int8",
+        "Int8",
+        "Text",
+        "Text",
+        "Text",
+        "Text",
+        "Text",
+        "Text"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      null,
+      null
+    ]
+  },
+  "hash": "e01bfce92f4795210c35ada67a7193dcf90d3f47272df9b713b1258361f1c2c3"
+}

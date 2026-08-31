@@ -1,0 +1,18 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "UPDATE work_type_rules r\n            SET pattern = $2,\n                work_type_id = w.id,\n                priority = $4,\n                active = $5\n           FROM work_types w\n          WHERE r.id = $1 AND w.code = $3",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Int8",
+        "Text",
+        "Text",
+        "Int4",
+        "Bool"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "f9ac3636c35ba51d902be15ef03fb6233cc7d49e306e91eec32115fd64b2feee"
+}

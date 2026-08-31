@@ -1,0 +1,35 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "INSERT INTO checks (\n                 source_check_id, attempt_no, checked_at, academic_year,\n                 work_type_id, faculty_id, department_id, program_id,\n                 originality_pct, status, escalated, initiator,\n                 self_citation_pct, citation_pct, match_pct, ai_content_pct,\n                 suspicious, suspicion_cleared, deleted, work_ref, reviewer_ref,\n                 ingest_batch_id\n             )\n             SELECT s.source_check_id,\n                    s.attempt_no,\n                    s.checked_at::timestamptz,\n                    s.academic_year,\n                    wt.id, f.id, d.id, p.id,\n                    s.originality_pct::numeric,\n                    s.status::check_status,\n                    s.escalated,\n                    s.initiator::initiator_role,\n                    s.self_citation_pct::numeric,\n                    s.citation_pct::numeric,\n                    s.match_pct::numeric,\n                    s.ai_content_pct::numeric,\n                    s.suspicious,\n                    s.suspicion_cleared,\n                    s.deleted,\n                    decode(s.work_ref, 'hex'),\n                    decode(s.reviewer_ref, 'hex'),\n                    $1\n             FROM UNNEST(\n                      $2::text[], $3::int4[], $4::text[], $5::int2[],\n                      $6::text[], $7::text[], $8::text[], $9::text[],\n                      $10::text[], $11::text[], $12::bool[], $13::text[],\n                      $14::text[], $15::text[], $16::text[], $17::text[],\n                      $18::bool[], $19::bool[], $20::bool[], $21::text[], $22::text[]\n                  ) AS s(\n                      source_check_id, attempt_no, checked_at, academic_year,\n                      work_type_code, faculty_code, department_code, program_code,\n                      originality_pct, status, escalated, initiator,\n                      self_citation_pct, citation_pct, match_pct, ai_content_pct,\n                      suspicious, suspicion_cleared, deleted, work_ref, reviewer_ref\n                  )\n             LEFT JOIN work_types wt ON wt.code = s.work_type_code\n             LEFT JOIN faculties f ON f.code = s.faculty_code\n             LEFT JOIN departments d ON d.code = s.department_code\n             LEFT JOIN programs p ON p.code = s.program_code\n             ON CONFLICT (source_check_id, attempt_no) DO UPDATE SET\n                 checked_at = EXCLUDED.checked_at,\n                 academic_year = EXCLUDED.academic_year,\n                 work_type_id = EXCLUDED.work_type_id,\n                 faculty_id = EXCLUDED.faculty_id,\n                 department_id = EXCLUDED.department_id,\n                 program_id = EXCLUDED.program_id,\n                 originality_pct = EXCLUDED.originality_pct,\n                 status = EXCLUDED.status,\n                 escalated = EXCLUDED.escalated,\n                 initiator = EXCLUDED.initiator,\n                 self_citation_pct = EXCLUDED.self_citation_pct,\n                 citation_pct = EXCLUDED.citation_pct,\n                 match_pct = EXCLUDED.match_pct,\n                 ai_content_pct = EXCLUDED.ai_content_pct,\n                 suspicious = EXCLUDED.suspicious,\n                 suspicion_cleared = EXCLUDED.suspicion_cleared,\n                 deleted = EXCLUDED.deleted,\n                 work_ref = EXCLUDED.work_ref,\n                 reviewer_ref = EXCLUDED.reviewer_ref,\n                 ingest_batch_id = EXCLUDED.ingest_batch_id",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Int8",
+        "TextArray",
+        "Int4Array",
+        "TextArray",
+        "Int2Array",
+        "TextArray",
+        "TextArray",
+        "TextArray",
+        "TextArray",
+        "TextArray",
+        "TextArray",
+        "BoolArray",
+        "TextArray",
+        "TextArray",
+        "TextArray",
+        "TextArray",
+        "TextArray",
+        "BoolArray",
+        "BoolArray",
+        "BoolArray",
+        "TextArray",
+        "TextArray"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "35e4d263ef0ad38c8625c71076a79a12daba1c5d6781e39109ada35f552288bc"
+}

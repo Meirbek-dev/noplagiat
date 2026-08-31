@@ -1,0 +1,65 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT count(*) FILTER (WHERE f.originality_pct < $12::text::numeric)\n                          AS \"lt50!\",\n                      count(*) FILTER (WHERE f.originality_pct >= $12::text::numeric\n                                         AND f.originality_pct < $13::text::numeric)\n                          AS \"b50_70!\",\n                      count(*) FILTER (WHERE f.originality_pct >= $13::text::numeric\n                                         AND f.originality_pct < $14::text::numeric)\n                          AS \"b70_85!\",\n                      count(*) FILTER (WHERE f.originality_pct >= $14::text::numeric\n                                         AND f.originality_pct < $15::text::numeric)\n                          AS \"b85_95!\",\n                      count(*) FILTER (WHERE f.originality_pct >= $15::text::numeric)\n                          AS \"ge95!\"\n                 FROM fact_cells($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) f",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "lt50!",
+        "type_info": "Int8",
+        "origin": "Expression"
+      },
+      {
+        "ordinal": 1,
+        "name": "b50_70!",
+        "type_info": "Int8",
+        "origin": "Expression"
+      },
+      {
+        "ordinal": 2,
+        "name": "b70_85!",
+        "type_info": "Int8",
+        "origin": "Expression"
+      },
+      {
+        "ordinal": 3,
+        "name": "b85_95!",
+        "type_info": "Int8",
+        "origin": "Expression"
+      },
+      {
+        "ordinal": 4,
+        "name": "ge95!",
+        "type_info": "Int8",
+        "origin": "Expression"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Date",
+        "Date",
+        "Bool",
+        "Int8",
+        "Int8",
+        "Text",
+        "Text",
+        "Text",
+        "Text",
+        "Text",
+        "Text",
+        "Text",
+        "Text",
+        "Text",
+        "Text"
+      ]
+    },
+    "nullable": [
+      null,
+      null,
+      null,
+      null,
+      null
+    ]
+  },
+  "hash": "3d1546960905555bdffe58921a50090d339532151e46b1c4c4868a7b7d8710bf"
+}

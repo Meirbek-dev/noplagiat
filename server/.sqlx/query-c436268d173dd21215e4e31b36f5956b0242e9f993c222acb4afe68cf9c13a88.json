@@ -1,0 +1,17 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "UPDATE ingest_sources SET base_url = $2, schedule = $3, enabled = $4 WHERE id = $1",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Int8",
+        "Text",
+        "Text",
+        "Bool"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "c436268d173dd21215e4e31b36f5956b0242e9f993c222acb4afe68cf9c13a88"
+}

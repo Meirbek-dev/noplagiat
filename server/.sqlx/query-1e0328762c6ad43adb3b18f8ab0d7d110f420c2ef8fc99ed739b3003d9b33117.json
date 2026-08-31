@@ -1,0 +1,53 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT st.academic_year, wt.code AS work_type_code, st.total_submitted\n               FROM submission_totals st\n               JOIN work_types wt ON wt.id = st.work_type_id\n              WHERE st.academic_year >= $1 AND st.academic_year <= $2\n              ORDER BY st.academic_year, wt.code",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "academic_year",
+        "type_info": "Int2",
+        "origin": {
+          "Table": {
+            "table": "submission_totals",
+            "name": "academic_year"
+          }
+        }
+      },
+      {
+        "ordinal": 1,
+        "name": "work_type_code",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "work_types",
+            "name": "code"
+          }
+        }
+      },
+      {
+        "ordinal": 2,
+        "name": "total_submitted",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "submission_totals",
+            "name": "total_submitted"
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Int2",
+        "Int2"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "1e0328762c6ad43adb3b18f8ab0d7d110f420c2ef8fc99ed739b3003d9b33117"
+}

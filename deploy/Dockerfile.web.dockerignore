@@ -1,0 +1,13 @@
+**
+!package.json
+!bun.lock
+!apps/
+!apps/web/
+!apps/web/**
+!deploy/
+!deploy/web-server.mjs
+
+apps/web/.env*
+apps/web/dist/
+apps/web/node_modules/
+node_modules/

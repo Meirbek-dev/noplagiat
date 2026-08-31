@@ -1,0 +1,17 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "DELETE FROM user_roles\n          WHERE user_id = $1\n            AND role = $2::text::role_kind\n            AND scope_faculty_id IS NOT DISTINCT FROM $3\n            AND scope_department_id IS NOT DISTINCT FROM $4",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Int8",
+        "Text",
+        "Int8",
+        "Int8"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "2ce5f125b5efac18c01107c58497e5f64f64ae2830dcae0f67257f361953ab8c"
+}

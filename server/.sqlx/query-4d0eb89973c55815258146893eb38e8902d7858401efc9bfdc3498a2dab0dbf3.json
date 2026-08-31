@@ -1,0 +1,30 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "INSERT INTO dict_aliases (kind, source_label, target_id)\n         VALUES ($1, $2, $3)\n         ON CONFLICT (kind, source_label) DO UPDATE SET target_id = EXCLUDED.target_id\n         RETURNING id",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Int8",
+        "origin": {
+          "Table": {
+            "table": "dict_aliases",
+            "name": "id"
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Text",
+        "Text",
+        "Int8"
+      ]
+    },
+    "nullable": [
+      false
+    ]
+  },
+  "hash": "4d0eb89973c55815258146893eb38e8902d7858401efc9bfdc3498a2dab0dbf3"
+}

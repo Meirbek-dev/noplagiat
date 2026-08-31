@@ -1,0 +1,177 @@
+/*
+ * Toraighyrov University brand tokens (TZ.md §8) + the chart system palette
+ * (ARCHITECTURE.md §5.3, PLAN.md W2.3).
+ *
+ * The ONLY place hex brand values may appear - components use the variables.
+ * `src/components/charts/tokens.test.ts` fails the build if a hex literal
+ * appears anywhere else under `src/`.
+ *
+ * ── How the series palette was derived ──────────────────────────────────────
+ * Method: the `dataviz` skill (form → job → validate → marks → interaction →
+ * a11y). Slot 1 is the brand navy hue (OKLCH h 255.6) stepped into the mode's
+ * lightness band; slot 2 is `--brand-orange` verbatim (it already clears 3:1 on
+ * white); slots 3–6 are four supporting hues chosen so that every *adjacent*
+ * pair clears the CVD ΔE ≥ 8 target under protanopia and deuteranopia
+ * (Machado-Oliveira-Fernandes 2009, severity 1.0) and the ΔE ≥ 15
+ * normal-vision floor. Both modes were run through
+ * `dataviz/scripts/validate_palette.js`; all six checks PASS:
+ *
+ *   light (surface #ffffff) worst adjacent CVD ΔE 15.3 · normal-vision 25.2
+ *   dark  (surface #171717) worst adjacent CVD ΔE  9.8 · normal-vision 19.1
+ *
+ * Contrast vs the surface the charts actually render on (`--card`):
+ *   light  navy 7.50  orange 3.29  teal 3.06  violet 6.19  gold 3.03  green 6.68
+ *   dark   navy 4.36  orange 5.45  teal 5.69  violet 3.66  gold 5.81  green 3.60
+ * All ≥ 3:1 → WCAG 2.1 AA for non-text contrast (1.4.11).
+ *
+ * `--chart-seq-1..5` is the single-hue navy ramp used for *ordinal* and
+ * *sequential* jobs (originality buckets, heat cells). It is validated with
+ * `--ordinal`: monotone lightness, adjacent ΔL ≥ 0.06, surface-nearest step
+ * ≥ 2:1 (light 2.04:1, dark 2.11:1), hue spread 1°.
+ *
+ * Charts must sit on `--background` or `--card`. On `--muted` in dark mode the
+ * green and violet steps fall to ~3.0:1 - still AA, with no margin.
+ */
+:root {
+  --brand-navy: #1d3d66;
+  --brand-orange: #de6e35;
+
+  /* The ink the brand book puts on the navy field, and the one token here that
+     is deliberately NOT redefined under `.dark`. The public masthead is that
+     field: a reverse lockup exists for exactly one background, so the bar keeps
+     its navy in both colour modes and its ink has to stay white with it -
+     unlike `--primary-foreground` below, which flips because `--primary`
+     lightens into a mid-tone that white text cannot sit on. */
+  --brand-navy-foreground: #ffffff;
+
+  /* shadcn overrides: primary follows the brand book */
+  --primary: var(--brand-navy);
+  --primary-foreground: #ffffff;
+  --ring: var(--brand-navy);
+
+  /* Categorical series palette - fixed slot order, never cycled. */
+  --chart-1: #205596; /* navy   - brand hue, primary series */
+  --chart-2: #de6e35; /* orange - brand accent */
+  --chart-3: #00a4a5; /* teal */
+  --chart-4: #784bab; /* violet */
+  --chart-5: #bb8d0c; /* gold */
+  --chart-6: #006b2e; /* green */
+
+  /* Single-hue navy ramp - ordinal buckets and sequential heat cells. */
+  --chart-seq-1: #98b8e4;
+  --chart-seq-2: #759fd7;
+  --chart-seq-3: #5486c9;
+  --chart-seq-4: #356cb3;
+  --chart-seq-5: #205596;
+
+  /* Ink for a label sitting ON a ramp step (8.89 / 6.63 / 4.85 : 1). */
+  --chart-seq-ink-low: oklch(0.2 0 0); /* on seq-1..3 */
+  --chart-seq-ink-high: #ffffff; /* on seq-4..5 - 5.32 / 7.50 : 1 */
+
+  /* Neutral chart chrome - recessive, never an identity channel. Grid lines
+     and axes are painted by the renderer as `currentColor` at low opacity,
+     which `.np-chart` binds to `--chart-ink` below. */
+  --chart-ink: oklch(0.2 0 0);
+  --chart-ink-muted: oklch(0.5 0 0);
+  --chart-band: oklch(
+    0.55 0.03 255
+  ); /* semester overlay, used at low opacity */
+
+  /* "insufficient data" (k-anonymity) cell treatment */
+  --suppressed-fg: oklch(0.5 0 0);
+  --suppressed-bg: oklch(0.96 0 0);
+  --suppressed-hatch: oklch(0.78 0 0);
+}
+
+.dark {
+  /* lightened navy keeps AA contrast on dark surfaces */
+  --primary: oklch(0.62 0.09 258);
+  /* The lightened primary is a MID-tone: as a button background it fails
+     4.5:1 under white text (axe: serious), so the foreground goes dark -
+     ~6.5:1 on the primary, standard practice for mid-tone fills. */
+  --primary-foreground: oklch(0.13 0.02 258);
+  --ring: oklch(0.62 0.09 258);
+
+  /* The same six hues, re-stepped for the dark surface - not an auto-flip. */
+  --chart-1: #4c7fc0;
+  --chart-2: #de6e35;
+  --chart-3: #1ba1a2;
+  --chart-4: #8a59c2;
+  --chart-5: #b88c19;
+  --chart-6: #2a7f43;
+
+  /* Ramp anchor flips: the step nearest the surface is the darkest one. */
+  --chart-seq-1: #2d4e79;
+  --chart-seq-2: #366096;
+  --chart-seq-3: #4273b2;
+  --chart-seq-4: #5088d0;
+  --chart-seq-5: #689ee3;
+
+  /* The anchor flips with the ramp: 8.48 / 6.42 / 4.85 : 1 then 4.98 / 6.54. */
+  --chart-seq-ink-low: #ffffff; /* on seq-1..3 */
+  --chart-seq-ink-high: oklch(0.2 0 0); /* on seq-4..5 */
+
+  --chart-ink: oklch(0.98 0 0);
+  --chart-ink-muted: oklch(0.72 0 0);
+  --chart-band: oklch(0.7 0.04 255);
+
+  --suppressed-fg: oklch(0.72 0 0);
+  --suppressed-bg: oklch(0.28 0 0);
+  --suppressed-hatch: oklch(0.45 0 0);
+}
+
+/*
+ * Every chart wrapper renders inside `.np-chart`. It republishes the brand
+ * palette under the names `@tanstack/charts` reads (`--ts-chart-N`) so a mark
+ * with no explicit paint still lands on a validated brand colour, and it
+ * themes the built-in tooltip from the shadcn popover tokens.
+ */
+.np-chart {
+  --ts-chart-1: var(--chart-1);
+  --ts-chart-2: var(--chart-2);
+  --ts-chart-3: var(--chart-3);
+  --ts-chart-4: var(--chart-4);
+  --ts-chart-5: var(--chart-5);
+  --ts-chart-6: var(--chart-6);
+
+  --ts-chart-tooltip-background: var(--popover);
+  --ts-chart-tooltip-color: var(--popover-foreground);
+  --ts-chart-tooltip-border: 1px solid var(--border);
+  --ts-chart-tooltip-border-radius: var(--radius-md);
+  --ts-chart-tooltip-font: 0.8125rem/1.35 var(--font-sans);
+
+  color: var(--chart-ink);
+}
+
+/*
+ * The suppression treatment.
+ *
+ * `.np-suppressed` is the *text* form - a flat muted chip behind the words
+ * «недостаточно данных», so the phrase itself stays legible.
+ * `.np-suppressed-hatch` adds the hatch, for the places where the suppression
+ * covers an *area* rather than a label (legend swatches). SVG areas - the heat
+ * cells - use the same two tokens through the `<pattern>` that
+ * `SuppressedPatternDefs` emits, because the chart renderer accepts only
+ * gradients as declared resources.
+ */
+.np-suppressed {
+  background-color: var(--suppressed-bg);
+  color: var(--suppressed-fg);
+}
+
+.np-suppressed-hatch {
+  background-color: var(--suppressed-bg);
+  background-image: var(--suppressed-hatch-image);
+  color: var(--suppressed-fg);
+}
+
+:root,
+.dark {
+  --suppressed-hatch-image: repeating-linear-gradient(
+    45deg,
+    transparent,
+    transparent 3px,
+    var(--suppressed-hatch) 3px,
+    var(--suppressed-hatch) 4px
+  );
+}

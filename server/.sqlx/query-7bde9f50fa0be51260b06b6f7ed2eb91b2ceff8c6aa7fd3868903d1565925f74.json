@@ -1,0 +1,79 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT coalesce(sum(c.checks), 0)::bigint              AS \"checks!\",\n                  (coalesce(sum(c.sum_originality), 0) * 100)::bigint\n                                                                  AS \"sum_originality_hundredths!\",\n                  coalesce(sum(c.b_lt50), 0)::bigint              AS \"b_lt50!\",\n                  coalesce(sum(c.b_50_70), 0)::bigint             AS \"b_50_70!\",\n                  coalesce(sum(c.b_70_85), 0)::bigint             AS \"b_70_85!\",\n                  coalesce(sum(c.b_85_95), 0)::bigint             AS \"b_85_95!\",\n                  coalesce(sum(c.escalated), 0)::bigint           AS \"escalated!\"\n             FROM agg_cells($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15) c",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "checks!",
+        "type_info": "Int8",
+        "origin": "Expression"
+      },
+      {
+        "ordinal": 1,
+        "name": "sum_originality_hundredths!",
+        "type_info": "Int8",
+        "origin": "Expression"
+      },
+      {
+        "ordinal": 2,
+        "name": "b_lt50!",
+        "type_info": "Int8",
+        "origin": "Expression"
+      },
+      {
+        "ordinal": 3,
+        "name": "b_50_70!",
+        "type_info": "Int8",
+        "origin": "Expression"
+      },
+      {
+        "ordinal": 4,
+        "name": "b_70_85!",
+        "type_info": "Int8",
+        "origin": "Expression"
+      },
+      {
+        "ordinal": 5,
+        "name": "b_85_95!",
+        "type_info": "Int8",
+        "origin": "Expression"
+      },
+      {
+        "ordinal": 6,
+        "name": "escalated!",
+        "type_info": "Int8",
+        "origin": "Expression"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Date",
+        "Date",
+        "Date",
+        "Date",
+        "Date",
+        "Date",
+        "Bool",
+        "Int8",
+        "Int8",
+        "Text",
+        "Text",
+        "Text",
+        "Text",
+        "Text",
+        "Text"
+      ]
+    },
+    "nullable": [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ]
+  },
+  "hash": "7bde9f50fa0be51260b06b6f7ed2eb91b2ceff8c6aa7fd3868903d1565925f74"
+}

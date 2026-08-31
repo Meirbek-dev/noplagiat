@@ -1,0 +1,55 @@
+# Rust API + background workers (ADR-009, ADR-015 §8).
+#
+# Build context is the repository root; `.dockerignore` narrows it to `server/`
+# and `contracts/`. That is deliberately everything the build needs:
+#   - `server/.sqlx/`  - the offline query cache, so `sqlx::query!` macros
+#                        compile without a database (there is none at build time)
+#   - `server/crates/reports/assets/` - the Typst template and the two Noto
+#                        faces, pulled into the binary by `include_str!` /
+#                        `include_bytes!`. Nothing is read from disk at runtime,
+#                        so the runtime stage copies no assets.
+
+# The tag is pinned to the exact patch in `server/rust-toolchain.toml`; a
+# mismatch makes the image silently download a second toolchain on every build.
+FROM rust:1.97.1-slim-bookworm AS build
+WORKDIR /build
+
+# No database at build time: resolve `sqlx::query!` from the committed cache and
+# fail loudly rather than trying to reach one.
+ENV SQLX_OFFLINE=true
+
+COPY server/ server/
+COPY contracts/ contracts/
+RUN cargo build --release --manifest-path server/Cargo.toml
+
+# Runtime stage
+FROM debian:bookworm-slim
+
+# `ca-certificates` - the OIDC discovery/JWKS/token calls and the API-kind ingest
+#   source are outbound HTTPS; without trusted roots they fail at handshake.
+# `curl` - the /readyz healthcheck in docker-compose.yml. debian-slim ships
+#   neither curl nor wget, so a healthcheck needs one of them installed.
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends ca-certificates curl \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN useradd --system --no-create-home appuser
+
+COPY --from=build /build/server/target/release/noplagiat-server /usr/local/bin/
+# The historical-backfill CLI (ADR-008 §10, ADR-011) travels with the server so
+# the W4.3 backfill and any manual re-import run from the deployed image, with
+# the deployed pepper. A second image for one binary would only drift.
+COPY --from=build /build/server/target/release/ingest-csv /usr/local/bin/
+# `generate-report` for the same reason: RUNBOOK.md's manual Приложение-1
+# procedure invokes it, and until it was copied here that procedure could only
+# be carried out by installing a Rust toolchain next to the production database.
+COPY --from=build /build/server/target/release/generate-report /usr/local/bin/
+
+# APP_REPORTS_DIR. Created here so the mount point has the right owner before
+# Compose attaches the named volume; snapshots are written by `appuser`.
+RUN mkdir -p /var/lib/noplagiat/reports && chown appuser /var/lib/noplagiat/reports
+ENV APP_REPORTS_DIR=/var/lib/noplagiat/reports
+
+USER appuser
+EXPOSE 8080
+ENTRYPOINT ["noplagiat-server"]

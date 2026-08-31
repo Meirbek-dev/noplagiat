@@ -1,0 +1,56 @@
+{
+  "name": "noplagiat",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "build": "turbo build",
+    "dev": "turbo dev",
+    "lint": "turbo lint",
+    "format": "turbo format",
+    "typecheck": "turbo typecheck",
+    "prepare": "vp config",
+    "gen:api": "bun scripts/gen-api.ts",
+    "gen:api:check": "bun scripts/gen-api.ts --check",
+    "server:dev": "cargo run --manifest-path server/Cargo.toml",
+    "server:check": "cargo clippy --workspace --all-targets --manifest-path server/Cargo.toml -- -D warnings",
+    "server:test": "cargo test --workspace --manifest-path server/Cargo.toml",
+    "db:up": "docker compose --env-file deploy/.env -f deploy/docker-compose.yml up -d postgres",
+    "db:reset": "psql \"postgres://noplagiat:noplagiat@localhost:5432/noplagiat\" -f fixtures/reset.sql",
+    "seed": "bun fixtures/seed.ts",
+    "fixtures:gen": "bun fixtures/generate.ts --scale small",
+    "e2e": "playwright test --config apps/web/e2e/playwright.config.ts",
+    "load": "k6 run fixtures/load/summary.js",
+    "ingest:csv": "cargo run --manifest-path server/Cargo.toml --bin ingest-csv -- --dir fixtures/out",
+    "report:generate": "cargo run --manifest-path server/Cargo.toml --bin generate-report --"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "^4.13.0",
+    "@hey-api/openapi-ts": "0.99.0",
+    "@playwright/test": "^1.62.1",
+    "@types/bun": "^1.4.0",
+    "turbo": "^2.10.12",
+    "typescript": "^6.0.3",
+    "vite": "catalog:",
+    "vite-plus": "catalog:"
+  },
+  "packageManager": "bun@1.4.0",
+  "engines": {
+    "node": ">=20"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild",
+      "lightningcss"
+    ]
+  },
+  "workspaces": [
+    "apps/*"
+  ],
+  "catalog": {
+    "vite": "npm:@voidzero-dev/vite-plus-core@0.3.0",
+    "vite-plus": "0.3.0"
+  },
+  "overrides": {
+    "vite": "catalog:"
+  }
+}

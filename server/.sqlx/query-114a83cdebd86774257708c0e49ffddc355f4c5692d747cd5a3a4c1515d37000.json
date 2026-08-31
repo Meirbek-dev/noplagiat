@@ -1,0 +1,65 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT coalesce(sum(c.b_lt50), 0)::bigint  AS \"lt50!\",\n                  coalesce(sum(c.b_50_70), 0)::bigint AS \"b50_70!\",\n                  coalesce(sum(c.b_70_85), 0)::bigint AS \"b70_85!\",\n                  coalesce(sum(c.b_85_95), 0)::bigint AS \"b85_95!\",\n                  coalesce(sum(c.b_ge95), 0)::bigint  AS \"ge95!\"\n             FROM agg_cells($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15) c",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "lt50!",
+        "type_info": "Int8",
+        "origin": "Expression"
+      },
+      {
+        "ordinal": 1,
+        "name": "b50_70!",
+        "type_info": "Int8",
+        "origin": "Expression"
+      },
+      {
+        "ordinal": 2,
+        "name": "b70_85!",
+        "type_info": "Int8",
+        "origin": "Expression"
+      },
+      {
+        "ordinal": 3,
+        "name": "b85_95!",
+        "type_info": "Int8",
+        "origin": "Expression"
+      },
+      {
+        "ordinal": 4,
+        "name": "ge95!",
+        "type_info": "Int8",
+        "origin": "Expression"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Date",
+        "Date",
+        "Date",
+        "Date",
+        "Date",
+        "Date",
+        "Bool",
+        "Int8",
+        "Int8",
+        "Text",
+        "Text",
+        "Text",
+        "Text",
+        "Text",
+        "Text"
+      ]
+    },
+    "nullable": [
+      null,
+      null,
+      null,
+      null,
+      null
+    ]
+  },
+  "hash": "114a83cdebd86774257708c0e49ffddc355f4c5692d747cd5a3a4c1515d37000"
+}

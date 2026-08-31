@@ -1,0 +1,17 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "UPDATE checks AS c\n           SET attempt_no = t.attempt_no,\n               status = t.status::check_status,\n               escalated = t.escalated\n           FROM UNNEST($1::bigint[], $2::int[], $3::text[], $4::bool[])\n                AS t(id, attempt_no, status, escalated)\n           WHERE c.id = t.id",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Int8Array",
+        "Int4Array",
+        "TextArray",
+        "BoolArray"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "e3de7b5d6e2c729bda20e8d20942db482d9c33c6d4fc2fa14ef81be9b57559a4"
+}

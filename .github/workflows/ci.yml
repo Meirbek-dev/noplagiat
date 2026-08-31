@@ -1,0 +1,329 @@
+# CI gate order is fixed by docs/ARCHITECTURE.md §10:
+#   install -> contract drift -> backend fmt/clippy/test -> frontend check/test/build -> e2e
+# The jobs below are chained with `needs:` so the pipeline fails at the earliest
+# broken gate. Per AGENTS.md §1.7 no gate here may be skipped, weakened or made
+# `continue-on-error`.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions:
+  contents: read
+
+env:
+  CARGO_TERM_COLOR: always
+  RUST_BACKTRACE: 1
+
+jobs:
+  # ── 1. Contract drift ───────────────────────────────────────────────────────
+  # contracts/openapi.json is generated from the Rust types (ADR-003); a stale
+  # file in the tree is a hard failure. Compile-only job: no database, so SQL
+  # macros must resolve from the committed `server/.sqlx/` cache.
+  contract:
+    name: contract drift
+    runs-on: ubuntu-24.04
+    env:
+      SQLX_OFFLINE: "true"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Resolve pinned Rust channel
+        id: rust
+        run: |
+          channel="$(sed -n 's/^[[:space:]]*channel[[:space:]]*=[[:space:]]*"\([^"]*\)".*/\1/p' server/rust-toolchain.toml | head -n1)"
+          if [ -z "$channel" ]; then
+            echo "::error file=server/rust-toolchain.toml::no [toolchain] channel found"
+            exit 1
+          fi
+          echo "channel=$channel" >> "$GITHUB_OUTPUT"
+
+      - name: Install Rust ${{ steps.rust.outputs.channel }}
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: ${{ steps.rust.outputs.channel }}
+
+      - name: Cache cargo registry and target
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: server
+
+      - name: contracts/openapi.json matches the Rust types
+        run: cargo run --manifest-path server/Cargo.toml --bin export-openapi -- --check contracts/openapi.json
+
+  # ── 2. Backend ──────────────────────────────────────────────────────────────
+  # Runs against a live PostgreSQL 18 so `sqlx::query!` macros are checked
+  # against the real schema (no SQLX_OFFLINE here - that is deliberate).
+  backend:
+    name: backend (fmt, clippy, test)
+    runs-on: ubuntu-24.04
+    needs: contract
+    services:
+      postgres:
+        image: postgres:18-alpine
+        env:
+          POSTGRES_USER: noplagiat
+          POSTGRES_PASSWORD: noplagiat
+          POSTGRES_DB: noplagiat
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U noplagiat -d noplagiat"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 20
+    env:
+      # Throwaway CI credentials; identical to the local dev defaults in
+      # deploy/env.example so that "local == CI".
+      DATABASE_URL: postgres://noplagiat:noplagiat@localhost:5432/noplagiat
+      APP_DATABASE_URL: postgres://noplagiat:noplagiat@localhost:5432/noplagiat
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Resolve pinned Rust channel
+        id: rust
+        run: |
+          channel="$(sed -n 's/^[[:space:]]*channel[[:space:]]*=[[:space:]]*"\([^"]*\)".*/\1/p' server/rust-toolchain.toml | head -n1)"
+          if [ -z "$channel" ]; then
+            echo "::error file=server/rust-toolchain.toml::no [toolchain] channel found"
+            exit 1
+          fi
+          echo "channel=$channel" >> "$GITHUB_OUTPUT"
+
+      - name: Install Rust ${{ steps.rust.outputs.channel }}
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: ${{ steps.rust.outputs.channel }}
+          components: rustfmt, clippy
+
+      - name: Cache cargo registry and target
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: server
+
+      # Applies the committed migrations in filename order so the compile-time
+      # SQL checks have a schema to verify against. `#[sqlx::test]` still creates
+      # and migrates its own throwaway databases.
+      # TODO(W1.1): if a slice needs `_sqlx_migrations` bookkeeping in CI,
+      # replace this with sqlx-cli 0.9.0 + `sqlx migrate run --source server/migrations`.
+      - name: Apply migrations
+        run: |
+          for f in server/migrations/*.sql; do
+            echo "applying $f"
+            psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -q -f "$f"
+          done
+
+      # The db/ingest test suites read fixtures/out (gitignored, deterministic)
+      # and shell out to bun when it is missing - pre-generate here so those
+      # tests never depend on a bun binary being visible to cargo.
+      - name: Set up Bun (fixture generation)
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.4.0
+
+      - name: Generate fixtures
+        run: |
+          bun fixtures/generate.ts --scale small
+          bun fixtures/expected.ts
+
+      - name: cargo fmt
+        run: cargo fmt --check --manifest-path server/Cargo.toml
+
+      - name: cargo clippy
+        run: cargo clippy --workspace --all-targets --manifest-path server/Cargo.toml -- -D warnings
+
+      - name: cargo test
+        run: cargo test --workspace --manifest-path server/Cargo.toml
+
+  # ── 3. Frontend ─────────────────────────────────────────────────────────────
+  # `vp` is the locally installed vite-plus (root catalog pin), reached by
+  # putting node_modules/.bin on PATH - never a globally installed vp, so the
+  # toolchain version is the one in bun.lock.
+  frontend:
+    name: frontend (check, test, build)
+    runs-on: ubuntu-24.04
+    needs: backend
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Install bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          # Must match "packageManager" in package.json.
+          bun-version: 1.4.0
+
+      - name: Cache bun install cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.bun/install/cache
+          key: bun-${{ runner.os }}-${{ hashFiles('bun.lock') }}
+          restore-keys: |
+            bun-${{ runner.os }}-
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Put node_modules/.bin on PATH
+        run: echo "$GITHUB_WORKSPACE/node_modules/.bin" >> "$GITHUB_PATH"
+
+      # apps/web/src/api/ is generated from contracts/openapi.json (ADR-003,
+      # AGENTS.md invariant #5). This regenerates into a temporary directory
+      # and diffs; it needs no cargo, because the contract-versus-Rust half is
+      # already gated by the `contract` job above.
+      - name: vp run gen:api:check
+        run: vp run gen:api:check
+
+      - name: vp check
+        run: vp check
+
+      - name: vp test
+        run: vp test
+
+      - name: vp build
+        # `vp -C` exists only in the global vp shim (0.2.1); the local
+        # vite-plus 0.3.0 binary used here rejects it - run from the package.
+        run: vp build
+        working-directory: apps/web
+
+  # ── 4. End-to-end ───────────────────────────────────────────────────────────
+  # Playwright against the real stack (PLAN.md W2.7): the Rust API on a seeded
+  # fixture database plus the *production* frontend build. The suite compares
+  # what the page prints against `fixtures/expected.json`, so this job is the
+  # acceptance evidence for TZ §10.1/§10.2 (metrics and filters), §10.3
+  # (exports), the UI half of §10.5 (roles) and §10.8 (localization, WCAG).
+  #
+  # `apps/web/e2e/playwright.config.ts` owns both servers - it starts the API
+  # and `vp build && vp preview` itself - so this job only has to make the
+  # binaries, the browser and the data exist.
+  e2e:
+    name: e2e
+    runs-on: ubuntu-24.04
+    needs: frontend
+    services:
+      postgres:
+        image: postgres:18-alpine
+        env:
+          POSTGRES_USER: noplagiat
+          POSTGRES_PASSWORD: noplagiat
+          POSTGRES_DB: noplagiat
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U noplagiat -d noplagiat"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 20
+    env:
+      DATABASE_URL: postgres://noplagiat:noplagiat@localhost:5432/noplagiat
+      APP_DATABASE_URL: postgres://noplagiat:noplagiat@localhost:5432/noplagiat
+      # The suite signs in through `POST /api/auth/dev-login`; the endpoint
+      # answers 404 under `APP_AUTH_MODE=oidc`, which is the default.
+      APP_AUTH_MODE: dev
+      # ADR-008 §2 - a throwaway pepper, matching the one the fixtures are
+      # seeded with so the derived reviewer keys line up.
+      APP_INGEST_PEPPER: dev-pepper
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Resolve pinned Rust channel
+        id: rust
+        run: |
+          channel="$(sed -n 's/^[[:space:]]*channel[[:space:]]*=[[:space:]]*"\([^"]*\)".*/\1/p' server/rust-toolchain.toml | head -n1)"
+          if [ -z "$channel" ]; then
+            echo "::error file=server/rust-toolchain.toml::no [toolchain] channel found"
+            exit 1
+          fi
+          echo "channel=$channel" >> "$GITHUB_OUTPUT"
+
+      - name: Install Rust ${{ steps.rust.outputs.channel }}
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: ${{ steps.rust.outputs.channel }}
+
+      - name: Cache cargo registry and target
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: server
+
+      - name: Install bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.4.0
+
+      - name: Cache bun install cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.bun/install/cache
+          key: bun-${{ runner.os }}-${{ hashFiles('bun.lock') }}
+          restore-keys: |
+            bun-${{ runner.os }}-
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Put node_modules/.bin on PATH
+        run: echo "$GITHUB_WORKSPACE/node_modules/.bin" >> "$GITHUB_PATH"
+
+      # Debug profile: the suite exercises behaviour, not throughput, and a
+      # release build would cost more than the whole job. Built here rather
+      # than left to the config's `cargo run`, so a compile error is reported
+      # as a build failure instead of a web-server start-up timeout.
+      # `SQLX_OFFLINE` because the service database has no schema yet.
+      - name: Build the API server
+        env:
+          SQLX_OFFLINE: "true"
+        run: cargo build --manifest-path server/Cargo.toml --bin noplagiat-server
+
+      # Same migration loop as the backend job. `seed.ts --reset` would drop
+      # and re-apply the schema through sqlx-cli, which is not installed here
+      # and would have nothing to drop: the service database starts empty.
+      - name: Apply migrations
+        run: |
+          for f in server/migrations/*.sql; do
+            echo "applying $f"
+            psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -q -f "$f"
+          done
+
+      # Deterministic by construction (seeded RNG), so CI and a developer's
+      # machine assert against identical numbers. `expected.ts` writes both
+      # `expected.json` and `out/facts.jsonl` in one reduction and must not be
+      # split from `generate.ts` (fixtures/README.md).
+      - name: Generate fixtures
+        run: |
+          bun fixtures/generate.ts --scale small
+          bun fixtures/expected.ts
+
+      # Dictionaries, rules, staff-unit HMACs, then the CSV ingest through
+      # `cargo run --bin ingest-csv`.
+      - name: Seed the fixture database
+        run: bun fixtures/seed.ts
+
+      # Chromium only: it is the engine the LCP budget in `perf.spec.ts` is
+      # defined against, and the one CDP throttling needs.
+      - name: Install Playwright browsers
+        run: bunx playwright install --with-deps chromium
+
+      - name: vp run e2e
+        run: vp run e2e
+
+      - name: Upload Playwright report
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: |
+            apps/web/playwright-report/
+            apps/web/test-results/
+          if-no-files-found: ignore
+          retention-days: 7

@@ -1,0 +1,63 @@
+# Web SSR bundle + static client assets (ADR-009, ADR-015 §8).
+#
+# Build context is the repository root, narrowed by two ignore files that
+# different builders read. BuildKit reads `Dockerfile.web.dockerignore` next to
+# this file; compose's classic builder - the only one podman exposes, since
+# there is no BuildKit behind the podman API - does not implement that
+# per-Dockerfile convention and reads the root `.dockerignore` instead. Every
+# path COPYed below is therefore un-excluded in BOTH, and the root file has to
+# stay a superset of the per-Dockerfile one. Dropping a path from the root file
+# does not fail under Docker; it fails only under podman, at the COPY.
+
+FROM oven/bun:1.4.0-alpine AS install
+WORKDIR /app
+
+COPY package.json bun.lock ./
+COPY apps/web/package.json apps/web/package.json
+# `--ignore-scripts` is required, not an optimisation. The root `package.json`
+# declares `"prepare": "vp config"`, which `bun install` runs; `vp` shells out
+# to `git`, and this image has no git and no `.git/` in the context, so the
+# install aborts with `prepare script from "noplagiat" exited with 1`. `vp
+# config` only materialises local editor/toolchain config - it produces nothing
+# the image needs. Bun already refuses dependency lifecycle scripts unless they
+# are listed in `trustedDependencies`, so this suppresses the root script and
+# nothing else.
+RUN bun install --frozen-lockfile --ignore-scripts
+
+FROM install AS build
+COPY apps/web/ apps/web/
+RUN bun run --cwd apps/web build
+
+FROM install AS production-dependencies
+RUN rm -rf node_modules apps/web/node_modules \
+    && bun install --frozen-lockfile --production --ignore-scripts
+
+FROM node:26-bookworm-slim AS runtime
+ENV NODE_ENV=production \
+    HOST=0.0.0.0 \
+    PORT=3000 \
+    WEB_DIST_DIR=/app/apps/web/dist
+WORKDIR /app
+
+# The workspace layout is reproduced here rather than flattened, and that is
+# load-bearing. Bun installs pnpm-style: the real package files live in the
+# content store at `/app/node_modules/.bun/<name>@<version>/`, and
+# `/app/apps/web/node_modules/<name>` is a RELATIVE symlink
+# (`../../../node_modules/.bun/…`) into it. Copying only `/app/node_modules`
+# brings the store but not the symlink farm that names it, which leaves Node
+# resolving `react` from `dist/server/server.js` against an effectively empty
+# directory - `ERR_MODULE_NOT_FOUND` at the first request, after a build that
+# reported success.
+#
+# Keeping both directories at their original depths is what keeps those
+# `../../../` links pointing at the store, so the two COPY lines below must stay
+# in this shape; `WEB_DIST_DIR` above follows the bundle to `apps/web/dist` for
+# the same reason.
+COPY --from=production-dependencies /app/node_modules ./node_modules
+COPY --from=production-dependencies /app/apps/web/node_modules ./apps/web/node_modules
+COPY --from=build /app/apps/web/dist ./apps/web/dist
+COPY deploy/web-server.mjs ./web-server.mjs
+
+USER node
+EXPOSE 3000
+CMD ["node", "web-server.mjs"]

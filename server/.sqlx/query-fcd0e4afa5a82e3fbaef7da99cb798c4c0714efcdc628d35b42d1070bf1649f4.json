@@ -1,0 +1,16 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "INSERT INTO usage_stats (period_month, active_users, avg_check_seconds)\n             VALUES ($1, $2, $3)\n             ON CONFLICT (period_month) DO UPDATE\n                 SET active_users = EXCLUDED.active_users,\n                     avg_check_seconds = EXCLUDED.avg_check_seconds",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Date",
+        "Int4",
+        "Int4"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "fcd0e4afa5a82e3fbaef7da99cb798c4c0714efcdc628d35b42d1070bf1649f4"
+}

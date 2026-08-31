@@ -1,0 +1,6 @@
+# Pinned backend toolchain. CI reads `channel` out of this file, so this is the
+# single source of truth for the Rust version (see .github/workflows/ci.yml).
+[toolchain]
+channel = "1.97.1"
+components = ["rustfmt", "clippy"]
+profile = "minimal"

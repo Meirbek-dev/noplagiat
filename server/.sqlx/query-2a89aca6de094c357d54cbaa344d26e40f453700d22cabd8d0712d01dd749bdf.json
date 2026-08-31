@@ -1,0 +1,69 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT id, pattern, initiator::text AS \"initiator!\", priority, active\n             FROM initiator_rules\n            ORDER BY priority, id",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Int8",
+        "origin": {
+          "Table": {
+            "table": "initiator_rules",
+            "name": "id"
+          }
+        }
+      },
+      {
+        "ordinal": 1,
+        "name": "pattern",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "initiator_rules",
+            "name": "pattern"
+          }
+        }
+      },
+      {
+        "ordinal": 2,
+        "name": "initiator!",
+        "type_info": "Text",
+        "origin": "Expression"
+      },
+      {
+        "ordinal": 3,
+        "name": "priority",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "initiator_rules",
+            "name": "priority"
+          }
+        }
+      },
+      {
+        "ordinal": 4,
+        "name": "active",
+        "type_info": "Bool",
+        "origin": {
+          "Table": {
+            "table": "initiator_rules",
+            "name": "active"
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Left": []
+    },
+    "nullable": [
+      false,
+      false,
+      null,
+      false,
+      false
+    ]
+  },
+  "hash": "2a89aca6de094c357d54cbaa344d26e40f453700d22cabd8d0712d01dd749bdf"
+}

@@ -1,0 +1,50 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT email_hmac, faculty_id, department_id FROM staff_units",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "email_hmac",
+        "type_info": "Bytea",
+        "origin": {
+          "Table": {
+            "table": "staff_units",
+            "name": "email_hmac"
+          }
+        }
+      },
+      {
+        "ordinal": 1,
+        "name": "faculty_id",
+        "type_info": "Int8",
+        "origin": {
+          "Table": {
+            "table": "staff_units",
+            "name": "faculty_id"
+          }
+        }
+      },
+      {
+        "ordinal": 2,
+        "name": "department_id",
+        "type_info": "Int8",
+        "origin": {
+          "Table": {
+            "table": "staff_units",
+            "name": "department_id"
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Left": []
+    },
+    "nullable": [
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "037c86acdf3ddceca82d1a9e08a7aaebcd69681855900522abf54edaadc4ad13"
+}

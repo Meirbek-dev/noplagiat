@@ -1,0 +1,40 @@
+node_modules
+.DS_Store
+dist
+dist-ssr
+*.local
+.env*
+.tanstack
+.wrangler
+.output
+.vinxi
+__unconfig*
+todos.json
+
+# turbo
+.turbo
+
+# rust
+server/target/
+
+# typescript
+*.tsbuildinfo
+
+stats
+
+# generated fixture CSVs (reproducible from the seed; expected.json stays committed)
+fixtures/out/
+
+# generated report snapshots ($APP_REPORTS_DIR, default reports-out/ - TZ §4.5)
+reports-out/
+
+# Playwright output (apps/web/e2e/playwright.config.ts). The report is a CI
+# artifact on failure, never a committed file; browsers live in the user cache.
+apps/web/playwright-report/
+apps/web/test-results/
+
+# k6 load-test output (fixtures/load/summary.js writes it to the working
+# directory; the nightly job uploads it as an artifact - RESULTS.md is the
+# committed record)
+k6-summary.json
+fixtures/load/out/

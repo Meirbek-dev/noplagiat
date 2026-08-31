@@ -1,0 +1,17 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "INSERT INTO user_roles (user_id, role, scope_faculty_id, scope_department_id)\n         VALUES ($1, $2::text::role_kind, $3, $4)\n         ON CONFLICT DO NOTHING",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Int8",
+        "Text",
+        "Int8",
+        "Int8"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "cdfb3e6681c6e60a56d9c69bf65e7be8d3e3fece0d6caab54567a30d4dc32667"
+}

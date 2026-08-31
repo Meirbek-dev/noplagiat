@@ -1,0 +1,47 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "WITH works AS (\n               SELECT f.work_key,\n                      count(*) AS attempts,\n                      -- ADR-008 §3 ordering: (checked_at, source_check_id) ascending.\n                      (array_agg(f.originality_pct\n                                 ORDER BY f.checked_at, f.source_check_id))[1]\n                          AS first_originality,\n                      (array_agg(f.originality_pct\n                                 ORDER BY f.checked_at DESC, f.source_check_id DESC))[1]\n                          AS last_originality\n                 FROM fact_cells($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) f\n                GROUP BY 1\n           )\n           SELECT count(*) AS \"works_total!\",\n                  (count(*) FILTER (WHERE w.attempts > 1)) AS \"works_rechecked!\",\n                  (count(*) FILTER (WHERE w.attempts > 1\n                                      AND w.last_originality > w.first_originality))\n                      AS \"improved!\"\n             FROM works w",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "works_total!",
+        "type_info": "Int8",
+        "origin": "Expression"
+      },
+      {
+        "ordinal": 1,
+        "name": "works_rechecked!",
+        "type_info": "Int8",
+        "origin": "Expression"
+      },
+      {
+        "ordinal": 2,
+        "name": "improved!",
+        "type_info": "Int8",
+        "origin": "Expression"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Date",
+        "Date",
+        "Bool",
+        "Int8",
+        "Int8",
+        "Text",
+        "Text",
+        "Text",
+        "Text",
+        "Text",
+        "Text"
+      ]
+    },
+    "nullable": [
+      null,
+      null,
+      null
+    ]
+  },
+  "hash": "bd0c62f58e0bb4dcfa1bdc1f3253399bddf35860da1df19642987028245bf6c6"
+}

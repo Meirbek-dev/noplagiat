@@ -1,0 +1,176 @@
+# Nightly load test (docs/PLAN.md W4.4, ARCHITECTURE.md §7, ADR-015 §5).
+#
+# Seeds a 250 000-row warehouse through the real importer, runs a release build
+# of the server against it, and enforces the D9 budget with k6:
+# `/api/public/summary` p95 < 300 ms. k6 exits 99 on a crossed threshold, so a
+# regression fails the job rather than filing a report nobody opens.
+#
+# Not on the pull-request path: the seed alone is minutes of work. `vp run load`
+# is the same k6 invocation for a developer with a warehouse already seeded -
+# see fixtures/load/README.md.
+name: Nightly load
+
+on:
+  schedule:
+    # 02:00 UTC - 08:00 Asia/Almaty, well outside working hours.
+    - cron: "0 2 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  load:
+    name: k6 load test
+    runs-on: ubuntu-24.04
+    # Seeding 250 k rows through the real pipeline plus a release build.
+    timeout-minutes: 90
+    # Scheduled runs are pointless on forks.
+    if: github.event_name != 'schedule' || github.repository == 'Meirbek-dev/noplagiat'
+    services:
+      postgres:
+        image: postgres:18-alpine
+        env:
+          POSTGRES_USER: noplagiat
+          POSTGRES_PASSWORD: noplagiat
+          POSTGRES_DB: noplagiat
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U noplagiat -d noplagiat"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 20
+    env:
+      DATABASE_URL: postgres://noplagiat:noplagiat@localhost:5432/noplagiat
+      APP_DATABASE_URL: postgres://noplagiat:noplagiat@localhost:5432/noplagiat
+      # A throwaway CI pepper, and it must equal `fixtures/seed.ts`'s default:
+      # `staff_units` rows are HMACed by that script and the importer derives
+      # `reviewer_ref` with this value. A mismatch produces a warehouse that
+      # loads fine and joins to nothing (ADR-008 §2).
+      APP_INGEST_PEPPER: dev-pepper
+      BASE: http://127.0.0.1:8080
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Resolve pinned Rust channel
+        id: rust
+        run: |
+          channel="$(sed -n 's/^[[:space:]]*channel[[:space:]]*=[[:space:]]*"\([^"]*\)".*/\1/p' server/rust-toolchain.toml | head -n1)"
+          if [ -z "$channel" ]; then
+            echo "::error file=server/rust-toolchain.toml::no [toolchain] channel found"
+            exit 1
+          fi
+          echo "channel=$channel" >> "$GITHUB_OUTPUT"
+
+      - name: Install Rust ${{ steps.rust.outputs.channel }}
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: ${{ steps.rust.outputs.channel }}
+
+      - name: Cache cargo registry and target
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: server
+          # The release profile is what is measured; a debug cache would be
+          # restored and then ignored.
+          key: release
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          # Must match "packageManager" in package.json.
+          bun-version: 1.4.0
+
+      # Same mechanism as ci.yml: apply the committed migrations in filename
+      # order. The service container starts empty, so no reset is needed and
+      # `fixtures/seed.ts --reset` (which would want sqlx-cli) is not used.
+      - name: Apply migrations
+        run: |
+          for f in server/migrations/*.sql; do
+            echo "applying $f"
+            psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -q -f "$f"
+          done
+
+      - name: Generate load-scale fixtures (250k rows)
+        run: bun fixtures/generate.ts --scale load
+
+      # Dictionaries, work-type/initiator rules and the HMACed `staff_units`
+      # mappings - every SQL step of the seed except the import, which the next
+      # step runs from a release build instead of seed.ts's debug `cargo run`.
+      - name: Seed dictionaries, rules and staff units
+        run: bun fixtures/seed.ts --scale load --skip-ingest
+
+      - name: Build the server (release)
+        run: cargo build --release --manifest-path server/Cargo.toml
+
+      # The real importer, which is also what anonymizes the data (ADR-008 §10).
+      # `--dir` takes the root holding the YYYY-YYYY academic-year directories,
+      # so one invocation covers all five years.
+      - name: Ingest 250k rows through the real pipeline
+        run: |
+          cargo run --release --manifest-path server/Cargo.toml \
+            --bin ingest-csv -- --dir fixtures/out
+
+      - name: Warehouse size
+        run: |
+          psql "$DATABASE_URL" -c 'SELECT count(*) AS checks FROM checks'
+          psql "$DATABASE_URL" -c 'SELECT count(*) AS agg_rows FROM agg_monthly'
+
+      # PLAN.md R6 names matview refresh at 250 k as the scaling risk that
+      # request latency alone would hide. Recorded every night, next to the
+      # request budget it is a hidden input to.
+      - name: Measure matview refresh duration
+        run: |
+          psql "$DATABASE_URL" -c '\timing on' -c 'SELECT refresh_aggregates()'
+
+      - name: Start the server (release, background)
+        env:
+          APP_LISTEN_ADDR: 127.0.0.1:8080
+          APP_PUBLIC_BASE_URL: http://127.0.0.1:8080
+          # Per-request logging is not free at 50 VUs, and it is not what is
+          # being measured.
+          RUST_LOG: warn
+        run: |
+          ./server/target/release/noplagiat-server > server.log 2>&1 &
+          echo "$!" > server.pid
+          for _ in $(seq 1 60); do
+            if curl --fail --silent "$BASE/readyz" > /dev/null; then
+              echo "server ready"
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "::error::server did not become ready in 120 s"
+          cat server.log
+          exit 1
+
+      - name: Install k6
+        uses: grafana/setup-k6-action@v1
+
+      # The gate. k6 exits 99 when a threshold is crossed, which fails the step.
+      - name: Run the load test
+        run: k6 run fixtures/load/summary.js
+
+      - name: Stop the server
+        if: always()
+        run: |
+          if [ -f server.pid ]; then
+            kill "$(cat server.pid)" 2>/dev/null || true
+          fi
+
+      - name: Server log tail
+        if: always()
+        run: tail -n 200 server.log || true
+
+      - name: Upload k6 summary
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: k6-summary
+          path: |
+            k6-summary.json
+            server.log
+          if-no-files-found: ignore
+          retention-days: 30

@@ -1,0 +1,17 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "INSERT INTO sessions (id, user_id, expires_at, csrf_token)\n         VALUES ($1, $2, now() + ($3::bigint * interval '1 second'), $4)",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Bytea",
+        "Int8",
+        "Int8",
+        "Bytea"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "fadf529f0abdcf1c4e16b0cc26141146a8e66edbe0f98ea91b25126e7558e8b4"
+}

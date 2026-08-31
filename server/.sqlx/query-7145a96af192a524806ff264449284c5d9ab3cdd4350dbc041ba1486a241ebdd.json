@@ -1,0 +1,16 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "INSERT INTO submission_totals (academic_year, work_type_id, total_submitted)\n             SELECT $1, wt.id, $3 FROM work_types wt WHERE wt.code = $2\n             ON CONFLICT (academic_year, work_type_id) DO UPDATE\n                 SET total_submitted = EXCLUDED.total_submitted",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Int2",
+        "Text",
+        "Int4"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "7145a96af192a524806ff264449284c5d9ab3cdd4350dbc041ba1486a241ebdd"
+}

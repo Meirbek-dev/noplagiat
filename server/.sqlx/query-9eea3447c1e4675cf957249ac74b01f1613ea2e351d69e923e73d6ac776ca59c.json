@@ -1,0 +1,32 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "INSERT INTO faculties (code, name_ru, name_kk, name_en, active)\n         VALUES ($1, $2, $3, $4, $5)\n         ON CONFLICT (code) DO UPDATE\n             SET name_ru = EXCLUDED.name_ru,\n                 name_kk = EXCLUDED.name_kk,\n                 name_en = EXCLUDED.name_en,\n                 active = EXCLUDED.active\n         RETURNING id",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Int8",
+        "origin": {
+          "Table": {
+            "table": "faculties",
+            "name": "id"
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Text",
+        "Text",
+        "Text",
+        "Text",
+        "Bool"
+      ]
+    },
+    "nullable": [
+      false
+    ]
+  },
+  "hash": "9eea3447c1e4675cf957249ac74b01f1613ea2e351d69e923e73d6ac776ca59c"
+}

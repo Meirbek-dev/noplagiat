@@ -1,0 +1,36 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "INSERT INTO checks (\n                   source_check_id, attempt_no, checked_at, academic_year,\n                   work_type_id, faculty_id, department_id, program_id,\n                   originality_pct, status, escalated, initiator, duration_seconds,\n                   ingest_batch_id, work_ref, reviewer_ref,\n                   self_citation_pct, citation_pct, match_pct, ai_content_pct,\n                   suspicious, suspicion_cleared, deleted\n               )\n               SELECT t.source_check_id,\n                      t.attempt_no,\n                      t.checked_at,\n                      t.academic_year,\n                      t.work_type_id,\n                      t.faculty_id,\n                      t.department_id,\n                      t.program_id,\n                      t.originality::numeric / 100,\n                      t.status::check_status,\n                      t.escalated,\n                      t.initiator::initiator_role,\n                      t.duration_seconds,\n                      $1::bigint,\n                      t.work_ref,\n                      t.reviewer_ref,\n                      t.self_citation::numeric / 100,\n                      t.citation::numeric / 100,\n                      t.matched::numeric / 100,\n                      t.ai_content::numeric / 100,\n                      t.suspicious,\n                      t.cleared,\n                      t.deleted\n               FROM UNNEST(\n                        $2::text[], $3::int[], $4::timestamptz[], $5::smallint[],\n                        $6::bigint[], $7::bigint[], $8::bigint[], $9::bigint[],\n                        $10::int[], $11::text[], $12::bool[], $13::text[], $14::int[],\n                        $15::bytea[], $16::bytea[],\n                        $17::int[], $18::int[], $19::int[], $20::int[],\n                        $21::bool[], $22::bool[], $23::bool[]\n                    ) AS t(\n                        source_check_id, attempt_no, checked_at, academic_year,\n                        work_type_id, faculty_id, department_id, program_id,\n                        originality, status, escalated, initiator, duration_seconds,\n                        work_ref, reviewer_ref,\n                        self_citation, citation, matched, ai_content,\n                        suspicious, cleared, deleted\n                    )\n               ON CONFLICT (source_check_id, attempt_no) DO UPDATE SET\n                   checked_at        = EXCLUDED.checked_at,\n                   academic_year     = EXCLUDED.academic_year,\n                   work_type_id      = EXCLUDED.work_type_id,\n                   faculty_id        = EXCLUDED.faculty_id,\n                   department_id     = EXCLUDED.department_id,\n                   program_id        = EXCLUDED.program_id,\n                   originality_pct   = EXCLUDED.originality_pct,\n                   status            = EXCLUDED.status,\n                   escalated         = EXCLUDED.escalated,\n                   initiator         = EXCLUDED.initiator,\n                   duration_seconds  = EXCLUDED.duration_seconds,\n                   ingest_batch_id   = EXCLUDED.ingest_batch_id,\n                   work_ref          = EXCLUDED.work_ref,\n                   reviewer_ref      = EXCLUDED.reviewer_ref,\n                   self_citation_pct = EXCLUDED.self_citation_pct,\n                   citation_pct      = EXCLUDED.citation_pct,\n                   match_pct         = EXCLUDED.match_pct,\n                   ai_content_pct    = EXCLUDED.ai_content_pct,\n                   suspicious        = EXCLUDED.suspicious,\n                   suspicion_cleared = EXCLUDED.suspicion_cleared,\n                   deleted           = EXCLUDED.deleted",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Int8",
+        "TextArray",
+        "Int4Array",
+        "TimestamptzArray",
+        "Int2Array",
+        "Int8Array",
+        "Int8Array",
+        "Int8Array",
+        "Int8Array",
+        "Int4Array",
+        "TextArray",
+        "BoolArray",
+        "TextArray",
+        "Int4Array",
+        "ByteaArray",
+        "ByteaArray",
+        "Int4Array",
+        "Int4Array",
+        "Int4Array",
+        "Int4Array",
+        "BoolArray",
+        "BoolArray",
+        "BoolArray"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "0f73fabd2e41be37638f158ad158beae2e137768a0855facd948b585beae19b5"
+}

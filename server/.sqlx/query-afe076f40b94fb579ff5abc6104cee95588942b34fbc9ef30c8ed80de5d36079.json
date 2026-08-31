@@ -1,0 +1,137 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT id, started_at, finished_at, source, mode,\n                rows_read, rows_upserted, rows_rejected, rows_skipped_deleted, status\n           FROM ingest_batches\n          ORDER BY started_at DESC, id DESC\n          LIMIT $1 OFFSET $2",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Int8",
+        "origin": {
+          "Table": {
+            "table": "ingest_batches",
+            "name": "id"
+          }
+        }
+      },
+      {
+        "ordinal": 1,
+        "name": "started_at",
+        "type_info": "Timestamptz",
+        "origin": {
+          "Table": {
+            "table": "ingest_batches",
+            "name": "started_at"
+          }
+        }
+      },
+      {
+        "ordinal": 2,
+        "name": "finished_at",
+        "type_info": "Timestamptz",
+        "origin": {
+          "Table": {
+            "table": "ingest_batches",
+            "name": "finished_at"
+          }
+        }
+      },
+      {
+        "ordinal": 3,
+        "name": "source",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "ingest_batches",
+            "name": "source"
+          }
+        }
+      },
+      {
+        "ordinal": 4,
+        "name": "mode",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "ingest_batches",
+            "name": "mode"
+          }
+        }
+      },
+      {
+        "ordinal": 5,
+        "name": "rows_read",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "ingest_batches",
+            "name": "rows_read"
+          }
+        }
+      },
+      {
+        "ordinal": 6,
+        "name": "rows_upserted",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "ingest_batches",
+            "name": "rows_upserted"
+          }
+        }
+      },
+      {
+        "ordinal": 7,
+        "name": "rows_rejected",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "ingest_batches",
+            "name": "rows_rejected"
+          }
+        }
+      },
+      {
+        "ordinal": 8,
+        "name": "rows_skipped_deleted",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "ingest_batches",
+            "name": "rows_skipped_deleted"
+          }
+        }
+      },
+      {
+        "ordinal": 9,
+        "name": "status",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "ingest_batches",
+            "name": "status"
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Int8",
+        "Int8"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "afe076f40b94fb579ff5abc6104cee95588942b34fbc9ef30c8ed80de5d36079"
+}

@@ -1,0 +1,72 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT encode(s.email_hmac, 'hex') AS \"email_hmac_hex!\",\n                  f.code AS \"faculty_code!\",\n                  d.code AS \"department_code!\",\n                  s.masked_label,\n                  s.updated_at\n             FROM staff_units s\n             JOIN faculties f ON f.id = s.faculty_id\n             JOIN departments d ON d.id = s.department_id\n            ORDER BY s.masked_label\n            LIMIT $1 OFFSET $2",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "email_hmac_hex!",
+        "type_info": "Text",
+        "origin": "Expression"
+      },
+      {
+        "ordinal": 1,
+        "name": "faculty_code!",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "faculties",
+            "name": "code"
+          }
+        }
+      },
+      {
+        "ordinal": 2,
+        "name": "department_code!",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "departments",
+            "name": "code"
+          }
+        }
+      },
+      {
+        "ordinal": 3,
+        "name": "masked_label",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "staff_units",
+            "name": "masked_label"
+          }
+        }
+      },
+      {
+        "ordinal": 4,
+        "name": "updated_at",
+        "type_info": "Timestamptz",
+        "origin": {
+          "Table": {
+            "table": "staff_units",
+            "name": "updated_at"
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Int8",
+        "Int8"
+      ]
+    },
+    "nullable": [
+      null,
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "a341dd547f015da5d21c306ff8d59683efdd4470e9c092948efad62b0e90b794"
+}

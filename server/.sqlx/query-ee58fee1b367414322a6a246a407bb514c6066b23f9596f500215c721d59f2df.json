@@ -1,0 +1,15 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "DELETE FROM submission_totals st\n              USING work_types wt\n              WHERE wt.id = st.work_type_id\n                AND st.academic_year = $1\n                AND wt.code = $2",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Int2",
+        "Text"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "ee58fee1b367414322a6a246a407bb514c6066b23f9596f500215c721d59f2df"
+}

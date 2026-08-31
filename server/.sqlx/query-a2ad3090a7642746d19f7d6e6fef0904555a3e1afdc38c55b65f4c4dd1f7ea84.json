@@ -1,0 +1,126 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT id, generated_at, period_start, period_end, kind, locale, pdf_path, xlsx_path,\n                published\n           FROM report_snapshots\n          WHERE NOT $1::boolean OR published\n          ORDER BY generated_at DESC, id DESC\n          LIMIT $2 OFFSET $3",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Int8",
+        "origin": {
+          "Table": {
+            "table": "report_snapshots",
+            "name": "id"
+          }
+        }
+      },
+      {
+        "ordinal": 1,
+        "name": "generated_at",
+        "type_info": "Timestamptz",
+        "origin": {
+          "Table": {
+            "table": "report_snapshots",
+            "name": "generated_at"
+          }
+        }
+      },
+      {
+        "ordinal": 2,
+        "name": "period_start",
+        "type_info": "Date",
+        "origin": {
+          "Table": {
+            "table": "report_snapshots",
+            "name": "period_start"
+          }
+        }
+      },
+      {
+        "ordinal": 3,
+        "name": "period_end",
+        "type_info": "Date",
+        "origin": {
+          "Table": {
+            "table": "report_snapshots",
+            "name": "period_end"
+          }
+        }
+      },
+      {
+        "ordinal": 4,
+        "name": "kind",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "report_snapshots",
+            "name": "kind"
+          }
+        }
+      },
+      {
+        "ordinal": 5,
+        "name": "locale",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "report_snapshots",
+            "name": "locale"
+          }
+        }
+      },
+      {
+        "ordinal": 6,
+        "name": "pdf_path",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "report_snapshots",
+            "name": "pdf_path"
+          }
+        }
+      },
+      {
+        "ordinal": 7,
+        "name": "xlsx_path",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "report_snapshots",
+            "name": "xlsx_path"
+          }
+        }
+      },
+      {
+        "ordinal": 8,
+        "name": "published",
+        "type_info": "Bool",
+        "origin": {
+          "Table": {
+            "table": "report_snapshots",
+            "name": "published"
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Bool",
+        "Int8",
+        "Int8"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      true,
+      true,
+      false
+    ]
+  },
+  "hash": "a2ad3090a7642746d19f7d6e6fef0904555a3e1afdc38c55b65f4c4dd1f7ea84"
+}

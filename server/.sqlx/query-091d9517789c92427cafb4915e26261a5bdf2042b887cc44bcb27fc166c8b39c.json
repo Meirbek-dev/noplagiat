@@ -1,0 +1,33 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT matviewname::text AS name, ispopulated\n           FROM pg_matviews\n           WHERE schemaname = current_schema()\n           ORDER BY matviewname",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "name",
+        "type_info": "Text",
+        "origin": "Expression"
+      },
+      {
+        "ordinal": 1,
+        "name": "ispopulated",
+        "type_info": "Bool",
+        "origin": {
+          "Table": {
+            "table": "pg_matviews",
+            "name": "ispopulated"
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Left": []
+    },
+    "nullable": [
+      null,
+      true
+    ]
+  },
+  "hash": "091d9517789c92427cafb4915e26261a5bdf2042b887cc44bcb27fc166c8b39c"
+}
