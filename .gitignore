@@ -20,13 +20,8 @@ server/target/
 # typescript
 *.tsbuildinfo
 
-stats
-
 # generated fixture CSVs (reproducible from the seed; expected.json stays committed)
 fixtures/out/
-
-# generated report snapshots ($APP_REPORTS_DIR, default reports-out/ - TZ §4.5)
-reports-out/
 
 # Playwright output (apps/web/e2e/playwright.config.ts). The report is a CI
 # artifact on failure, never a committed file; browsers live in the user cache.

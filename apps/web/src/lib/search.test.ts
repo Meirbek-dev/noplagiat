@@ -15,8 +15,8 @@ import {
  * so a bookmarked or shared link renders the same view.
  */
 describe("dashboardSearchSchema", () => {
-  it("defaults to the academic-year period", () => {
-    expect(v.parse(dashboardSearchSchema, {})).toEqual({ period: "year" })
+  it("defaults to five academic years", () => {
+    expect(v.parse(dashboardSearchSchema, {})).toEqual({ period: "5y" })
   })
 
   it("round-trips every period preset", () => {
@@ -122,7 +122,7 @@ describe("publicSearchSchema", () => {
 describe("embedSearchSchema", () => {
   it("defaults to the summary section and keeps the dashboard filters", () => {
     expect(v.parse(embedSearchSchema, {})).toEqual({
-      period: "year",
+      period: "5y",
       section: "summary",
     })
   })

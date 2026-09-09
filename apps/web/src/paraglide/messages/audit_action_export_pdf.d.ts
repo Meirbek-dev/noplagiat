@@ -1,0 +1,16 @@
+/**
+* | output |
+* | --- |
+* | "PDF export" |
+*
+* @param {Audit_Action_Export_PdfInputs} inputs
+* @param {{ locale?: "ru" | "kk" | "en" }} options
+* @returns {LocalizedString}
+*/
+export const audit_action_export_pdf: ((inputs?: Audit_Action_Export_PdfInputs, options?: {
+    locale?: "ru" | "kk" | "en";
+}) => LocalizedString) & import("../runtime.js").MessageMetadata<Audit_Action_Export_PdfInputs, {
+    locale?: "ru" | "kk" | "en";
+}, {}>;
+export type LocalizedString = import("../runtime.js").LocalizedString;
+export type Audit_Action_Export_PdfInputs = {};

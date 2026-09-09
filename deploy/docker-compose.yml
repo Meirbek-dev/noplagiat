@@ -30,6 +30,7 @@ services:
       - data
 
   server:
+    image: ${SERVER_IMAGE:-noplagiat-server:local}
     build:
       context: ..
       dockerfile: deploy/Dockerfile.server
@@ -74,6 +75,7 @@ services:
       - data
 
   web:
+    image: ${WEB_IMAGE:-noplagiat-web:local}
     build:
       context: ..
       dockerfile: deploy/Dockerfile.web
@@ -112,7 +114,7 @@ services:
     restart: unless-stopped
     logging: *default-logging
     ports:
-      - "${GATEWAY_PORT:-8080}:8080"
+      - "${BIND_ADDRESS_NGINX:-0.0.0.0}:${BIND_PORT_NGINX:-8080}:8080"
     volumes:
       # Mounted as a template, not straight into conf.d: the image's entrypoint
       # substitutes ${NGINX_LOCAL_RESOLVERS} on the way from templates/ to

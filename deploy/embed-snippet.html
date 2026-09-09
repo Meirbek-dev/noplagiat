@@ -9,7 +9,7 @@
   Query parameters the widget understands (all optional):
 
     section    summary | dynamics | work-types | histogram | yoy | faculties
-    period     month | semester | year | 3y | 5y | custom   (default: year)
+    period     month | semester | year | 3y | 5y | custom   (default: 5y)
     from,to    YYYY-MM-DD - required when period=custom
     faculty    faculty dictionary code
     workType   work-type dictionary code
@@ -49,7 +49,7 @@
     <div class="np-embed">
       <iframe
         id="np-embed-frame"
-        src="http://localhost:3000/embed?section=summary&period=year"
+        src="http://localhost:3000/embed?section=summary&period=5y"
         title="Академическая честность - открытая статистика"
         loading="lazy"
         referrerpolicy="no-referrer"

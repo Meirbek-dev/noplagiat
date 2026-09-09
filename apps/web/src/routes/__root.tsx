@@ -9,9 +9,8 @@ import {
 
 import { m } from "@/paraglide/messages.js"
 import { getLocale } from "@/paraglide/runtime.js"
-import appCss from "@/styles/globals.css?url"
-
-import tokensCss from "../styles/tokens.css?url"
+import "@/styles/globals.css"
+import "@/styles/tokens.css"
 
 export interface RouterContext {
   queryClient: QueryClient
@@ -90,14 +89,6 @@ export const Route = createRootRouteWithContext<RouterContext>()({
         rel: "manifest",
         href: "/manifest.json",
       },
-      {
-        rel: "stylesheet",
-        href: appCss,
-      },
-      {
-        rel: "stylesheet",
-        href: tokensCss,
-      },
     ],
   }),
   notFoundComponent: () => (
@@ -146,8 +137,16 @@ function RootDocument({ children }: { children: React.ReactNode }) {
   // Resolved per request on the server (AsyncLocalStorage via
   // paraglideMiddleware) and from cookie/`?lang=` on the client.
   return (
-    <html lang={getLocale()}>
+    <html lang={getLocale()} data-css-loading>
       <head>
+        {/*
+         * `HeadContent` owns the external stylesheet links. During a document
+         * navigation or head reconciliation there can be a paint between the
+         * new HTML arriving and those links becoming active. Keep the document
+         * out of the paint tree for that interval; `globals.css` overrides
+         * this guard as soon as the application stylesheet is available.
+         */}
+        <style>{"html[data-css-loading]{visibility:hidden}"}</style>
         <HeadContent />
       </head>
       <body>

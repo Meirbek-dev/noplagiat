@@ -6,6 +6,15 @@
 @custom-variant dark (&:is(.dark *));
 @source "../**/*.{ts,tsx}";
 
+/*
+ * Paired with the tiny inline guard in `routes/__root.tsx`. This rule only
+ * exists after the application stylesheet has loaded, so raw SSR HTML can
+ * never be painted while its layout and design tokens are unavailable.
+ */
+html[data-css-loading] {
+  visibility: visible !important;
+}
+
 @theme inline {
   --font-heading: var(--font-sans);
   --color-sidebar-ring: var(--sidebar-ring);

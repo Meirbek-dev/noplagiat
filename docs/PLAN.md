@@ -172,7 +172,7 @@ D2, D7 и D11 - внешние зависимости: их нужно запр�
 ### Фаза 0 - Разблокировка (30.08 – 02.09)
 
 **W0.1 - Конвейер CI и поверхность задач** · 1 дн. · поток: tooling
-Результаты: `.github/workflows/ci.yml`, реализующий порядок из ARCHITECTURE §10 (расхождение контракта → `fmt`/`clippy`/`test` бэкенда с сервисом `postgres` → `vp check`/`vp test`/`vp build` фронтенда → e2e → ночная нагрузка); `rust-toolchain.toml`, зафиксированный на 1.98.0; скрипты `db:up`, `db:reset`, `seed`, `e2e`, `load`, `ingest:csv`, `report:generate` в корневом `package.json`; `SQLX_OFFLINE=true` на задачах, которые только компилируют.
+Результаты: `.github/workflows/ci.yml`, реализующий порядок из ARCHITECTURE §10 (расхождение контракта → `fmt`/`clippy`/`test` бэкенда с сервисом `postgres` → `vp check`/`vp test`/`vp build` фронтенда → e2e → ночная нагрузка); `rust-toolchain.toml`, зафиксированный на 1.97.1; скрипты `db:up`, `db:reset`, `seed`, `e2e`, `load`, `ingest:csv`, `report:generate` в корневом `package.json`; `SQLX_OFFLINE=true` на задачах, которые только компилируют.
 Гейт: CI зелёный на нетронутом дереве; намеренно сломанный коммит роняет каждую задачу.
 
 **W0.2 - Приведение к обязательному стеку (ТЗ §7, §9)** · 1 дн. · поток: app

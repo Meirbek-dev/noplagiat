@@ -287,7 +287,7 @@ export function facultyCodesIn(bodies: readonly string[]): Set<string> {
 
 /**
  * Navigates and waits for the router to settle. The public routes redirect
- * `/` → `/?period=year`, and every section fetches after hydration, so
+ * `/` → `/?period=5y`, and every section fetches after hydration, so
  * `waitUntil: "networkidle"` is what "the page is showing its numbers" means
  * here - not a timeout.
  */

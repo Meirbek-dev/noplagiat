@@ -1,0 +1,84 @@
+stages:
+  - build
+  - deploy
+
+variables:
+  SERVER_IMAGE: "$CI_REGISTRY_IMAGE/server:$CI_COMMIT_REF_SLUG-$CI_COMMIT_SHORT_SHA"
+  WEB_IMAGE: "$CI_REGISTRY_IMAGE/web:$CI_COMMIT_REF_SLUG-$CI_COMMIT_SHORT_SHA"
+  DEPLOY_PATH: "/docker/projects/$CI_PROJECT_NAME-$CI_COMMIT_BRANCH/"
+  START_TIMEOUT: "120"
+
+# Сборка двух образов приложения и загрузка в GitLab Container Registry.
+.build_template:
+  stage: build
+  before_script:
+    - printf '%s\n' "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin "$CI_REGISTRY"
+  script:
+    - DOCKER_BUILDKIT=1 docker build -f deploy/Dockerfile.server -t "$SERVER_IMAGE" .
+    - DOCKER_BUILDKIT=1 docker build --no-cache -f deploy/Dockerfile.web -t "$WEB_IMAGE" .
+    - docker push "$SERVER_IMAGE"
+    - docker push "$WEB_IMAGE"
+
+build_dev:
+  extends: .build_template
+  tags:
+    - build
+  only:
+    - dev
+  environment:
+    name: development
+
+build_prod:
+  extends: .build_template
+  tags:
+    - build
+  only:
+    - prod
+  environment:
+    name: production
+
+# DEV разворачивается на сервере GitLab Runner.
+deploy-job-dev:
+  stage: deploy
+  environment:
+    name: development
+  tags:
+    - dev
+  only:
+    - dev
+  before_script:
+    - printf '%s\n' "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin "$CI_REGISTRY"
+  script:
+    - echo "Deploying DEV application..."
+    - mkdir -p "$DEPLOY_PATH"
+    - cp deploy/docker-compose.yml deploy/nginx.conf "$DEPLOY_PATH/"
+    - cp "$ENV_DEV" "$DEPLOY_PATH/.env"
+    - printf '\nSERVER_IMAGE=%s\nWEB_IMAGE=%s\n' "$SERVER_IMAGE" "$WEB_IMAGE" >> "$DEPLOY_PATH/.env"
+    - cd "$DEPLOY_PATH"
+    - docker compose -f docker-compose.yml --env-file .env down || true
+    - docker compose -f docker-compose.yml --env-file .env pull
+    - docker compose -f docker-compose.yml --env-file .env up --no-build --force-recreate -d --wait --wait-timeout "$START_TIMEOUT"
+
+# PROD разворачивается на отдельном сервере через rsync + SSH.
+deploy-job-prod:
+  stage: deploy
+  environment:
+    name: production
+  tags:
+    - deploy
+  only:
+    - prod
+  before_script:
+    - eval $(ssh-agent -s)
+    - echo "$PROD_DEPLOY_KEY" | tr -d '\r' | ssh-add -
+  script:
+    - echo "Deploying application on $PROD_SERVER"
+    - cp "$ENV_PROD" "$CI_PROJECT_DIR/.env"
+    - printf '\nSERVER_IMAGE=%s\nWEB_IMAGE=%s\n' "$SERVER_IMAGE" "$WEB_IMAGE" >> "$CI_PROJECT_DIR/.env"
+    - ssh -o StrictHostKeyChecking=no "root@$PROD_SERVER" "mkdir -p '$DEPLOY_PATH'"
+    - rsync -e "ssh -o StrictHostKeyChecking=no" -avz deploy/docker-compose.yml deploy/nginx.conf "$CI_PROJECT_DIR/.env" "root@$PROD_SERVER:$DEPLOY_PATH"
+    - rm -f "$CI_PROJECT_DIR/.env"
+    - printf '%s\n' "$CI_REGISTRY_PASSWORD" | ssh -o StrictHostKeyChecking=no "root@$PROD_SERVER" "docker login -u '$CI_REGISTRY_USER' --password-stdin '$CI_REGISTRY'"
+    - ssh -o StrictHostKeyChecking=no "root@$PROD_SERVER" "cd '$DEPLOY_PATH' && docker compose -f docker-compose.yml --env-file .env down || true"
+    - ssh -o StrictHostKeyChecking=no "root@$PROD_SERVER" "cd '$DEPLOY_PATH' && docker compose -f docker-compose.yml --env-file .env pull"
+    - ssh -o StrictHostKeyChecking=no "root@$PROD_SERVER" "cd '$DEPLOY_PATH' && docker compose -f docker-compose.yml --env-file .env up --no-build --force-recreate -d --wait --wait-timeout '$START_TIMEOUT'"

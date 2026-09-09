@@ -16,6 +16,8 @@ export const PERIOD_PRESETS = [
   "custom",
 ] as const
 
+export const DEFAULT_PERIOD = "5y" as const
+
 export type PeriodPreset = (typeof PERIOD_PRESETS)[number]
 
 /** Check statuses (TZ §3.1). */
@@ -57,7 +59,7 @@ export const UI_LOCALES = ["ru", "kk", "en"] as const
  * actually answered, which the filter bar displays.
  */
 export const publicSearchSchema = v.object({
-  period: v.optional(v.picklist(PERIOD_PRESETS), "year"),
+  period: v.optional(v.picklist(PERIOD_PRESETS), DEFAULT_PERIOD),
   from: v.optional(v.pipe(v.string(), v.isoDate())),
   to: v.optional(v.pipe(v.string(), v.isoDate())),
   faculty: v.optional(v.string()),

@@ -31,13 +31,21 @@ test.describe("localization", () => {
     page,
     context,
   }) => {
-    await goto(page, "/?period=year")
+    let documentRequests = 0
+    page.on("request", (request) => {
+      if (request.resourceType() === "document") documentRequests += 1
+    })
 
-    // The switch is a real link (it must work without JavaScript), so the
-    // click is a navigation and the target locale is server-rendered.
+    await goto(page, "/?period=year")
+    const documentsBeforeSwitch = documentRequests
+
+    // It remains a real link for no-JS/SSR, but the hydrated application must
+    // switch through the client router. A second document request would unload
+    // the active stylesheet and reintroduce the visible unstyled frame.
     await page.getByRole("link", { name: "Қазақша", exact: true }).click()
     await page.waitForLoadState("networkidle")
 
+    expect(documentRequests).toBe(documentsBeforeSwitch)
     await expect(page).toHaveURL(/[?&]lang=kk\b/)
     await expect(page.locator("html")).toHaveAttribute("lang", "kk")
     await expect(

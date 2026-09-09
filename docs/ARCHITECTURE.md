@@ -55,9 +55,7 @@ noplagiat/
 ├─ scripts/
 │  ├─ gen-api.ts              # `gen:api` / `gen:api:check` - contract → TS client
 │  └─ format-staged.ts        # `vp` staged-format wrapper
-├─ .github/workflows/
-│  ├─ ci.yml                  # contract drift → backend → frontend → e2e (§10)
-│  └─ nightly-load.yml        # 250k seed + k6 budget (§7)
+├─ .gitlab-ci.yml             # university GitLab: two images → dev/prod deploy
 ├─ docs/
 │  ├─ TZ.md                   # normative spec (RU)
 │  ├─ ARCHITECTURE.md         # this file
@@ -432,6 +430,10 @@ Paraglide JS (ADR-007, предписан ТЗ §7): `messages/{ru,kk,en}.json` 
 
 ## 10. Сборка и конвейер CI
 
+GitHub Actions удалён по запросу владельца проекта (см. [ADR-019](adr/019-remove-github-ci.md)).
+Упоминания автоматических проверок GitHub и ночных запусков выше описывают прежний
+конвейер. Эти проверки теперь запускаются локально; GitLab CI сохранён.
+
 Локально = CI; по одной команде на каждый шаг (полный сценарий см. в AGENTS.md):
 
 ```
@@ -447,7 +449,10 @@ docker compose --env-file deploy/.env -f deploy/docker-compose.yml config
                             # render/validate deployment topology (when Docker is available)
 ```
 
-Порядок в CI: install → проверка расхождения контракта → fmt/clippy/test бэкенда → check/test фронтенда → сборка → e2e → (ночью) нагрузочный тест. **Для слияния требуются все зелёные гейты.** Ни один гейт нельзя пропустить, ослабить или пометить `#[ignore]`, чтобы протащить изменение - вместо этого исправляйте само изменение.
+Порядок локальной проверки: install → проверка расхождения контракта → fmt/clippy/test бэкенда → check/test фронтенда → сборка → e2e → нагрузочный тест. **Для слияния требуются все зелёные гейты.** Ни один гейт нельзя пропустить, ослабить или пометить `#[ignore]`, чтобы протащить изменение - вместо этого исправляйте само изменение.
+
+GitLab-конвейер собирает и публикует два образа (`server` и `web`). Ветка `dev`
+автоматически разворачивается на dev-runner, ветка `prod` — на production-сервере.
 
 ---
 

@@ -1,5 +1,3 @@
-[![CI](https://github.com/Meirbek-dev/noplagiat/actions/workflows/ci.yml/badge.svg)](https://github.com/Meirbek-dev/noplagiat/actions/workflows/ci.yml)
-
 # Панель аналитики по антиплагиату (`noplagiat-analytics`)
 
 Панель аналитики по антиплагиату НАО «Торайгыров университет» - веб-раздел на
@@ -88,6 +86,7 @@ Docker». Свежий стек поднимается с **пустым** хр�
 - [docs/TZ.md](docs/TZ.md) - нормативное техническое задание.
 - [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) - инженерный источник истины.
 - [docs/AUTH.md](docs/AUTH.md) - аутентификация и авторизация: CLI учётных записей, сеансы, роли, гарантии.
+- [deploy/PRODUCTION_BOOTSTRAP.md](deploy/PRODUCTION_BOOTSTRAP.md) - первичная загрузка production-данных и создание учётных записей.
 - [docs/PLAN.md](docs/PLAN.md) - срезы, решения, график.
 - [docs/ACCEPTANCE.md](docs/ACCEPTANCE.md) - критерии приёмки ТЗ §10: команда → доказательство.
 - [deploy/RUNBOOK.md](deploy/RUNBOOK.md) - эксплуатация, учения и продуктивные оговорки.

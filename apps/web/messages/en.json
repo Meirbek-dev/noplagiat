@@ -386,7 +386,7 @@
   "status_recheck": "Recheck",
   "status_rejected": "Rejected",
   "table_actions": "Actions",
-  "units_coverage_footnote": "The breakdown by unit follows the current reviewer-to-unit mapping; for past academic years it is approximate.",
+  "units_coverage_footnote": "The breakdown by unit is available from the 2025/26 academic year.",
   "units_margin_footnote": "A faculty total includes departments whose own cells are suppressed, so the visible rows need not add up to it.",
   "units_own_scope_only": "No breakdown: your scope is a single unit, and its figures are above.",
   "units_pending_mapping_footnote": "The breakdown by unit becomes available once the mapping of reviewers to units has been loaded.",

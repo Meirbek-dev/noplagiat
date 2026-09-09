@@ -11,7 +11,7 @@
 
 # The tag is pinned to the exact patch in `server/rust-toolchain.toml`; a
 # mismatch makes the image silently download a second toolchain on every build.
-FROM rust:1.98.0-slim-bookworm AS build
+FROM rust:1.97.1-slim-bookworm AS build
 WORKDIR /build
 
 # No database at build time: resolve `sqlx::query!` from the committed cache and

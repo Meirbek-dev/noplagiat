@@ -11,7 +11,7 @@ import { formatDate } from "@/lib/format"
 import { cn } from "@/lib/utils"
 import { resolvePreset } from "@/lib/period"
 import type { CheckStatus, DashboardSearch, PeriodPreset } from "@/lib/search"
-import { CHECK_STATUSES, PERIOD_PRESETS } from "@/lib/search"
+import { CHECK_STATUSES, DEFAULT_PERIOD, PERIOD_PRESETS } from "@/lib/search"
 import { m } from "@/paraglide/messages.js"
 import type { Locale } from "@/paraglide/runtime.js"
 
@@ -229,7 +229,7 @@ export function FilterBar({
             size="sm"
             onClick={() => {
               onChange({
-                period: "year",
+                period: DEFAULT_PERIOD,
                 from: undefined,
                 to: undefined,
                 faculty: undefined,

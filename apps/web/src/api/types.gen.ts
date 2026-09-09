@@ -437,8 +437,8 @@ export type InternalFilterQuery = {
      */
     initiator?: string | null;
     /**
-     * Quick period pick: `month`, `semester`, `year` (the default), `3y`,
-     * `5y` or `custom`.
+     * Quick period pick: `month`, `semester`, `year`, `3y`,
+     * `5y` (the default) or `custom`.
      */
     period?: string | null;
     /**
@@ -755,8 +755,8 @@ export type PublicFilterQuery = {
      */
     from?: string | null;
     /**
-     * Quick period pick: `month`, `semester`, `year` (academic year, the
-     * default), `3y`, `5y` or `custom`. With any preset other than `custom`,
+     * Quick period pick: `month`, `semester`, `year` (academic year),
+     * `3y`, `5y` (the default) or `custom`. With any preset other than `custom`,
      * `from`/`to` are still validated but the preset determines the range.
      */
     period?: string | null;
@@ -2430,8 +2430,8 @@ export type DepartmentsMatrixData = {
     path?: never;
     query?: {
         /**
-         * Quick period pick: `month`, `semester`, `year` (the default), `3y`,
-         * `5y` or `custom`.
+         * Quick period pick: `month`, `semester`, `year`, `3y`,
+         * `5y` (the default) or `custom`.
          */
         period?: string;
         /**
@@ -2489,8 +2489,8 @@ export type EscalationsData = {
     path?: never;
     query?: {
         /**
-         * Quick period pick: `month`, `semester`, `year` (the default), `3y`,
-         * `5y` or `custom`.
+         * Quick period pick: `month`, `semester`, `year`, `3y`,
+         * `5y` (the default) or `custom`.
          */
         period?: string;
         /**
@@ -2590,8 +2590,8 @@ export type HistogramData = {
     path?: never;
     query?: {
         /**
-         * Quick period pick: `month`, `semester`, `year` (the default), `3y`,
-         * `5y` or `custom`.
+         * Quick period pick: `month`, `semester`, `year`, `3y`,
+         * `5y` (the default) or `custom`.
          */
         period?: string;
         /**
@@ -2675,8 +2675,8 @@ export type RechecksData = {
     path?: never;
     query?: {
         /**
-         * Quick period pick: `month`, `semester`, `year` (the default), `3y`,
-         * `5y` or `custom`.
+         * Quick period pick: `month`, `semester`, `year`, `3y`,
+         * `5y` (the default) or `custom`.
          */
         period?: string;
         /**
@@ -2734,8 +2734,8 @@ export type SummaryData = {
     path?: never;
     query?: {
         /**
-         * Quick period pick: `month`, `semester`, `year` (the default), `3y`,
-         * `5y` or `custom`.
+         * Quick period pick: `month`, `semester`, `year`, `3y`,
+         * `5y` (the default) or `custom`.
          */
         period?: string;
         /**
@@ -2799,8 +2799,8 @@ export type TimeseriesData = {
     path?: never;
     query?: {
         /**
-         * Quick period pick: `month`, `semester`, `year` (the default), `3y`,
-         * `5y` or `custom`.
+         * Quick period pick: `month`, `semester`, `year`, `3y`,
+         * `5y` (the default) or `custom`.
          */
         period?: string;
         /**
@@ -2858,8 +2858,8 @@ export type UsageData = {
     path?: never;
     query?: {
         /**
-         * Quick period pick: `month`, `semester`, `year` (the default), `3y`,
-         * `5y` or `custom`.
+         * Quick period pick: `month`, `semester`, `year`, `3y`,
+         * `5y` (the default) or `custom`.
          */
         period?: string;
         /**
@@ -2917,8 +2917,8 @@ export type WorkTypesData = {
     path?: never;
     query?: {
         /**
-         * Quick period pick: `month`, `semester`, `year` (the default), `3y`,
-         * `5y` or `custom`.
+         * Quick period pick: `month`, `semester`, `year`, `3y`,
+         * `5y` (the default) or `custom`.
          */
         period?: string;
         /**
@@ -2976,8 +2976,8 @@ export type YoyData = {
     path?: never;
     query?: {
         /**
-         * Quick period pick: `month`, `semester`, `year` (the default), `3y`,
-         * `5y` or `custom`.
+         * Quick period pick: `month`, `semester`, `year`, `3y`,
+         * `5y` (the default) or `custom`.
          */
         period?: string;
         /**
@@ -3076,8 +3076,8 @@ export type FacultiesData = {
     path?: never;
     query?: {
         /**
-         * Quick period pick: `month`, `semester`, `year` (academic year, the
-         * default), `3y`, `5y` or `custom`. With any preset other than `custom`,
+         * Quick period pick: `month`, `semester`, `year` (academic year),
+         * `3y`, `5y` (the default) or `custom`. With any preset other than `custom`,
          * `from`/`to` are still validated but the preset determines the range.
          */
         period?: string;
@@ -3130,8 +3130,8 @@ export type Histogram2Data = {
     path?: never;
     query?: {
         /**
-         * Quick period pick: `month`, `semester`, `year` (academic year, the
-         * default), `3y`, `5y` or `custom`. With any preset other than `custom`,
+         * Quick period pick: `month`, `semester`, `year` (academic year),
+         * `3y`, `5y` (the default) or `custom`. With any preset other than `custom`,
          * `from`/`to` are still validated but the preset determines the range.
          */
         period?: string;
@@ -3245,8 +3245,8 @@ export type Summary2Data = {
     path?: never;
     query?: {
         /**
-         * Quick period pick: `month`, `semester`, `year` (academic year, the
-         * default), `3y`, `5y` or `custom`. With any preset other than `custom`,
+         * Quick period pick: `month`, `semester`, `year` (academic year),
+         * `3y`, `5y` (the default) or `custom`. With any preset other than `custom`,
          * `from`/`to` are still validated but the preset determines the range.
          */
         period?: string;
@@ -3303,8 +3303,8 @@ export type Timeseries2Data = {
     path?: never;
     query?: {
         /**
-         * Quick period pick: `month`, `semester`, `year` (academic year, the
-         * default), `3y`, `5y` or `custom`. With any preset other than `custom`,
+         * Quick period pick: `month`, `semester`, `year` (academic year),
+         * `3y`, `5y` (the default) or `custom`. With any preset other than `custom`,
          * `from`/`to` are still validated but the preset determines the range.
          */
         period?: string;
@@ -3357,8 +3357,8 @@ export type WorkTypes2Data = {
     path?: never;
     query?: {
         /**
-         * Quick period pick: `month`, `semester`, `year` (academic year, the
-         * default), `3y`, `5y` or `custom`. With any preset other than `custom`,
+         * Quick period pick: `month`, `semester`, `year` (academic year),
+         * `3y`, `5y` (the default) or `custom`. With any preset other than `custom`,
          * `from`/`to` are still validated but the preset determines the range.
          */
         period?: string;
@@ -3411,8 +3411,8 @@ export type Yoy2Data = {
     path?: never;
     query?: {
         /**
-         * Quick period pick: `month`, `semester`, `year` (academic year, the
-         * default), `3y`, `5y` or `custom`. With any preset other than `custom`,
+         * Quick period pick: `month`, `semester`, `year` (academic year),
+         * `3y`, `5y` (the default) or `custom`. With any preset other than `custom`,
          * `from`/`to` are still validated but the preset determines the range.
          */
         period?: string;

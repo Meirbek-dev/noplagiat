@@ -38,7 +38,7 @@ describe("academic year", () => {
 })
 
 describe("resolvePreset", () => {
-  it("resolves the academic year the dashboard defaults to", () => {
+  it("resolves the academic-year preset", () => {
     expect(resolvePreset("year", ON_THE_BOUNDARY)).toEqual({
       from: "2025-09-01",
       to: "2026-08-31",

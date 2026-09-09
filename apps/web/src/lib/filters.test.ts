@@ -35,15 +35,15 @@ describe("normalizePublicQuery", () => {
     ).toEqual({ period: "custom", from: "2025-11-01", to: "2025-11-30" })
   })
 
-  it("degrades an incomplete custom period to the academic year", () => {
+  it("degrades an incomplete custom period to five academic years", () => {
     expect(
       normalizePublicQuery(parse({ period: "custom", from: "2025-11-01" }))
-    ).toEqual({ period: "year" })
+    ).toEqual({ period: "5y" })
   })
 
   it("renames the work-type filter to the contract's snake_case", () => {
     expect(normalizePublicQuery(parse({ workType: "thesis_master" }))).toEqual({
-      period: "year",
+      period: "5y",
       work_type: "thesis_master",
     })
   })
@@ -57,7 +57,7 @@ describe("normalizePublicQuery", () => {
         lang: "kk",
       })
     )
-    expect(query).toEqual({ period: "year", faculty: "FAC03" })
+    expect(query).toEqual({ period: "5y", faculty: "FAC03" })
     expect(Object.keys(query)).not.toContain("department")
     expect(Object.keys(query)).not.toContain("program")
     expect(Object.keys(query)).not.toContain("lang")
@@ -66,7 +66,7 @@ describe("normalizePublicQuery", () => {
   it("treats a blank string as an absent filter", () => {
     expect(
       normalizePublicQuery(parse({ faculty: "  ", workType: "" }))
-    ).toEqual({ period: "year" })
+    ).toEqual({ period: "5y" })
   })
 
   it("is order-independent: equal filter states normalize to equal objects", () => {
@@ -88,13 +88,13 @@ describe("normalizePublicQuery", () => {
     const query = normalizePublicQuery(
       parse({ faculty: "FAC03", status: "accepted" })
     )
-    expect(query).toEqual({ period: "year", faculty: "FAC03" })
+    expect(query).toEqual({ period: "5y", faculty: "FAC03" })
     expect(Object.keys(query)).not.toContain("status")
   })
 
   it("keeps status on the internal contour", () => {
     expect(normalizeInternalQuery(parse({ status: "accepted" }))).toEqual({
-      period: "year",
+      period: "5y",
       status: "accepted",
     })
   })
@@ -118,7 +118,7 @@ describe("publicQueries", () => {
   it("caches identical filter states under one key", () => {
     const one = publicQueries.summary(normalizePublicQuery(parse({}))).queryKey
     const two = publicQueries.summary(
-      normalizePublicQuery(parse({ period: "year" }))
+      normalizePublicQuery(parse({ period: "5y" }))
     ).queryKey
     expect(JSON.stringify(one)).toBe(JSON.stringify(two))
   })
@@ -137,7 +137,7 @@ describe("publicQueries", () => {
   })
 
   it("holds the public contour for an hour, matching Cache-Control", () => {
-    expect(publicQueries.summary({ period: "year" }).staleTime).toBe(3600000)
+    expect(publicQueries.summary({ period: "5y" }).staleTime).toBe(3600000)
   })
 })
 
@@ -165,7 +165,7 @@ describe("normalizeInternalQuery", () => {
         parse({ faculty: "FAC03", department: "DEP11", program: "PROG01" })
       )
     ).toEqual({
-      period: "year",
+      period: "5y",
       faculty: "FAC03",
       department: "DEP11",
       program: "PROG01",
@@ -178,16 +178,16 @@ describe("normalizeInternalQuery", () => {
     ])
   })
 
-  it("degrades an incomplete custom period to the academic year", () => {
+  it("degrades an incomplete custom period to five academic years", () => {
     expect(
       normalizeInternalQuery(parse({ period: "custom", to: "2026-08-31" }))
-    ).toEqual({ period: "year" })
+    ).toEqual({ period: "5y" })
   })
 
   it("treats a blank unit code as an absent filter, not an empty unit", () => {
     expect(
       normalizeInternalQuery(parse({ department: "   ", program: "" }))
-    ).toEqual({ period: "year" })
+    ).toEqual({ period: "5y" })
   })
 
   it("is order-independent: equal filter states normalize to equal objects", () => {
@@ -220,14 +220,14 @@ describe("internalQueries", () => {
   })
 
   it("never collides with a public key carrying the same filters", () => {
-    const query = { period: "year" as const }
+    const query = { period: "5y" as const }
     expect(JSON.stringify(internalQueries.summary(query).queryKey)).not.toBe(
       JSON.stringify(publicQueries.summary(query).queryKey)
     )
   })
 
   it("holds the internal contour for five minutes (ARCHITECTURE §5.1)", () => {
-    expect(internalQueries.summary({ period: "year" }).staleTime).toBe(300000)
+    expect(internalQueries.summary({ period: "5y" }).staleTime).toBe(300000)
   })
 
   it("derives the scope-aware unit options from the unfiltered matrix", () => {

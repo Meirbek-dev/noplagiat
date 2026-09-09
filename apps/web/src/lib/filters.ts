@@ -1,5 +1,6 @@
 import type { PublicQuery } from "./api"
 import type { InternalQuery } from "./api-internal"
+import { DEFAULT_PERIOD } from "./search"
 import type { DashboardSearch } from "./search"
 
 /**
@@ -22,7 +23,7 @@ function trimmed(value: string | undefined): string | undefined {
 
 /**
  * A `custom` period without both endpoints is not a period; it degrades to the
- * academic-year default rather than sending the server a 422.
+ * five-academic-year default rather than sending the server a 422.
  */
 export function normalizePublicQuery(search: DashboardSearch): PublicQuery {
   const from = trimmed(search.from)
@@ -34,7 +35,7 @@ export function normalizePublicQuery(search: DashboardSearch): PublicQuery {
     period: custom
       ? "custom"
       : search.period === "custom"
-        ? "year"
+        ? DEFAULT_PERIOD
         : search.period,
   }
   if (custom) {
@@ -71,7 +72,7 @@ export function normalizeInternalQuery(search: DashboardSearch): InternalQuery {
     period: custom
       ? "custom"
       : search.period === "custom"
-        ? "year"
+        ? DEFAULT_PERIOD
         : search.period,
   }
   if (custom) {
@@ -127,7 +128,7 @@ export function mergeFilters(
 /** `true` when the user has narrowed anything beyond the default period. */
 export function hasActiveFilters(search: DashboardSearch): boolean {
   return (
-    search.period !== "year" ||
+    search.period !== DEFAULT_PERIOD ||
     trimmed(search.faculty) !== undefined ||
     trimmed(search.department) !== undefined ||
     trimmed(search.program) !== undefined ||

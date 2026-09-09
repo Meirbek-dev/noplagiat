@@ -55,8 +55,8 @@ const STATUSES: [&str; 4] = ["accepted", "needs_revision", "rejected", "recheck"
 #[serde(deny_unknown_fields)]
 #[into_params(parameter_in = Query)]
 pub struct PublicFilterQuery {
-    /// Quick period pick: `month`, `semester`, `year` (academic year, the
-    /// default), `3y`, `5y` or `custom`. With any preset other than `custom`,
+    /// Quick period pick: `month`, `semester`, `year` (academic year),
+    /// `3y`, `5y` (the default) or `custom`. With any preset other than `custom`,
     /// `from`/`to` are still validated but the preset determines the range.
     #[garde(inner(custom(known(&PERIOD_PRESETS, "period"))))]
     pub period: Option<String>,
@@ -112,7 +112,7 @@ impl PublicFilterQuery {
     }
 
     /// The preset this request asked for. Absent `period` with a `from`/`to`
-    /// pair means a custom range; absent everything means the academic year,
+    /// pair means a custom range; absent everything means five academic years,
     /// matching the frontend default.
     fn period_preset(&self) -> Result<PeriodPreset, ApiError> {
         preset_of(
@@ -141,8 +141,8 @@ const INITIATORS: [&str; 4] = ["student", "staff_self", "registrar", "other"];
 #[serde(deny_unknown_fields)]
 #[into_params(parameter_in = Query)]
 pub struct InternalFilterQuery {
-    /// Quick period pick: `month`, `semester`, `year` (the default), `3y`,
-    /// `5y` or `custom`.
+    /// Quick period pick: `month`, `semester`, `year`, `3y`,
+    /// `5y` (the default) or `custom`.
     #[garde(inner(custom(known(&PERIOD_PRESETS, "period"))))]
     pub period: Option<String>,
     /// Inclusive range start, `YYYY-MM-DD`.
@@ -372,7 +372,7 @@ fn preset_of(
         Some("5y") => Ok(PeriodPreset::FiveYears),
         Some("custom") => custom(),
         None if from.is_some() || to.is_some() => custom(),
-        None => Ok(PeriodPreset::AcademicYear),
+        None => Ok(PeriodPreset::FiveYears),
         Some(other) => Err(ApiError::field(
             "period",
             format!("unknown period preset `{other}`"),
@@ -626,12 +626,16 @@ mod tests {
     }
 
     #[test]
-    fn the_default_period_is_the_academic_year() {
+    fn the_default_period_is_five_academic_years() {
         let filters = query("")
             .resolve(SemesterBoundaries::default(), date(2026, 2, 15))
             .expect("empty filters resolve");
-        assert_eq!(filters.period().start(), date(2025, 9, 1));
+        assert_eq!(filters.period().start(), date(2021, 9, 1));
         assert_eq!(filters.period().end(), date(2026, 8, 31));
+        let internal = InternalFilterQuery::default()
+            .resolve(SemesterBoundaries::default(), date(2026, 2, 15))
+            .expect("empty internal filters resolve");
+        assert_eq!(internal.period(), filters.period());
     }
 
     #[test]

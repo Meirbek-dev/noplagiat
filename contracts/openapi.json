@@ -2720,7 +2720,7 @@
           {
             "name": "period",
             "in": "query",
-            "description": "Quick period pick: `month`, `semester`, `year` (the default), `3y`,\n`5y` or `custom`.",
+            "description": "Quick period pick: `month`, `semester`, `year`, `3y`,\n`5y` (the default) or `custom`.",
             "required": false,
             "schema": {
               "type": "string"
@@ -2859,7 +2859,7 @@
           {
             "name": "period",
             "in": "query",
-            "description": "Quick period pick: `month`, `semester`, `year` (the default), `3y`,\n`5y` or `custom`.",
+            "description": "Quick period pick: `month`, `semester`, `year`, `3y`,\n`5y` (the default) or `custom`.",
             "required": false,
             "schema": {
               "type": "string"
@@ -3086,7 +3086,7 @@
           {
             "name": "period",
             "in": "query",
-            "description": "Quick period pick: `month`, `semester`, `year` (the default), `3y`,\n`5y` or `custom`.",
+            "description": "Quick period pick: `month`, `semester`, `year`, `3y`,\n`5y` (the default) or `custom`.",
             "required": false,
             "schema": {
               "type": "string"
@@ -3272,7 +3272,7 @@
           {
             "name": "period",
             "in": "query",
-            "description": "Quick period pick: `month`, `semester`, `year` (the default), `3y`,\n`5y` or `custom`.",
+            "description": "Quick period pick: `month`, `semester`, `year`, `3y`,\n`5y` (the default) or `custom`.",
             "required": false,
             "schema": {
               "type": "string"
@@ -3411,7 +3411,7 @@
           {
             "name": "period",
             "in": "query",
-            "description": "Quick period pick: `month`, `semester`, `year` (the default), `3y`,\n`5y` or `custom`.",
+            "description": "Quick period pick: `month`, `semester`, `year`, `3y`,\n`5y` (the default) or `custom`.",
             "required": false,
             "schema": {
               "type": "string"
@@ -3550,7 +3550,7 @@
           {
             "name": "period",
             "in": "query",
-            "description": "Quick period pick: `month`, `semester`, `year` (the default), `3y`,\n`5y` or `custom`.",
+            "description": "Quick period pick: `month`, `semester`, `year`, `3y`,\n`5y` (the default) or `custom`.",
             "required": false,
             "schema": {
               "type": "string"
@@ -3689,7 +3689,7 @@
           {
             "name": "period",
             "in": "query",
-            "description": "Quick period pick: `month`, `semester`, `year` (the default), `3y`,\n`5y` or `custom`.",
+            "description": "Quick period pick: `month`, `semester`, `year`, `3y`,\n`5y` (the default) or `custom`.",
             "required": false,
             "schema": {
               "type": "string"
@@ -3828,7 +3828,7 @@
           {
             "name": "period",
             "in": "query",
-            "description": "Quick period pick: `month`, `semester`, `year` (the default), `3y`,\n`5y` or `custom`.",
+            "description": "Quick period pick: `month`, `semester`, `year`, `3y`,\n`5y` (the default) or `custom`.",
             "required": false,
             "schema": {
               "type": "string"
@@ -3967,7 +3967,7 @@
           {
             "name": "period",
             "in": "query",
-            "description": "Quick period pick: `month`, `semester`, `year` (the default), `3y`,\n`5y` or `custom`.",
+            "description": "Quick period pick: `month`, `semester`, `year`, `3y`,\n`5y` (the default) or `custom`.",
             "required": false,
             "schema": {
               "type": "string"
@@ -4180,7 +4180,7 @@
           {
             "name": "period",
             "in": "query",
-            "description": "Quick period pick: `month`, `semester`, `year` (academic year, the\ndefault), `3y`, `5y` or `custom`. With any preset other than `custom`,\n`from`/`to` are still validated but the preset determines the range.",
+            "description": "Quick period pick: `month`, `semester`, `year` (academic year),\n`3y`, `5y` (the default) or `custom`. With any preset other than `custom`,\n`from`/`to` are still validated but the preset determines the range.",
             "required": false,
             "schema": {
               "type": "string"
@@ -4259,7 +4259,7 @@
           {
             "name": "period",
             "in": "query",
-            "description": "Quick period pick: `month`, `semester`, `year` (academic year, the\ndefault), `3y`, `5y` or `custom`. With any preset other than `custom`,\n`from`/`to` are still validated but the preset determines the range.",
+            "description": "Quick period pick: `month`, `semester`, `year` (academic year),\n`3y`, `5y` (the default) or `custom`. With any preset other than `custom`,\n`from`/`to` are still validated but the preset determines the range.",
             "required": false,
             "schema": {
               "type": "string"
@@ -4435,7 +4435,7 @@
           {
             "name": "period",
             "in": "query",
-            "description": "Quick period pick: `month`, `semester`, `year` (academic year, the\ndefault), `3y`, `5y` or `custom`. With any preset other than `custom`,\n`from`/`to` are still validated but the preset determines the range.",
+            "description": "Quick period pick: `month`, `semester`, `year` (academic year),\n`3y`, `5y` (the default) or `custom`. With any preset other than `custom`,\n`from`/`to` are still validated but the preset determines the range.",
             "required": false,
             "schema": {
               "type": "string"
@@ -4524,7 +4524,7 @@
           {
             "name": "period",
             "in": "query",
-            "description": "Quick period pick: `month`, `semester`, `year` (academic year, the\ndefault), `3y`, `5y` or `custom`. With any preset other than `custom`,\n`from`/`to` are still validated but the preset determines the range.",
+            "description": "Quick period pick: `month`, `semester`, `year` (academic year),\n`3y`, `5y` (the default) or `custom`. With any preset other than `custom`,\n`from`/`to` are still validated but the preset determines the range.",
             "required": false,
             "schema": {
               "type": "string"
@@ -4602,7 +4602,7 @@
           {
             "name": "period",
             "in": "query",
-            "description": "Quick period pick: `month`, `semester`, `year` (academic year, the\ndefault), `3y`, `5y` or `custom`. With any preset other than `custom`,\n`from`/`to` are still validated but the preset determines the range.",
+            "description": "Quick period pick: `month`, `semester`, `year` (academic year),\n`3y`, `5y` (the default) or `custom`. With any preset other than `custom`,\n`from`/`to` are still validated but the preset determines the range.",
             "required": false,
             "schema": {
               "type": "string"
@@ -4680,7 +4680,7 @@
           {
             "name": "period",
             "in": "query",
-            "description": "Quick period pick: `month`, `semester`, `year` (academic year, the\ndefault), `3y`, `5y` or `custom`. With any preset other than `custom`,\n`from`/`to` are still validated but the preset determines the range.",
+            "description": "Quick period pick: `month`, `semester`, `year` (academic year),\n`3y`, `5y` (the default) or `custom`. With any preset other than `custom`,\n`from`/`to` are still validated but the preset determines the range.",
             "required": false,
             "schema": {
               "type": "string"
@@ -5797,7 +5797,7 @@
               "string",
               "null"
             ],
-            "description": "Quick period pick: `month`, `semester`, `year` (the default), `3y`,\n`5y` or `custom`."
+            "description": "Quick period pick: `month`, `semester`, `year`, `3y`,\n`5y` (the default) or `custom`."
           },
           "program": {
             "type": [
@@ -6484,7 +6484,7 @@
               "string",
               "null"
             ],
-            "description": "Quick period pick: `month`, `semester`, `year` (academic year, the\ndefault), `3y`, `5y` or `custom`. With any preset other than `custom`,\n`from`/`to` are still validated but the preset determines the range."
+            "description": "Quick period pick: `month`, `semester`, `year` (academic year),\n`3y`, `5y` (the default) or `custom`. With any preset other than `custom`,\n`from`/`to` are still validated but the preset determines the range."
           },
           "to": {
             "type": [

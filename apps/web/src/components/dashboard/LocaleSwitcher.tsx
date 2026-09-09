@@ -1,4 +1,4 @@
-import { useLocation } from "@tanstack/react-router"
+import { Link } from "@tanstack/react-router"
 
 import { cn } from "@/lib/utils"
 import { m } from "@/paraglide/messages.js"
@@ -35,9 +35,9 @@ const TONE_CLASSES: Record<
  *
  * Each choice is a real link carrying the current filters plus `?lang=…`, so
  * the switch works without JavaScript and SSR renders the target locale
- * directly. The click handler additionally calls paraglide's `setLocale`,
- * which persists the `locale` cookie so the choice survives a later visit with
- * no query parameter (ADR-007: `?lang` → cookie → browser → RU).
+ * directly. With JavaScript, TanStack Router performs the same change without
+ * replacing the document (and therefore without unloading its styles). The
+ * click handler persists the locale cookie for later visits without `?lang=`.
  */
 export function LocaleSwitcher({
   active,
@@ -49,22 +49,10 @@ export function LocaleSwitcher({
   /** Which surface the switch sits on. Defaults to a light toolbar. */
   tone?: LocaleSwitcherTone
 }) {
-  const location = useLocation()
-
   const names: Record<Locale, string> = {
     ru: m.locale_name_ru({}, { locale: active }),
     kk: m.locale_name_kk({}, { locale: active }),
     en: m.locale_name_en({}, { locale: active }),
-  }
-
-  const hrefFor = (locale: Locale): string => {
-    const params = new URLSearchParams()
-    for (const [key, value] of Object.entries(location.search)) {
-      if (key === "lang" || value === undefined || value === null) continue
-      params.set(key, String(value))
-    }
-    params.set("lang", locale)
-    return `${location.pathname}?${params.toString()}`
   }
 
   return (
@@ -75,19 +63,18 @@ export function LocaleSwitcher({
       {locales.map((locale) => {
         const current = locale === active
         return (
-          <a
+          <Link
             key={locale}
-            href={hrefFor(locale)}
+            to="."
+            search={(previous) => ({ ...previous, lang: locale })}
+            resetScroll={false}
             hrefLang={locale}
             lang={locale}
             aria-current={current ? "true" : undefined}
             onClick={() => {
-              // The link is allowed to navigate: a full request is what makes
-              // SSR render the target locale (`?lang=` is the highest-priority
-              // strategy). The click only persists the choice, so a later
-              // visit without the parameter still lands in it - that is the
-              // cookie step of the ADR-007 chain, written with paraglide's own
-              // cookie name and lifetime.
+              // Navigation itself is owned by TanStack Router. This handler
+              // only persists the choice, so a later visit without `?lang=`
+              // still lands in it - the cookie step of the ADR-007 chain.
               if (typeof document === "undefined") return
               document.cookie = `${cookieName}=${locale};path=/;max-age=${String(cookieMaxAge)};samesite=lax`
             }}
@@ -98,7 +85,7 @@ export function LocaleSwitcher({
             )}
           >
             {names[locale]}
-          </a>
+          </Link>
         )
       })}
     </nav>

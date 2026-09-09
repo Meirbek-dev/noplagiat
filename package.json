@@ -26,8 +26,8 @@
   "devDependencies": {
     "@axe-core/playwright": "^4.13.0",
     "@hey-api/openapi-ts": "0.99.0",
-    "@playwright/test": "^1.62.1",
-    "@types/bun": "^1.4.0",
+    "@playwright/test": "^1.63.0",
+    "@types/bun": "^1.4.2",
     "turbo": "^2.10.12",
     "typescript": "^6.0.3",
     "vite": "catalog:",
@@ -35,7 +35,7 @@
   },
   "packageManager": "bun@1.4.0",
   "engines": {
-    "node": ">=26"
+    "node": ">=20"
   },
   "pnpm": {
     "onlyBuiltDependencies": [
@@ -47,10 +47,13 @@
     "apps/*"
   ],
   "catalog": {
-    "vite": "npm:@voidzero-dev/vite-plus-core@0.3.0",
-    "vite-plus": "0.3.0"
+    "vite": "npm:@voidzero-dev/vite-plus-core@0.3.1",
+    "vite-plus": "0.3.1",
+    "vitest": "4.1.11"
   },
   "overrides": {
-    "vite": "catalog:"
+    "@inlang/sdk": "3.0.3",
+    "vite": "catalog:",
+    "vitest": "catalog:"
   }
 }

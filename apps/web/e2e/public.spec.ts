@@ -34,23 +34,23 @@ const FAC03 = scenario("faculty-fac03")
 const COMBO = scenario("faculty-fac03-worktype-course")
 
 test.describe("public dashboard", () => {
-  test("default view shows the current academic year", async ({ page }) => {
+  test("default view shows five academic years", async ({ page }) => {
     await goto(page, "/")
 
     // `/` has no period, so the router fills in the default and rewrites the
     // URL - the filter state is always spelled out (TZ §4.3).
-    await expect(page).toHaveURL(/[?&]period=year\b/)
+    await expect(page).toHaveURL(/[?&]period=5y\b/)
 
-    await expectKpi(page, "kpi-total-checks", count(AY.public_summary.checks))
+    await expectKpi(page, "kpi-total-checks", count(ALL.public_summary.checks))
     await expectKpi(
       page,
       "kpi-avg-originality",
-      percentPoints(AY.public_summary.avg_originality)
+      percentPoints(ALL.public_summary.avg_originality)
     )
 
-    // The server echoes the range it actually queried; it must be the academic
-    // year the fixture scenario describes, not a rolling 12 months.
-    await expect(page.getByTestId("applied-period")).toContainText("01.09.2025")
+    // The server echoes the range it actually queried; it must span five
+    // academic years, including the current one.
+    await expect(page.getByTestId("applied-period")).toContainText("01.09.2021")
     await expect(page.getByTestId("applied-period")).toContainText("31.08.2026")
   })
 
